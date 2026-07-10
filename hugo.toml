@@ -15,9 +15,9 @@ disableKinds = ["taxonomy", "term"]
   # rasputin-releases mirror is retired).
   downloadUrl = "https://github.com/geekdojo/rasputin-os/releases"
   releasesUrl = "https://github.com/geekdojo/rasputin-os/releases"
-  # TODO(ADR-0002 Phase 3/4): design-partner intake still lands on the mirror
-  # repo, which will be archived — move this to a source/intake repo before then.
-  partnerIssueUrl = "https://github.com/geekdojo/rasputin-releases/issues/new?title=design%20partner"
+  # Design-partner intake lands on the control-plane repo's issues (the mirror is
+  # retired — ADR-0002).
+  partnerIssueUrl = "https://github.com/geekdojo/rasputin-control-plane/issues/new?title=design%20partner"
   githubUrl = "https://github.com/geekdojo"
   blueskyUrl = "https://bsky.app/profile/hoodoo5x5.bsky.social"
   lemmyUrl = "https://lemmy.world/u/hoodoo5x5"
