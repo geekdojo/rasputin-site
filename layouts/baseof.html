@@ -9,6 +9,8 @@
 <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
+{{ if .Params.noindex }}<meta name="robots" content="noindex">
+{{ end -}}
 <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
 {{ with .OutputFormats.Get "rss" -}}
 <link rel="alternate" type="application/rss+xml" title="Rasputin devlog" href="{{ .Permalink }}">
