@@ -1,0 +1,29 @@
+baseURL = "https://rasputin.geekdojo.com/"
+languageCode = "en-us"
+title = "Rasputin"
+timeZone = "America/Los_Angeles"
+enableRobotsTXT = true
+disableKinds = ["taxonomy", "term"]
+
+[params]
+  description = "Rasputin is an open-source homelab cluster system: Raspberry Pi and Intel N100 nodes plus a dedicated firewall node, managed from one web UI — opinionated where you want guidance, open where you want control, and built to work in the first hour."
+  # Kit (ConvertKit) form ID — leave empty to show the GitHub-watch fallback
+  # instead of the email form. Set it and the form goes live; nothing else to do.
+  kitFormId = ""
+  downloadUrl = "https://github.com/geekdojo/rasputin-releases"
+  releasesUrl = "https://github.com/geekdojo/rasputin-releases/releases"
+  partnerIssueUrl = "https://github.com/geekdojo/rasputin-releases/issues/new?title=design%20partner"
+  githubUrl = "https://github.com/geekdojo"
+  blueskyUrl = "https://bsky.app/profile/hoodoo5x5.bsky.social"
+  # mastodonUrl = "https://hachyderm.io/@hoodoo5x5"  # enable once the instance approves the account
+  parentUrl = "https://geekdojo.com"
+
+[outputs]
+  home = ["html"]
+  section = ["html", "rss"]
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[minify]
+  minifyOutput = true

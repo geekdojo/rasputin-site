@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ if .IsHome }}{{ site.Title }} — the homelab cluster that works in the first hour{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
+<meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+<meta property="og:title" content="{{ if .IsHome }}Rasputin — open-source homelab cluster system{{ else }}{{ .Title }}{{ end }}">
+<meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
+{{ with .OutputFormats.Get "rss" -}}
+<link rel="alternate" type="application/rss+xml" title="Rasputin devlog" href="{{ .Permalink }}">
+{{ else -}}
+<link rel="alternate" type="application/rss+xml" title="Rasputin devlog" href="{{ "devlog/index.xml" | relURL }}">
+{{ end -}}
+{{ with resources.Get "css/main.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
+{{ end -}}
+</head>
+<body>
+<header class="site-head">
+  <nav class="wrap">
+    <a class="brand" href="{{ "/" | relURL }}">
+      <svg class="mark" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1 23 12 12 23 1 12Z" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M4 12h16" stroke="currentColor" stroke-width="2.4"/></svg>
+      RASPUTIN
+    </a>
+    <div class="nav-links">
+      <a href="{{ "/" | relURL }}#partners">Design partners</a>
+      <a href="{{ "devlog/" | relURL }}">Devlog</a>
+      <a class="nav-cta" href="{{ site.Params.releasesUrl }}">Download</a>
+    </div>
+  </nav>
+</header>
+<main>
+{{ block "main" . }}{{ end }}
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-grid">
+    <div>
+      <p class="foot-brand">RASPUTIN</p>
+      <p class="muted">An open-source homelab cluster system.<br>
+      Built in the open by one person. A <a href="{{ site.Params.parentUrl }}">geekdojo</a> project.</p>
+    </div>
+    <div class="foot-links">
+      <a href="{{ site.Params.githubUrl }}">GitHub</a>
+      <a href="{{ site.Params.blueskyUrl }}">Bluesky</a>
+      {{ with site.Params.mastodonUrl }}<a rel="me" href="{{ . }}">Mastodon</a>{{ end }}
+      <a href="{{ "devlog/index.xml" | relURL }}">RSS</a>
+    </div>
+    <div class="foot-links">
+      <a href="{{ site.Params.downloadUrl }}">Releases</a>
+      <a href="https://github.com/geekdojo/rasputin-releases/blob/main/LICENSE">AGPL-3.0</a>
+      <a href="{{ site.Params.partnerIssueUrl }}">Become a design partner</a>
+    </div>
+  </div>
+  <div class="wrap foot-fine">
+    <p class="muted">© 2026 geekdojo. Software licensed AGPL-3.0 — free, no paywall, no open core.</p>
+  </div>
+</footer>
+</body>
+</html>

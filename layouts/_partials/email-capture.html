@@ -1,0 +1,14 @@
+{{ with site.Params.kitFormId }}
+<form class="email-form" action="https://app.kit.com/forms/{{ . }}/subscriptions" method="post">
+  <label class="visually-hidden" for="email">Email address</label>
+  <input id="email" type="email" name="email_address" required placeholder="you@homelab.example" autocomplete="email">
+  <button class="btn btn-primary" type="submit">Subscribe</button>
+</form>
+<p class="muted fine">Devlogs and release news only. No tracking pixels in the emails we control, unsubscribe anytime, and the list is never shared or sold.</p>
+{{ else }}
+<div class="email-fallback card">
+  <p>The mailing list is being set up. Meanwhile, <a href="{{ site.Params.downloadUrl }}">watch
+  rasputin-releases on GitHub</a> (Watch → Custom → Releases) or subscribe to the
+  <a href="{{ "devlog/index.xml" | relURL }}">devlog RSS feed</a>.</p>
+</div>
+{{ end }}

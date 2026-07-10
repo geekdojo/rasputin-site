@@ -1,0 +1,126 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Pre-alpha · AGPL-3.0 · runs on hardware you already own</p>
+    <h1>The homelab cluster<br>that works in the <span class="accent">first hour</span>.</h1>
+    <p class="lede">Rasputin turns a few Raspberry Pis or Intel N100 mini-PCs into one managed
+    system: a web control plane, a node OS with atomic updates and automatic rollback, and a
+    dedicated firewall node. Opinionated where you want guidance, open where you want control —
+    and every line of it is open source. No paywall, no open core.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="{{ site.Params.releasesUrl }}">Download the latest release</a>
+      <a class="btn btn-ghost" href="#partners">Become a design partner</a>
+    </div>
+    <p class="hero-fine muted">Flash a card, boot, open <code>http://rasputin.local</code>.
+    Cold start to working dashboard in under ten minutes — if it's slower, that's a bug and we want it filed.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <h2>What you get</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>First hour, not first weekend</h3>
+        <p>Download, flash, set a role in one text file, boot. The first-run wizard registers
+        a passkey and lands you on the dashboard. No config management, no shell required.</p>
+      </div>
+      <div class="card">
+        <h3>Updates you can trust</h3>
+        <p>Atomic A/B OS updates with signed images and automatic rollback when a health
+        check fails. An update that breaks a node undoes itself.</p>
+      </div>
+      <div class="card">
+        <h3>No passwords</h3>
+        <p>Passkey-only login — Touch ID, Windows Hello, or a security key. SSH is key-only
+        and your key is the only key: images ship with none baked in, and the build pipeline
+        cannot inject one.</p>
+      </div>
+      <div class="card">
+        <h3>Apps without ceremony</h3>
+        <p>Deploy from a curated catalog or paste your own Docker Compose. Your compose files
+        stay yours — the escape hatch is always open, including opt-in Kubernetes (k3s) for
+        those who want it.</p>
+      </div>
+      <div class="card">
+        <h3>A real firewall node</h3>
+        <p>A dedicated x86 firewall with stateful filtering, WireGuard, and intrusion
+        detection — managed from the same UI as the rest of the cluster.</p>
+      </div>
+      <div class="card">
+        <h3>Observability included</h3>
+        <p>Per-node metrics and logs in one dashboard, out of the box, using components
+        sized for small boards — not a monitoring stack you have to assemble first.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band band-alt">
+  <div class="wrap">
+    <h2>Straight answers before you flash</h2>
+    <ul class="honest">
+      <li><strong>It's pre-alpha.</strong> Image layouts and update formats still change without
+      notice. Don't put it in front of a network you care about — yet.</li>
+      <li><strong>The IDS is detection-only.</strong> An N100 can't do inline intrusion
+      prevention at 1&nbsp;Gbps line rate, so Rasputin runs detection in tap mode and doesn't
+      pretend otherwise.</li>
+      <li><strong>IPv4-only, by design.</strong> IPv6 is disabled across the whole stack.</li>
+      <li><strong>There is nothing to buy.</strong> Rasputin runs on a Pi 4/5, CM5, or any
+      N100/amd64 box you already own. Down the road geekdojo plans purpose-built hardware for
+      it — the software stays free either way.</li>
+      <li><strong>Every download is verifiable.</strong> Each release ships a manifest with
+      SHA-256 checksums for every artifact.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="band" id="partners">
+  <div class="wrap">
+    <h2>Design partners wanted</h2>
+    <div class="partner-cols">
+      <div class="card">
+        <h3>The ask</h3>
+        <p>Run Rasputin on your own hardware — a Raspberry Pi 4/5, CM5, or an Intel N100
+        box — for two weeks or more, and tell us in writing what's broken and what's
+        missing. That's it. Blunt feedback is the valuable kind.</p>
+      </div>
+      <div class="card">
+        <h3>The give</h3>
+        <p>Early access to every build, a direct line to the maintainer (your reports get
+        answered fast, not triaged into a void), and your name in the credits.</p>
+      </div>
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="{{ site.Params.partnerIssueUrl }}">Open an issue titled “design partner”</a>
+    </div>
+  </div>
+</section>
+
+<section class="band band-alt" id="updates">
+  <div class="wrap narrow">
+    <h2>Follow the build</h2>
+    <p>A weekly-ish devlog — what shipped, one honest problem, one number — plus release
+    announcements. The list is where launch news lands first.</p>
+    {{ partial "email-capture.html" . }}
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="row-head">
+      <h2>Devlog</h2>
+      <a class="more" href="{{ "devlog/" | relURL }}">All posts →</a>
+    </div>
+    <div class="grid">
+      {{ range first 3 (where site.RegularPages "Section" "devlog") }}
+      <a class="card card-link" href="{{ .RelPermalink }}">
+        <p class="post-date muted">{{ .Date.Format "2006-01-02" }}</p>
+        <h3>{{ .Title }}</h3>
+        <p>{{ .Summary | plainify | truncate 140 }}</p>
+      </a>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
