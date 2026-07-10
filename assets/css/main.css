@@ -290,9 +290,75 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 
 .foot-fine { border-top: 1px solid var(--line); padding-top: 20px; font-size: 0.82rem; }
 
+/* ---- download page ---- */
+
+.hero-sub { padding: 60px 0 40px; }
+.hero-sub h1 { font-size: clamp(1.9rem, 4.6vw, 2.8rem); margin-bottom: 16px; }
+
+.dl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 16px;
+}
+
+.dl-card { display: flex; flex-direction: column; }
+.dl-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.dl-head h3 { margin: 0; font-size: 1.15rem; }
+
+.pill {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.dl-btns { display: flex; flex-direction: column; gap: 10px; margin: 16px 0 12px; }
+
+.dl-btn {
+  display: flex; flex-direction: column; gap: 2px;
+  text-decoration: none;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  color: var(--text);
+  padding: 11px 16px;
+}
+.dl-btn:hover { border-color: var(--accent-dim); border-left-color: var(--accent); background: var(--bg-alt); }
+.dl-btn-arch { font-weight: 700; font-size: 0.95rem; }
+.dl-btn:hover .dl-btn-arch { color: var(--accent); }
+.dl-btn-file { font-family: var(--mono); font-size: 0.76rem; color: var(--muted); word-break: break-all; }
+
+.dl-notes { margin-top: auto; }
+.dl-notes a { color: var(--muted); text-decoration: none; }
+.dl-notes a:hover { color: var(--accent); }
+
+.steps { list-style: none; counter-reset: step; max-width: 52em; }
+.steps li {
+  position: relative;
+  padding: 14px 0 14px 44px;
+  border-bottom: 1px solid var(--line);
+  color: #aeb3bc;
+  font-size: 0.98rem;
+}
+.steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute; left: 0; top: 12px;
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 0.85rem; font-weight: 700;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+.steps li strong { color: var(--text); }
+
 @media (max-width: 640px) {
   .foot-grid { grid-template-columns: 1fr; }
   .hero { padding: 56px 0 44px; }
   .band { padding: 44px 0; }
   .nav-links { gap: 14px; }
+  .dl-grid { grid-template-columns: 1fr; }
 }

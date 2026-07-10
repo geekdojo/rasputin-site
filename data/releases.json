@@ -1,0 +1,35 @@
+{
+  "generated": "2026-07-10",
+  "os": {
+    "version": "2026.07.1",
+    "releaseUrl": "https://github.com/geekdojo/rasputin-os/releases/tag/2026.07.1",
+    "latestUrl": "https://github.com/geekdojo/rasputin-os/releases/latest",
+    "images": [
+      {
+        "label": "Raspberry Pi 4 / 5 / CM5",
+        "arch": "arm64",
+        "name": "rasputin-os-rpi-2026.07.1.img.xz",
+        "url": "https://github.com/geekdojo/rasputin-os/releases/download/2026.07.1/rasputin-os-rpi-2026.07.1.img.xz"
+      },
+      {
+        "label": "Intel N100 / any amd64 box",
+        "arch": "amd64",
+        "name": "rasputin-os-n100-2026.07.1.img.xz",
+        "url": "https://github.com/geekdojo/rasputin-os/releases/download/2026.07.1/rasputin-os-n100-2026.07.1.img.xz"
+      }
+    ]
+  },
+  "firewall": {
+    "version": "2026.07.1",
+    "releaseUrl": "https://github.com/geekdojo/rasputin-openwrt-firewall/releases/tag/2026.07.1",
+    "latestUrl": "https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest",
+    "images": [
+      {
+        "label": "Intel N100 firewall (x86-64)",
+        "arch": "amd64",
+        "name": "rasputin-fw-n100-2026.07.1-ab.img.gz",
+        "url": "https://github.com/geekdojo/rasputin-openwrt-firewall/releases/download/2026.07.1/rasputin-fw-n100-2026.07.1-ab.img.gz"
+      }
+    ]
+  }
+}
