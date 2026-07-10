@@ -9,7 +9,7 @@ disableKinds = ["taxonomy", "term"]
   description = "Rasputin is an open-source homelab cluster system: Raspberry Pi and Intel N100 nodes plus a dedicated firewall node, managed from one web UI — opinionated where you want guidance, open where you want control, and built to work in the first hour."
   # Kit (ConvertKit) form ID — leave empty to show the GitHub-watch fallback
   # instead of the email form. Set it and the form goes live; nothing else to do.
-  kitFormId = ""
+  kitFormId = "9667090"
   downloadUrl = "https://github.com/geekdojo/rasputin-releases"
   releasesUrl = "https://github.com/geekdojo/rasputin-releases/releases"
   partnerIssueUrl = "https://github.com/geekdojo/rasputin-releases/issues/new?title=design%20partner"
