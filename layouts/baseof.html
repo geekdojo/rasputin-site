@@ -46,6 +46,7 @@
     <div class="foot-links">
       <a href="{{ site.Params.githubUrl }}">GitHub</a>
       <a href="{{ site.Params.blueskyUrl }}">Bluesky</a>
+      {{ with site.Params.lemmyUrl }}<a href="{{ . }}">Lemmy</a>{{ end }}
       {{ with site.Params.mastodonUrl }}<a rel="me" href="{{ . }}">Mastodon</a>{{ end }}
       <a href="{{ "devlog/index.xml" | relURL }}">RSS</a>
     </div>
