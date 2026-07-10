@@ -1,5 +1,5 @@
 baseURL = "https://rasputin.geekdojo.com/"
-languageCode = "en-us"
+locale = "en-us"
 title = "Rasputin"
 timeZone = "America/Los_Angeles"
 enableRobotsTXT = true
@@ -9,7 +9,7 @@ disableKinds = ["taxonomy", "term"]
   description = "Rasputin is an open-source homelab cluster system: Raspberry Pi and Intel N100 nodes plus a dedicated firewall node, managed from one web UI — opinionated where you want guidance, open where you want control, and built to work in the first hour."
   # Kit (ConvertKit) form ID — leave empty to show the GitHub-watch fallback
   # instead of the email form. Set it and the form goes live; nothing else to do.
-  kitFormId = ""
+  kitFormId = "9667090"
   # The /download/ page is the image front door now; these back the "all
   # releases" link and point at the OS source repo (ADR-0002 — the
   # rasputin-releases mirror is retired).
@@ -20,6 +20,7 @@ disableKinds = ["taxonomy", "term"]
   partnerIssueUrl = "https://github.com/geekdojo/rasputin-releases/issues/new?title=design%20partner"
   githubUrl = "https://github.com/geekdojo"
   blueskyUrl = "https://bsky.app/profile/hoodoo5x5.bsky.social"
+  lemmyUrl = "https://lemmy.world/u/hoodoo5x5"
   # mastodonUrl = "https://hachyderm.io/@hoodoo5x5"  # enable once the instance approves the account
   parentUrl = "https://geekdojo.com"
 

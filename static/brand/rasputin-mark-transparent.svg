@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Rasputin mark, transparent background variant. -->
+  <path d="M256 86 426 256 256 426 86 256Z" fill="none" stroke="#fa4616" stroke-width="44"/>
+  <path d="M128 256h256" stroke="#fa4616" stroke-width="44"/>
+</svg>

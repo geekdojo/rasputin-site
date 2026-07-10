@@ -1,0 +1,25 @@
+{{ define "main" }}
+<section class="band">
+  <div class="wrap narrow">
+    <p class="eyebrow">Almost in</p>
+    <h1>Check your inbox.</h1>
+    <div class="prose">
+      <p>We just sent you a confirmation email — click the link in it and you're on the
+      list. No confirmation, no emails: that's deliberate, so nobody can subscribe an
+      address that isn't theirs.</p>
+      <p>What you'll get: a weekly-ish devlog — what shipped, one honest problem, one
+      number — plus release announcements. Nothing else, and you can unsubscribe from
+      any email.</p>
+      <p>While you're here:</p>
+      <ul>
+        <li><a href="{{ "devlog/" | relURL }}">Read the devlog</a> — start with
+        <a href="{{ "devlog/001-your-keys-not-mine/" | relURL }}">Your keys, not mine</a>.</li>
+        <li><a href="{{ site.Params.releasesUrl }}">Grab the latest release</a> and try the
+        first hour yourself.</li>
+        <li>Got a spare Pi or N100? <a href="{{ site.Params.partnerIssueUrl }}">Become a
+        design partner.</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+{{ end }}
