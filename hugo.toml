@@ -15,7 +15,7 @@ disableKinds = ["taxonomy", "term"]
   partnerIssueUrl = "https://github.com/geekdojo/rasputin-releases/issues/new?title=design%20partner"
   githubUrl = "https://github.com/geekdojo"
   blueskyUrl = "https://bsky.app/profile/hoodoo5x5.bsky.social"
-  lemmyUrl = "https://lemmy.world/u/bryce_geekdojo"
+  lemmyUrl = "https://lemmy.world/u/hoodoo5x5"
   # mastodonUrl = "https://hachyderm.io/@hoodoo5x5"  # enable once the instance approves the account
   parentUrl = "https://geekdojo.com"
 
