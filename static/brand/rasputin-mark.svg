@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Rasputin mark: diamond + equatorial trench, Pantone 172 C on near-black. -->
+  <rect width="512" height="512" fill="#0b0c0e"/>
+  <path d="M256 86 426 256 256 426 86 256Z" fill="none" stroke="#fa4616" stroke-width="44"/>
+  <path d="M128 256h256" stroke="#fa4616" stroke-width="44"/>
+</svg>
