@@ -1,0 +1,109 @@
+{{ define "main" }}
+<section class="hero hero-sub">
+  <div class="wrap">
+    <p class="eyebrow">Downloads · AGPL-3.0 · pre-alpha</p>
+    <h1>Get <span class="accent">Rasputin</span></h1>
+    <p class="lede">Flashable images for the node OS and the firewall, published straight from the
+    source repositories. Every image is signed and ships a <code>manifest.json</code> with a
+    SHA-256 checksum for each artifact — verify before you flash.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    {{ with hugo.Data.releases }}
+    <div class="row-head">
+      <h2>Latest stable images</h2>
+      {{ with .generated }}<span class="more muted">resolved {{ . }}</span>{{ end }}
+    </div>
+    <div class="dl-grid">
+
+      {{ with .os }}
+      <div class="card dl-card">
+        <div class="dl-head">
+          <h3>Rasputin OS</h3>
+          {{ with .version }}<span class="pill">{{ . }}</span>{{ end }}
+        </div>
+        <p>The node operating system — one image per architecture; a node's role is chosen at
+        first boot. The web control plane ships <em>inside</em> this image, so there is nothing
+        else to install.</p>
+        <div class="dl-btns">
+          {{ range .images }}
+          <a class="dl-btn" href="{{ .url }}">
+            <span class="dl-btn-arch">{{ .label }}</span>
+            <span class="dl-btn-file">{{ .name }}</span>
+          </a>
+          {{ end }}
+        </div>
+        {{ with .releaseUrl }}<p class="fine dl-notes"><a href="{{ . }}">Release notes &amp; checksums →</a></p>{{ end }}
+      </div>
+      {{ end }}
+
+      {{ with .firewall }}
+      <div class="card dl-card">
+        <div class="dl-head">
+          <h3>Rasputin Firewall</h3>
+          {{ with .version }}<span class="pill">{{ . }}</span>{{ end }}
+        </div>
+        <p>The dedicated firewall node — a separate x86-only image on its own release cadence,
+        with stateful filtering, WireGuard, and tap-mode intrusion detection, managed from the
+        same UI as the rest of the cluster.</p>
+        <div class="dl-btns">
+          {{ range .images }}
+          <a class="dl-btn" href="{{ .url }}">
+            <span class="dl-btn-arch">{{ .label }}</span>
+            <span class="dl-btn-file">{{ .name }}</span>
+          </a>
+          {{ end }}
+        </div>
+        {{ with .releaseUrl }}<p class="fine dl-notes"><a href="{{ . }}">Release notes &amp; checksums →</a></p>{{ end }}
+      </div>
+      {{ end }}
+
+    </div>
+    {{ else }}
+    <h2>Latest images</h2>
+    <p class="lede">Grab the newest signed images straight from the source repositories:</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/geekdojo/rasputin-os/releases/latest">Rasputin OS releases</a>
+      <a class="btn btn-primary" href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest">Firewall releases</a>
+    </div>
+    {{ end }}
+  </div>
+</section>
+
+<section class="band band-alt">
+  <div class="wrap narrow">
+    <h2>Flash it in four steps</h2>
+    <ol class="steps">
+      <li><strong>Verify.</strong> Check the image's SHA-256 against the <code>manifest.json</code>
+      on its release page. Authenticity rides on the signature, not on where the file is hosted.</li>
+      <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive
+      (<code>xz -d</code> the OS image first; the firewall image flashes as-is).</li>
+      <li><strong>Seed.</strong> Drop a one-line <code>rasputin-seed.env</code> onto the boot
+      partition — your node's role and your SSH public key. No key is baked in; yours is the only one.</li>
+      <li><strong>Boot.</strong> Power on and open <code>http://rasputin.local</code>. The
+      first-run wizard registers a passkey and lands you on the dashboard — under ten minutes,
+      cold start to working cluster.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap narrow">
+    <h2>Before you flash</h2>
+    <ul class="honest">
+      <li><strong>It's pre-alpha.</strong> Image layouts and update formats still change without
+      notice. Don't put it in front of a network you care about — yet.</li>
+      <li><strong>Two supported targets.</strong> Raspberry Pi 4 / 5 / CM5 (arm64) and Intel
+      N100 / amd64 for nodes; an N100 box for the firewall. Everything else is community territory.</li>
+      <li><strong>There is nothing to buy.</strong> Rasputin runs on hardware you already own,
+      and the software is AGPL-3.0 — free, no paywall, no open core.</li>
+    </ul>
+    <div class="cta-row">
+      <a class="btn btn-ghost" href="{{ site.Params.releasesUrl }}">All OS releases on GitHub →</a>
+      <a class="btn btn-ghost" href="{{ "/" | relURL }}#partners">Become a design partner</a>
+    </div>
+  </div>
+</section>
+{{ end }}

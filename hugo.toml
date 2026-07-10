@@ -10,8 +10,13 @@ disableKinds = ["taxonomy", "term"]
   # Kit (ConvertKit) form ID — leave empty to show the GitHub-watch fallback
   # instead of the email form. Set it and the form goes live; nothing else to do.
   kitFormId = ""
-  downloadUrl = "https://github.com/geekdojo/rasputin-releases"
-  releasesUrl = "https://github.com/geekdojo/rasputin-releases/releases"
+  # The /download/ page is the image front door now; these back the "all
+  # releases" link and point at the OS source repo (ADR-0002 — the
+  # rasputin-releases mirror is retired).
+  downloadUrl = "https://github.com/geekdojo/rasputin-os/releases"
+  releasesUrl = "https://github.com/geekdojo/rasputin-os/releases"
+  # TODO(ADR-0002 Phase 3/4): design-partner intake still lands on the mirror
+  # repo, which will be archived — move this to a source/intake repo before then.
   partnerIssueUrl = "https://github.com/geekdojo/rasputin-releases/issues/new?title=design%20partner"
   githubUrl = "https://github.com/geekdojo"
   blueskyUrl = "https://bsky.app/profile/hoodoo5x5.bsky.social"

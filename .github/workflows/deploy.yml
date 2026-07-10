@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Refresh the resolved "latest release" data daily, and on demand when a source
+  # repo publishes a release (it sends a repository_dispatch of this type).
+  schedule:
+    - cron: "17 8 * * *"
+  repository_dispatch:
+    types: [release-published]
 
 permissions:
   contents: read
@@ -29,6 +35,10 @@ jobs:
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
+      - name: Resolve latest releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/fetch-releases.sh
       - name: Build
         run: hugo --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
       - uses: actions/upload-pages-artifact@v3
