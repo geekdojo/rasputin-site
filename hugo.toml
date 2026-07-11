@@ -17,6 +17,7 @@ disableKinds = ["taxonomy", "term"]
   releasesUrl = "https://github.com/geekdojo/rasputin-os/releases"
   # Design-partner intake lands on the control-plane repo's issues (the mirror is
   # retired — ADR-0002).
+  docIssueUrl = "https://github.com/geekdojo/rasputin-site/issues/new?title=Docs Issue"
   partnerIssueUrl = "https://github.com/geekdojo/rasputin-control-plane/issues/new?title=design%20partner"
   githubUrl = "https://github.com/geekdojo"
   blueskyUrl = "https://bsky.app/profile/hoodoo5x5.bsky.social"
