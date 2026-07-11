@@ -1,0 +1,13 @@
+{{ define "main" }}
+<article class="band">
+  <div class="wrap narrow">
+    <p class="post-date muted"><a href="{{ "docs/" | relURL }}">Docs</a> ›</p>
+    <h1>{{ .Title }}</h1>
+    <div class="prose">
+      {{ .Content }}
+    </div>
+    <hr class="rule">
+    <p class="muted">Something wrong or missing on this page? <a href="{{ site.Params.partnerIssueUrl }}">Tell us</a> — docs bugs count too.</p>
+  </div>
+</article>
+{{ end }}

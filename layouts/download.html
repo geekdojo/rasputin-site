@@ -42,7 +42,7 @@
       {{ with .firewall }}
       <div class="card dl-card">
         <div class="dl-head">
-          <h3>Rasputin Firewall</h3>
+          <h3>Rasputin OpenWrt Firewall</h3>
           {{ with .version }}<span class="pill">{{ . }}</span>{{ end }}
         </div>
         <p>The dedicated firewall node — a separate x86-only image on its own release cadence,
@@ -80,8 +80,12 @@
       on its release page. Authenticity rides on the signature, not on where the file is hosted.</li>
       <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive
       (<code>xz -d</code> the OS image first; the firewall image flashes as-is).</li>
-      <li><strong>Seed.</strong> Drop a one-line <code>rasputin-seed.env</code> onto the boot
-      partition — your node's role and your SSH public key. No key is baked in; yours is the only one.</li>
+      <li><strong>Seed.</strong> Mount the boot partition and drop a <code>rasputin-seed.env</code> —
+      a short <code>KEY=value</code> file. For your first node (the control plane) it's two lines:
+      <pre class="seed">RASPUTIN_NODE_ROLE=controlplane
+RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
+      Use your own SSH public key and keep the quotes — no key is baked in, yours is the only one.
+      <a href="{{ "docs/provisioning/" | relURL }}">Full seed options →</a></li>
       <li><strong>Boot.</strong> Power on and open <code>http://rasputin.local</code>. The
       first-run wizard registers a passkey and lands you on the dashboard — under ten minutes,
       cold start to working cluster.</li>
@@ -99,6 +103,11 @@
       N100 / amd64 for nodes; an N100 box for the firewall. Everything else is community territory.</li>
       <li><strong>There is nothing to buy.</strong> Rasputin runs on hardware you already own,
       and the software is AGPL-3.0 — free, no paywall, no open core.</li>
+      <li><strong>Dev builds exist.</strong> Beyond the stable images above, each repo publishes
+      <code>-dev.N</code> pre-releases — the newest work, but rougher and subject to breaking format
+      changes. Grab them from the <a href="https://github.com/geekdojo/rasputin-os/releases">OS</a> or
+      <a href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases">firewall</a> releases if
+      you want the bleeding edge.</li>
     </ul>
     <div class="cta-row">
       <a class="btn btn-ghost" href="{{ site.Params.releasesUrl }}">All OS releases on GitHub →</a>
