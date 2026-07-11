@@ -79,7 +79,7 @@
       <li><strong>Verify.</strong> Check the image's SHA-256 against the <code>manifest.json</code>
       on its release page. Authenticity rides on the signature, not on where the file is hosted.</li>
       <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive
-      (<code>xz -d</code> the OS image first; the firewall image flashes as-is). We recommend using <a href="https://etcher.balena.io">Balena Etcher</a>.</li>
+      (<code>xz -d</code> the OS image first; the firewall image flashes as-is). We recommend using <a href="https://etcher.balena.io" target="_blank">Balena Etcher</a>.</li>
       <li><strong>Seed.</strong> Mount the volume labeled <code>RASPUTIN-FW</code> and drop a <code>rasputin-seed.env</code> —
       a short <code>KEY=value</code> file. For your first node (the control plane) it's two lines:
       <pre class="seed">RASPUTIN_NODE_ROLE=controlplane
