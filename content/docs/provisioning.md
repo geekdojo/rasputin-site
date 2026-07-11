@@ -38,4 +38,4 @@ The SSH key **must** be double-quoted: the value contains spaces and the file is
 
 ## Adding more nodes
 
-Additional nodes need a **node id** and a **join token** minted by the running control plane — set `RASPUTIN_NODE_ID`, `RASPUTIN_CP_JOIN_TOKEN`, and `RASPUTIN_NATS_URL` in that node's seed. You don't hand-write these: the control plane's Add-Node flow and the `rasputin-provision` matched-set tooling generate a seed bound to each node id. The firewall is a separate x86 image with its own seed — see [`rasputin-openwrt-firewall`](https://github.com/geekdojo/rasputin-openwrt-firewall).
+Additional nodes need a **node id** and a **join token** minted by the running control plane — set `RASPUTIN_NODE_ID`, `RASPUTIN_CP_JOIN_TOKEN`, and `RASPUTIN_NATS_URL` in that node's seed. **You don't hand-write these:** the control plane's Add-Node flow and the `rasputin-provision` matched-set tooling generate a seed bound to each node id. The firewall is a separate x86 image with its own seed — see [`rasputin-openwrt-firewall`](https://github.com/geekdojo/rasputin-openwrt-firewall).
