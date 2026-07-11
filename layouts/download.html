@@ -80,8 +80,12 @@
       on its release page. Authenticity rides on the signature, not on where the file is hosted.</li>
       <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive
       (<code>xz -d</code> the OS image first; the firewall image flashes as-is).</li>
-      <li><strong>Seed.</strong> Drop a one-line <code>rasputin-seed.env</code> onto the boot
-      partition — your node's role and your SSH public key. No key is baked in; yours is the only one.</li>
+      <li><strong>Seed.</strong> Mount the boot partition and drop a <code>rasputin-seed.env</code> —
+      a short <code>KEY=value</code> file. For your first node (the control plane) it's two lines:
+      <pre class="seed">RASPUTIN_NODE_ROLE=controlplane
+RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
+      Use your own SSH public key and keep the quotes — no key is baked in, yours is the only one.
+      <a href="{{ "docs/provisioning/" | relURL }}">Full seed options →</a></li>
       <li><strong>Boot.</strong> Power on and open <code>http://rasputin.local</code>. The
       first-run wizard registers a passkey and lands you on the dashboard — under ten minutes,
       cold start to working cluster.</li>
