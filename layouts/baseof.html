@@ -20,6 +20,10 @@
 {{ with resources.Get "css/main.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
 {{ end -}}
+{{ if hugo.IsProduction -}}
+<script data-goatcounter="https://geekdojo-rasputin.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+{{ end -}}
 </head>
 <body>
 <header class="site-head">
