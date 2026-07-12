@@ -30,11 +30,30 @@ That's the whole happy path. The first control plane self-initializes against it
 | `RASPUTIN_NODE_ROLE` | **all** | `controlplane` or `compute`. Required — first boot waits for it. (The firewall node runs the separate OpenWrt image, not this one.) |
 | `RASPUTIN_SSH_AUTHORIZED_KEY` | all | Your SSH **public** key for `root`, **double-quoted**. The image bakes no key, so this is the only way in over the network — leave it blank and SSH is unusable (the local console still works). One key line. |
 | `RASPUTIN_NODE_ID` | all | Optional — defaults to the hardware serial. The provisioning pipeline assigns it explicitly and binds the join token to it. |
+| `RASPUTIN_NTP_SERVER` | all | Optional NTP server to pin (host or IP; **double-quote** a space-separated list). Only needed to force a homelab-local time server — see [Time sync](#time-sync). |
 | `RASPUTIN_NATS_URL` | compute | The control plane's NATS URL. The **first** control plane self-inits against its own embedded NATS and doesn't need this. |
 | `RASPUTIN_CP_JOIN_TOKEN` | compute | A join token minted by the control plane. Not needed by the first control plane. |
 | `RASPUTIN_RELEASE_CHANNEL` | control plane only | `stable` or `dev` — which channel Check-for-Updates tracks. Optional; blank → `stable`. |
 
 The SSH key **must** be double-quoted: the value contains spaces and the file is sourced by `sh`. First boot appends it to the persistent partition (the rootfs is read-only) and runs once; to rotate or revoke a key later, edit `/var/lib/rasputin/dropbear/authorized_keys` on the node directly.
+
+## Time sync
+
+Every node needs a correct clock. The control plane mints its HTTPS certificate against the current time, so a node whose clock is wrong serves a certificate your browser rejects as **expired** (or not-yet-valid). Nodes with no battery-backed real-time clock — the Raspberry Pi 5 — rely entirely on NTP for this, so if you ever see an expired-certificate warning on a freshly flashed node, the clock is the first thing to check.
+
+You normally don't configure anything — a node gets its time automatically, in this order of precedence:
+
+1. **Your DHCP server's NTP server** (option 42), if it advertises one — used automatically.
+2. **`RASPUTIN_NTP_SERVER`** from the seed, if you set it.
+3. **Built-in public fallback** — anycast Cloudflare/Google IPs, used only when neither of the above is known. These are numeric, so they work even on a network with no working DNS.
+
+Set `RASPUTIN_NTP_SERVER` only to pin a specific time server — for example an isolated LAN whose DHCP doesn't advertise NTP:
+
+```env
+RASPUTIN_NTP_SERVER="ntp.homelab.lan"
+```
+
+Double-quote the value if you list more than one server (space-separated), the same way you quote the SSH key.
 
 ## Adding more nodes
 
