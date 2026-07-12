@@ -8,7 +8,7 @@ weight: 10
 
 Your first node runs the **control plane** (the web UI + API). Flash the [OS image](/download/), then:
 
-1. Plug the flashed card or drive into your computer and mount the volume labeled **`RASPUTIN-FW`** — the small FAT seed partition. Go by the label, not size: the Pi image has several FAT partitions.
+1. Plug the flashed card or drive into your computer and mount the volume labeled **`RASPUTIN-OS`** — the small FAT seed partition. Go by the label, not size: the Pi image has several FAT partitions.
 2. Create a file named `rasputin-seed.env` at its root with two lines:
 
    ```env
@@ -23,7 +23,7 @@ That's the whole happy path. The first control plane self-initializes against it
 
 ## The seed file
 
-`rasputin-seed.env` lives on the `RASPUTIN-FW` volume and is read **once**, on first boot, to pick the node's role and join the fleet. Leave it blank for an un-provisioned image — first boot waits until the role is set. Every entry is `KEY=value`, one per line.
+`rasputin-seed.env` lives on the `RASPUTIN-OS` volume and is read **once**, on first boot, to pick the node's role and join the fleet. Leave it blank for an un-provisioned image — first boot waits until the role is set. Every entry is `KEY=value`, one per line.
 
 | Variable | Applies to | What it does |
 | --- | --- | --- |
