@@ -229,19 +229,12 @@ if [ "$OS" = "Linux" ]; then
 	[ "/dev/${rootdisk}" = "$DISK" ] && die "refusing to flash $DISK — it backs this computer's root filesystem."
 fi
 
-part_for() { # first partition device of a whole disk
-	if [ "$OS" = "Darwin" ]; then printf '%ss1' "$1"; else
-		case "$1" in *[0-9]) printf '%sp1' "$1";; *) printf '%s1' "$1";; esac
-	fi
-}
-PART="$(part_for "$DISK")"
-
 # --- confirm ------------------------------------------------------------------
 DISK_DESC="$(list_disks | awk -F'\t' -v d="$DISK" '$1==d{print $2"  "$3}')"
 say ""
 warn "About to ${BLD}ERASE ALL DATA${RST}${YEL} on ${BLD}${DISK}${RST}${YEL}  ${DISK_DESC}${RST}"
 say   "        and flash Rasputin OS ${IMG_VERSION}, seeded as ${NODE_ID} (controlplane)."
-if [ "${RASPUTIN_DRY_RUN:-}" = "1" ]; then info "DRY RUN — stopping before any write. Disk=$DISK Part=$PART Image=$IMG_URL"; exit 0; fi
+if [ "${RASPUTIN_DRY_RUN:-}" = "1" ]; then info "DRY RUN — stopping before any write. Disk=$DISK Image=$IMG_URL"; exit 0; fi
 if [ "${RASPUTIN_ASSUME_YES:-}" != "1" ]; then
 	short="$(basename "$DISK")"
 	ans="$(ask "Type ${BLD}${short}${RST} to confirm (anything else aborts): ")"
@@ -280,7 +273,34 @@ if [ "$OS" = "Darwin" ]; then diskutil unmountDisk "$DISK" >/dev/null 2>&1 || tr
 	sleep 2
 fi
 
-# --- write the seed onto the boot FAT, then READ IT BACK ----------------------
+# --- locate the seed FAT on the flashed disk — BY VOLUME LABEL, never by number
+# The seed volume is the FAT labeled RASPUTIN-OS. Its partition NUMBER differs
+# by board (rpi: p1 "selector"; n100: p2 — p1 is the hidden ESP), and the OS
+# mounts it by label, so number-guessing strands the node: a seed written to
+# the ESP verifies clean but firstboot only ever sees the real seed volume's
+# baked blank template (bit the first two bootstrap bench runs, 2026-07-14).
+seed_part_for() { # <disk> -> partition device carrying the RASPUTIN-OS FAT
+	if [ "$OS" = "Darwin" ]; then
+		local id vn
+		for id in $(diskutil list "$1" 2>/dev/null | awk '{print $NF}' | grep "^${1#/dev/}s[0-9]*$"); do
+			vn="$(diskutil info "/dev/$id" 2>/dev/null | awk -F': *' '/Volume Name/{print $2; exit}')"
+			[ "$vn" = "RASPUTIN-OS" ] && { printf '/dev/%s\n' "$id"; return 0; }
+		done
+		return 1
+	else
+		lsblk -lnpo NAME,LABEL "$1" 2>/dev/null | awk '$2=="RASPUTIN-OS"{print $1; exit}' | grep . || return 1
+	fi
+}
+PART=""
+for attempt in 1 2 3 4 5; do
+	PART="$(seed_part_for "$DISK" || true)"
+	[ -n "$PART" ] && break
+	sleep 1   # partition scan can lag the flash by a moment
+done
+[ -n "$PART" ] || die "no RASPUTIN-OS volume found on $DISK after flashing — can't place the seed. (Unexpected image layout? Re-run, and if it persists file a bug at github.com/${REPO_OWNER}/${OS_REPO}.)"
+info "Seed volume: ${PART} (RASPUTIN-OS)"
+
+# --- write the seed onto the seed FAT, then READ IT BACK ----------------------
 SEED="RASPUTIN_NODE_ROLE=controlplane
 RASPUTIN_NODE_ID=$NODE_ID
 RASPUTIN_SSH_AUTHORIZED_KEY=\"$SSH_KEY\"
