@@ -363,6 +363,30 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
   .dl-grid { grid-template-columns: 1fr; }
 }
 
+/* ---- bootstrap one-liner + manual-flash disclosure (download page) ---- */
+
+.cmd {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  padding: 13px 16px;
+  margin: 14px 0;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  color: var(--text);
+}
+.manual-flash { margin-top: 26px; border-top: 1px solid var(--line); }
+.manual-flash summary {
+  cursor: pointer;
+  padding: 14px 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+.manual-flash summary:hover { color: var(--accent); }
+.manual-flash[open] summary { color: var(--text); }
+
 /* ---- seed block (download step) + docs tables ---- */
 
 .steps pre {
