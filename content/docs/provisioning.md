@@ -9,17 +9,18 @@ weight: 10
 Your first node runs the **control plane** (the web UI + API). Flash the [OS image](/download/), then:
 
 1. Plug the flashed card or drive into your computer and mount the volume labeled **`RASPUTIN-OS`** — the small FAT seed partition. Go by the label, not size: the Pi image has several FAT partitions.
-2. Create a file named `rasputin-seed.env` at its root with two lines:
+2. Create a file named `rasputin-seed.env` at its root with three lines:
 
    ```env
    RASPUTIN_NODE_ROLE=controlplane
+   RASPUTIN_NODE_ID=cp-1
    RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"
    ```
 
-   Use your own SSH **public** key, and keep the double quotes — the file is read by `sh` and the key contains spaces.
+   `RASPUTIN_NODE_ID` names the control plane on the fleet — any short lowercase name works (`cp-1`, `home-cp`). Use your own SSH **public** key, and keep the double quotes — the file is read by `sh` and the key contains spaces.
 3. Boot the node and open <http://rasputin.local>. The first-run wizard registers a passkey and lands you on the dashboard.
 
-That's the whole happy path. The first control plane self-initializes against its own embedded NATS, so it needs nothing else in the seed.
+That's the whole happy path. The first control plane self-initializes against its own embedded NATS — it needs no join token or NATS URL, just its role, an id, and your key.
 
 ## The seed file
 
@@ -29,7 +30,7 @@ That's the whole happy path. The first control plane self-initializes against it
 | --- | --- | --- |
 | `RASPUTIN_NODE_ROLE` | **all** | `controlplane` or `compute`. Required — first boot waits for it. (The firewall node runs the separate OpenWrt image, not this one.) |
 | `RASPUTIN_SSH_AUTHORIZED_KEY` | all | Your SSH **public** key for `root`, **double-quoted**. The image bakes no key, so this is the only way in over the network — leave it blank and SSH is unusable (the local console still works). One key line. |
-| `RASPUTIN_NODE_ID` | all | Optional — defaults to the hardware serial. The provisioning pipeline assigns it explicitly and binds the join token to it. |
+| `RASPUTIN_NODE_ID` | **all** | Names the node on the fleet. **Required on the control plane** — a control-plane seed without it stops first boot with an error, since the control plane's identity must be stable. On a compute node it's optional and defaults to the hardware serial; the Add-Node flow and `rasputin-provision` assign it and bind the join token to it. |
 | `RASPUTIN_NTP_SERVER` | all | Optional NTP server to pin (host or IP; **double-quote** a space-separated list). Only needed to force a homelab-local time server — see [Time sync](#time-sync). |
 | `RASPUTIN_NATS_URL` | compute | The control plane's NATS URL. The **first** control plane self-inits against its own embedded NATS and doesn't need this. |
 | `RASPUTIN_CP_JOIN_TOKEN` | compute | A join token minted by the control plane. Not needed by the first control plane. |

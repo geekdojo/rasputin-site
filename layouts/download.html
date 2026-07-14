@@ -81,9 +81,11 @@
       <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive
       (<code>xz -d</code> the OS image first; the firewall image flashes as-is).</li>
       <li><strong>Seed.</strong> Mount the volume labeled <code>RASPUTIN-OS</code> (<code>RASPUTIN-FW</code> on the firewall image) and drop a <code>rasputin-seed.env</code> —
-      a short <code>KEY=value</code> file. For your first node (the control plane) it's two lines:
+      a short <code>KEY=value</code> file. For your first node (the control plane) it's three lines:
       <pre class="seed">RASPUTIN_NODE_ROLE=controlplane
+RASPUTIN_NODE_ID=cp-1
 RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
+      <code>RASPUTIN_NODE_ID</code> names the control plane — any short lowercase name (letters, digits, hyphens) works.
       Use your own SSH public key and keep the quotes — no key is baked in, yours is the only one.
       <a href="{{ "docs/provisioning/" | relURL }}">Full seed options →</a></li>
       <li><strong>Boot.</strong> Power on and open <code>http://rasputin.local</code>. The
