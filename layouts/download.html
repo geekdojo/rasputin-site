@@ -74,8 +74,23 @@
 
 <section class="band band-alt">
   <div class="wrap narrow">
-    <h2>Flash it in four steps</h2>
-    <ol class="steps">
+    <h2>Flash it in one command</h2>
+    <p>On macOS or Linux, plug in the first node's microSD card or SSD and paste this into a
+    terminal:</p>
+    <pre class="cmd">curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | sudo bash</pre>
+    <p>It asks three questions — which hardware, a name for the node, which SSH key — then
+    downloads the latest stable image, verifies its SHA-256 against the release manifest,
+    flashes the drive (external drives only, behind a typed confirmation), writes your
+    control-plane seed, and reads it back from the medium to prove it landed. Then power the
+    node on and open <code>http://rasputin.local</code> — the first-run wizard registers a
+    passkey and lands you on the dashboard. Under ten minutes, cold start to working cluster.</p>
+    <p class="fine">Adding a node to a cluster that's already running? Use the control plane's
+    own <em>Add node</em> wizard instead — it hands you an equivalent one-liner with the node's
+    enrollment seed baked in.</p>
+
+    <details class="manual-flash">
+      <summary>Prefer to flash manually? (Windows, or by hand)</summary>
+      <ol class="steps">
       <li><strong>Verify.</strong> Check the image's SHA-256 against the <code>manifest.json</code>
       on its release page. Authenticity rides on the signature, not on where the file is hosted.</li>
       <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive
@@ -92,6 +107,7 @@ RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
       first-run wizard registers a passkey and lands you on the dashboard — under ten minutes,
       cold start to working cluster.</li>
     </ol>
+    </details>
   </div>
 </section>
 
