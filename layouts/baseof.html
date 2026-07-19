@@ -18,6 +18,9 @@
 {{ else -}}
 <link rel="alternate" type="application/rss+xml" title="Rasputin devlog" href="{{ "devlog/index.xml" | relURL }}">
 {{ end -}}
+{{ with .OutputFormats.Get "markdown" -}}
+<link rel="alternate" type="text/markdown" title="{{ $.Title }} (markdown)" href="{{ .Permalink }}">
+{{ end -}}
 {{ with resources.Get "css/main.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
 {{ end -}}
@@ -60,6 +63,8 @@
     </div>
     <div class="foot-links">
       <a href="{{ "download/" | relURL }}">Downloads</a>
+      <a href="{{ "docs/agents/" | relURL }}">For AI agents</a>
+      <a href="{{ "llms.txt" | relURL }}">llms.txt</a>
       <a href="https://github.com/geekdojo/rasputin-os/blob/main/LICENSE">AGPL-3.0</a>
       <a href="{{ site.Params.partnerIssueUrl }}">Become a design partner</a>
     </div>

@@ -1,0 +1,4 @@
+User-agent: *
+Sitemap: {{ "sitemap.xml" | absURL }}
+
+# Agent-readable index: {{ "llms.txt" | absURL }}

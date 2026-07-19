@@ -25,8 +25,30 @@ disableKinds = ["taxonomy", "term"]
   # mastodonUrl = "https://hachyderm.io/@hoodoo5x5"  # enable once the instance approves the account
   parentUrl = "https://geekdojo.com"
 
+[mediaTypes."text/markdown"]
+  suffixes = ["md"]
+
+# Agent-facing outputs: raw-markdown mirrors of docs pages (opted in via the
+# docs section cascade), plus /llms.txt and /releases.json rendered from the
+# home page. data/releases.json is refreshed in CI (daily + on release), so
+# the published /releases.json tracks the latest stable automatically.
+[outputFormats.markdown]
+  mediaType = "text/markdown"
+  baseName = "index"
+  isPlainText = true
+
+[outputFormats.llms]
+  mediaType = "text/plain"
+  baseName = "llms"
+  isPlainText = true
+
+[outputFormats.releases-json]
+  mediaType = "application/json"
+  baseName = "releases"
+  isPlainText = true
+
 [outputs]
-  home = ["html"]
+  home = ["html", "llms", "releases-json"]
   section = ["html", "rss"]
 
 [markup.goldmark.renderer]

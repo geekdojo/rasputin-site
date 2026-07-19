@@ -35,7 +35,7 @@
           </a>
           {{ end }}
         </div>
-        {{ with .releaseUrl }}<p class="fine dl-notes"><a href="{{ . }}">Release notes &amp; checksums →</a></p>{{ end }}
+        <p class="fine dl-notes">{{ with .releaseUrl }}<a href="{{ . }}">Release notes →</a> · {{ end }}<a href="https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json">manifest.json (checksums)</a></p>
       </div>
       {{ end }}
 
@@ -56,11 +56,17 @@
           </a>
           {{ end }}
         </div>
-        {{ with .releaseUrl }}<p class="fine dl-notes"><a href="{{ . }}">Release notes &amp; checksums →</a></p>{{ end }}
+        <p class="fine dl-notes">{{ with .releaseUrl }}<a href="{{ . }}">Release notes →</a> · {{ end }}<a href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest/download/manifest.json">manifest.json (checksums)</a></p>
       </div>
       {{ end }}
 
     </div>
+    <p class="fine">The version pill above is resolved at site build time (daily, and on each
+    release). The authoritative pointer is each repo's
+    <code>releases/latest/download/manifest.json</code> — a stable URL serving plain JSON with
+    every artifact's SHA-256; also mirrored as <a href="{{ "releases.json" | relURL }}">/releases.json</a>
+    on this site. Scripting an install — or pointing an AI agent at it? See
+    <a href="{{ "docs/agents/" | relURL }}">Install with an AI agent</a>.</p>
     {{ else }}
     <h2>Latest images</h2>
     <p class="lede">Grab the newest signed images straight from the source repositories:</p>
@@ -92,12 +98,26 @@
     <details class="manual-flash">
       <summary>Prefer to flash manually? (Windows, or by hand)</summary>
       <ol class="steps">
-      <li><strong>Verify.</strong> Check the image's SHA-256 against the <code>manifest.json</code>
-      on its release page. Authenticity rides on the signature, not on where the file is hosted.</li>
-      <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive
-      (<code>xz -d</code> the OS image first; the firewall image flashes as-is).</li>
+      <li><strong>Verify.</strong> Check the image's SHA-256 against its
+      <code>manifest.json</code> — the stable URL is
+      <a href="https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json"><code>releases/latest/download/manifest.json</code></a>
+      on each repo (field <code>imageSha256</code>). Authenticity rides on the signature, not on
+      where the file is hosted:
+      <pre class="cmd">curl -fsSLO https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json
+shasum -a 256 rasputin-os-*.img.xz   # compare to imageSha256 in manifest.json</pre></li>
+      <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive.
+      Raspberry Pi Imager (custom image) and balenaEtcher take the compressed files as-is;
+      flashing with <code>dd</code>, decompress first (<code>xz -d</code> for the OS image,
+      <code>gzip -d</code> for the firewall's <code>.img.gz</code>). On Windows, Rufus works
+      too — fair warning: we don't bench-test Windows flashing, so if something's weird,
+      <a href="https://github.com/geekdojo/rasputin-site/issues/new?title=Docs Issue">say so</a>.
+      <span class="fine">macOS + Etcher note: a "validation failed" at the very end is usually
+      benign — macOS auto-mounts the freshly written seed volume and dirties it behind
+      Etcher's back. The write itself succeeded; check the seed file landed and carry on.</span></li>
       <li><strong>Seed.</strong> Mount the volume labeled <code>RASPUTIN-OS</code> (<code>RASPUTIN-FW</code> on the firewall image) and drop a <code>rasputin-seed.env</code> —
-      a short <code>KEY=value</code> file. For your first node (the control plane) it's three lines:
+      a short <code>KEY=value</code> file (<a href="{{ "rasputin-seed.env.example" | relURL }}">copy-exact template</a>;
+      save with Unix <abbr title="line feed">LF</abbr> line endings — the file is read by <code>sh</code>,
+      and stray <code>CR</code>s corrupt the values). For your first node (the control plane) it's three lines:
       <pre class="seed">RASPUTIN_NODE_ROLE=controlplane
 RASPUTIN_NODE_ID=cp-1
 RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
@@ -122,6 +142,11 @@ RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
       N100 / amd64 for nodes; an N100 box for the firewall. Everything else is community territory.</li>
       <li><strong>There is nothing to buy.</strong> Rasputin runs on hardware you already own,
       and the software is AGPL-3.0 — free, no paywall, no open core.</li>
+      <li><strong>These images are for first flashes.</strong> A running cluster updates itself:
+      Check for Updates applies the signed OTA bundles from the same releases (the
+      <code>.raucb</code> files in the OS manifest — atomic, with automatic rollback; the firewall
+      uses its own <code>.rootfs</code> artifact). You come back to this page for new media, not
+      for upgrades.</li>
       <li><strong>Dev builds exist.</strong> Beyond the stable images above, each repo publishes
       <code>-dev.N</code> pre-releases — the newest work, but rougher and subject to breaking format
       changes. Grab them from the <a href="https://github.com/geekdojo/rasputin-os/releases">OS</a> or

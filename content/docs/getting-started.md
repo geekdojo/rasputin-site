@@ -41,16 +41,25 @@ On Windows, or if you'd rather do each step by hand: grab an image from the
 [manual steps](/download/) and the full
 [seed-file reference](/docs/provisioning/) cover it.
 
+Scripting the flash — or letting an AI agent drive it? Every prompt above has an env-var
+override, including a no-write dry run. The whole contract is on
+[Install with an AI agent](/docs/agents/).
+
 ## 2. Boot and sign in
 
 Slot the card, connect ethernet, power on, and open <http://rasputin.local> from any
-machine on the same network. The first-run wizard walks you through trusting the
-cluster's certificate authority and registering a passkey, then lands you on the
-dashboard: a hex grid with one node in it — yours, online.
+machine on the same network. You land on a **trust page** first: your cluster generates
+its own certificate authority, and this page hands it to you per-OS — a profile link for
+iPhones and iPads, a one-line `curl` for laptops, Windows steps — with a
+proceed-past-the-browser-warning escape hatch if you'd rather skip it. Then **Continue
+securely** takes you to `https://rasputin.local/setup` to register a passkey, and lands
+you on the dashboard: a hex grid with one node in it — yours, online.
 
 Two things worth knowing while it boots. First boot takes a few minutes, and until the
 control plane is up the browser just says it can't connect — that's the boot, not a
-failure. And if `rasputin.local` never resolves at all — routine on Windows without
+failure. (Impatient, or scripting the wait? `curl -fsS http://rasputin.local/healthz`
+answers `{"status":"ok"}` the moment the control plane is up.) And if `rasputin.local`
+never resolves at all — routine on Windows without
 mDNS, and behind some routers — find the node in your router's DHCP lease list (the
 control plane shows up named `rasputin`) and browse to its IP address directly.
 
@@ -117,6 +126,8 @@ Two known first-boot symptoms, honestly labeled:
   mode, the observability toggle, and operator SSH keys live there.
 - [Provisioning & the seed file](/docs/provisioning/) — the full `rasputin-seed.env`
   reference: roles, join tokens, NTP, release channels.
+- [Install with an AI agent](/docs/agents/) — the scriptable install contract:
+  non-interactive flashing, machine-readable release manifests, the health probe.
 - [Download](/download/) — images, checksums, release notes, dev builds.
 - [ARCHITECTURE.md](https://github.com/geekdojo/rasputin-control-plane/blob/main/ARCHITECTURE.md)
   — the system-level picture: node roles, the bus, the job model, updates.
