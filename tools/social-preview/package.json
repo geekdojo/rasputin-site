@@ -1,0 +1,9 @@
+{
+  "name": "social-preview",
+  "version": "1.0.0",
+  "description": "GitHub social-preview card renderer for the public Rasputin repos",
+  "type": "module",
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
+}
