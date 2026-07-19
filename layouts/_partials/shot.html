@@ -1,0 +1,19 @@
+{{- /* A product screenshot with a no-JS lightbox (checkbox hack).
+     args: id, src, width, height, alt, caption; optional: class, eager.
+     The overlay sits outside the .shot figure because its clip-path
+     creates a containing block that would trap position:fixed. */ -}}
+<div class="shot-wrap{{ with .class }} {{ . }}{{ end }}">
+  <input type="checkbox" id="lb-{{ .id }}" class="lb-toggle visually-hidden">
+  <figure class="shot">
+    <label for="lb-{{ .id }}" class="shot-zoom">
+      <img src="{{ .src | relURL }}" width="{{ .width }}" height="{{ .height }}"
+           alt="{{ .alt }}"
+           {{ if not .eager }}loading="lazy" {{ end }}decoding="async">
+    </label>
+    <figcaption>{{ .caption }} <span class="lb-hint">— tap to enlarge</span></figcaption>
+  </figure>
+  <label for="lb-{{ .id }}" class="lb-overlay">
+    <img src="{{ .src | relURL }}" width="{{ .width }}" height="{{ .height }}"
+         alt="{{ .alt }}" loading="lazy" decoding="async">
+  </label>
+</div>
