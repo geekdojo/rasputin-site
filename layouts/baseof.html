@@ -9,6 +9,7 @@
 <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:image" content="{{ "brand/rasputin-mark-512.png" | absURL }}">
 {{ if .Params.noindex }}<meta name="robots" content="noindex">
 {{ end -}}
 <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
@@ -29,7 +30,7 @@
 <header class="site-head">
   <nav class="wrap">
     <a class="brand" href="{{ "/" | relURL }}">
-      <svg class="mark" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1 23 12 12 23 1 12Z" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M4 12h16" stroke="currentColor" stroke-width="2.4"/></svg>
+      <svg class="mark" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1 23 12 12 23 1 12Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 12h16" stroke="currentColor" stroke-width="2.4"/></svg>
       RASPUTIN
     </a>
     <div class="nav-links">

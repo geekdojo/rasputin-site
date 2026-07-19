@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Rasputin mark, display master, transparent background variant. -->
+  <!-- Rasputin mark, display master, light (white) background variant. -->
+  <rect width="512" height="512" fill="#ffffff"/>
   <path d="M256 86 426 256 256 426 86 256Z" fill="none" stroke="#fa4616" stroke-width="28" stroke-linejoin="round"/>
   <path d="M100 248h312" stroke="#fa4616" stroke-width="12"/>
   <path d="M100 264h312" stroke="#fa4616" stroke-width="12"/>
