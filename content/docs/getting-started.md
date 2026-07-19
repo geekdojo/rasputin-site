@@ -48,6 +48,11 @@ machine on the same network. The first-run wizard walks you through trusting the
 cluster's certificate authority and registering a passkey, then lands you on the
 dashboard: a hex grid with one node in it — yours, online.
 
+One thing left: a banner on the dashboard points at the **setup wizard**. Finish it to
+fully configure the cluster — give the installation a name, optionally turn on remote
+access (a private mesh, so you can reach the dashboard when you're away from home), and
+click **Finish**. It's re-runnable any time, so nothing there is a one-way door.
+
 No config management, no YAML, no shell required. If the browser warns that the node's
 certificate is **expired** on a freshly flashed node, the clock is the first thing to
 check — see [time sync](/docs/provisioning/#time-sync).
@@ -102,6 +107,8 @@ Two known first-boot symptoms, honestly labeled:
 
 ## Next
 
+- **Settings** — the gear in the lower-left corner of the dashboard: themes, deployment
+  mode, the observability toggle, and operator SSH keys live there.
 - [Provisioning & the seed file](/docs/provisioning/) — the full `rasputin-seed.env`
   reference: roles, join tokens, NTP, release channels.
 - [Download](/download/) — images, checksums, release notes, dev builds.
