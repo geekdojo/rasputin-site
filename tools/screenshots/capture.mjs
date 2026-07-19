@@ -32,6 +32,21 @@ const SHOTS = {
   dashboard: {
     path: '/',
     ready: (page) => page.getByText('NODES ONLINE').first().waitFor({ timeout: 30_000 }),
+    prepare: async (page) => {
+      // Select the control-plane node so NODE CONTROLS is populated, not
+      // "— select a node —" with everything disabled.
+      for (const target of [
+        page.getByText('ctrl', { exact: true }),
+        page.getByText(/^node-/),
+      ]) {
+        try {
+          await target.first().click({ timeout: 3000 });
+          await page.waitForTimeout(1500);
+          return;
+        } catch { /* try the next locator */ }
+      }
+      console.warn('  (could not select the control-plane node — capturing unselected)');
+    },
     settle: 3000, // let the hex grid + HUD background finish animating in
   },
   apps: {
