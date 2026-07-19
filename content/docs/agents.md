@@ -19,6 +19,15 @@ only write to a disk after I confirm. My first node's hardware is:
 <Raspberry Pi 4/5/CM5, or an Intel N100 / amd64 box>.
 ```
 
+Or skip the prompt: this contract ships packaged as an agent skill in
+[geekdojo/rasputin-agents](https://github.com/geekdojo/rasputin-agents).
+
+- **Claude Code**: `/plugin marketplace add geekdojo/rasputin-agents`, then
+  `/plugin install rasputin@geekdojo`
+- **Codex** (or any [Agent Skills](https://agentskills.io) client):
+  `git clone https://github.com/geekdojo/rasputin-agents && cd rasputin-agents && codex`
+  — the skill and `AGENTS.md` are auto-discovered
+
 ## Machine-readable endpoints
 
 | URL | What it is |
