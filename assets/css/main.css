@@ -143,6 +143,44 @@ h1 {
 
 .hero-fine { font-size: 0.92rem; }
 
+/* ---- product shots ---- */
+
+.shot {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 10px;
+  clip-path: polygon(var(--notch) 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%, 0 var(--notch));
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+}
+
+.shot figcaption {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: 11px 4px 3px;
+}
+
+.hero-media { margin-top: 44px; }
+
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.band-lede {
+  max-width: 52em;
+  color: #aeb3bc;
+  margin: -8px 0 26px;
+}
+
 /* ---- bands & cards ---- */
 
 .band { padding: 64px 0; }

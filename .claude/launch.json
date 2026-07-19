@@ -4,7 +4,7 @@
     {
       "name": "rasputin-site",
       "runtimeExecutable": "hugo",
-      "runtimeArgs": ["server", "--port", "1717", "--source", "/Users/geekdojo/src/rasputin-site"],
+      "runtimeArgs": ["server", "--port", "1717", "--source", "/Users/geekdojo/src/rasputin/rasputin-site"],
       "port": 1717,
       "autoPort": false
     }
