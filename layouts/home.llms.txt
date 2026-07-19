@@ -1,0 +1,33 @@
+# Rasputin
+
+> Open-source homelab cluster system: Raspberry Pi and Intel N100 nodes plus a dedicated
+> firewall node, managed from one web UI. Flash a card, boot, open http://rasputin.local.
+> Pre-alpha, AGPL-3.0 — image layouts and update formats still change without notice.
+{{ with hugo.Data.releases }}
+Current stable: Rasputin OS {{ .os.version }} · firewall {{ .firewall.version }}.
+{{ end }}
+## Start here (AI agents)
+{{ with site.GetPage "/docs/agents" }}
+- [{{ .Title }}]({{ (.OutputFormats.Get "markdown").Permalink }}): {{ .Description }}
+{{ end }}
+## Docs (raw markdown)
+{{ range (site.GetPage "/docs").RegularPages.ByWeight }}{{ $p := . }}{{ with .OutputFormats.Get "markdown" }}- [{{ $p.Title }}]({{ .Permalink }}): {{ $p.Description }}
+{{ end }}{{ end }}
+## Machine-readable releases
+
+- [Latest stable pointer]({{ "releases.json" | absURL }}): versions + image download URLs, regenerated daily and on every release.
+- [OS release manifest](https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json): authoritative — per-artifact SHA-256 checksums, sizes, signer.
+- [Firewall release manifest](https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest/download/manifest.json): same, for the firewall image.
+- [Rasputin root CA]({{ "rasputin-root-ca.pem" | absURL }}): public trust anchor for release signatures (verify commands in the agents doc).
+
+## Install
+
+- One command (macOS/Linux): `curl -fsSL {{ "bootstrap.sh" | absURL }} | sudo bash`
+- [bootstrap.sh]({{ "bootstrap.sh" | absURL }}): fully scriptable — non-interactive via `RASPUTIN_*` env vars (`RASPUTIN_DRY_RUN=1` for a no-write preflight); see the agents doc above.
+- [Download page]({{ "download/" | absURL }}): images, manual flashing steps, verification.
+
+## Source
+
+- [GitHub](https://github.com/geekdojo): rasputin-os, rasputin-control-plane, rasputin-openwrt-firewall, rasputin-site.
+- [Architecture](https://github.com/geekdojo/rasputin-control-plane/blob/main/ARCHITECTURE.md): node roles, the bus, the job model, updates.
+- [Devlog]({{ "devlog/" | absURL }}): what shipped, weekly-ish.

@@ -11,11 +11,13 @@ Your first node runs the **control plane** (the web UI + API). Flash the [OS ima
 1. Plug the flashed card or drive into your computer and mount the volume labeled **`RASPUTIN-OS`** — the small FAT seed partition. Go by the label, not size: the Pi image has several FAT partitions.
 2. Create a file named `rasputin-seed.env` at its root with three lines:
 
-   ```env
+   ```
    RASPUTIN_NODE_ROLE=controlplane
    RASPUTIN_NODE_ID=cp-1
    RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"
    ```
+
+   (Copy-exact template: [rasputin-seed.env.example](/rasputin-seed.env.example).)
 
    `RASPUTIN_NODE_ID` names the control plane on the fleet — any short lowercase name works (`cp-1`, `home-cp`). Use your own SSH **public** key, and keep the double quotes — the file is read by `sh` and the key contains spaces.
 3. Boot the node and open <http://rasputin.local>. The first-run wizard registers a passkey and lands you on the dashboard.
@@ -50,7 +52,7 @@ You normally don't configure anything — a node gets its time automatically, in
 
 Set `RASPUTIN_NTP_SERVER` only to pin a specific time server — for example an isolated LAN whose DHCP doesn't advertise NTP:
 
-```env
+```
 RASPUTIN_NTP_SERVER="ntp.homelab.lan"
 ```
 
@@ -58,4 +60,6 @@ Double-quote the value if you list more than one server (space-separated), the s
 
 ## Adding more nodes
 
-Additional nodes need a **node id** and a **join token** minted by the running control plane — set `RASPUTIN_NODE_ID`, `RASPUTIN_CP_JOIN_TOKEN`, and `RASPUTIN_NATS_URL` in that node's seed. **You don't hand-write these:** the control plane's Add-Node flow and the `rasputin-provision` matched-set tooling generate a seed bound to each node id. The firewall is a separate x86 image with its own seed — see [`rasputin-openwrt-firewall`](https://github.com/geekdojo/rasputin-openwrt-firewall).
+Additional nodes need a **node id** and a **join token** minted by the running control plane — set `RASPUTIN_NODE_ID`, `RASPUTIN_CP_JOIN_TOKEN`, and `RASPUTIN_NATS_URL` in that node's seed. **You don't hand-write these:** the control plane's Add-Node flow and the
+[`rasputin-provision`](https://github.com/geekdojo/rasputin-control-plane/tree/main/api/cmd/rasputin-provision)
+matched-set CLI (it ships in the control-plane repo) generate a seed bound to each node id. The firewall is a separate x86 image with its own seed — see [`rasputin-openwrt-firewall`](https://github.com/geekdojo/rasputin-openwrt-firewall).
