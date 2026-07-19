@@ -11,9 +11,13 @@
 // serves its own CA, so TLS errors are ignored for this origin only.
 
 import { chromium } from 'playwright';
-import { existsSync } from 'node:fs';
+import { execFile } from 'node:child_process';
+import { existsSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
+
+const exec = promisify(execFile);
 
 const BASE = process.env.RASPUTIN_URL || 'https://rasputin.local';
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -77,6 +81,21 @@ async function login() {
   await browser.close();
 }
 
+// Quantize in place; the flat dark UI compresses ~3x with no visible change.
+// pngquant exits 98/99 when it would grow the file or miss the quality floor —
+// both mean "keep the original", not failure.
+async function optimize(file) {
+  const before = statSync(file).size;
+  try {
+    await exec('pngquant', ['--force', '--strip', '--skip-if-larger', '--quality', '70-95', '--speed', '1', '--ext', '.png', file]);
+    const after = statSync(file).size;
+    console.log(`  pngquant: ${Math.round(before / 1024)}K -> ${Math.round(after / 1024)}K`);
+  } catch (e) {
+    if (e.code === 98 || e.code === 99) return;
+    console.warn(`  (pngquant unavailable or failed — keeping the raw capture: ${e.message.split('\n')[0]})`);
+  }
+}
+
 async function capture(names) {
   if (!existsSync(STATE)) {
     console.error('No saved session. Run: node capture.mjs --login');
@@ -106,7 +125,9 @@ async function capture(names) {
     if (shot.ready) await shot.ready(page);
     if (shot.prepare) await shot.prepare(page);
     await page.waitForTimeout(shot.settle ?? 2000);
-    await page.screenshot({ path: join(OUT, `${name}.png`) });
+    const file = join(OUT, `${name}.png`);
+    await page.screenshot({ path: file });
+    await optimize(file);
     await page.close();
     if (shot.unauthenticated) await context.close();
   }
