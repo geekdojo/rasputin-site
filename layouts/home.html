@@ -13,6 +13,12 @@
     </div>
     <p class="hero-fine muted">Flash a card, boot, open <code>http://rasputin.local</code>.
     Cold start to working dashboard in under ten minutes — if it's slower, that's a bug and we want it filed.</p>
+    <figure class="shot hero-media">
+      <img src="{{ "img/ui/dashboard.png" | relURL }}" width="1644" height="888"
+           alt="Rasputin control plane dashboard: a hexagonal grid of 24 nodes, all online, beside a node-controls panel with reboot, update, ping, and log actions"
+           decoding="async">
+      <figcaption>The control plane, captured live from the 24-node bench rack — real hardware, real data.</figcaption>
+    </figure>
   </div>
 </section>
 
@@ -56,7 +62,30 @@
   </div>
 </section>
 
-<section class="band band-alt">
+<section class="band band-alt" id="tour">
+  <div class="wrap">
+    <h2>See it running</h2>
+    <p class="band-lede">Straight captures from the bench cluster — a Raspberry Pi 5 control plane
+    driving 23 Pi 4 compute nodes. Demoed, never claimed:
+    <a href="{{ "devlog/004-bitscope-rack-24-nodes/" | relURL }}">watch the whole rack come online in 121 seconds →</a></p>
+    <div class="shot-grid">
+      <figure class="shot">
+        <img src="{{ "img/ui/apps.png" | relURL }}" width="1440" height="756"
+             alt="Apps page listing Docker Compose apps deployed to the cluster, with navidrome and uptime-kuma running"
+             loading="lazy" decoding="async">
+        <figcaption>Apps — deploy a compose stack, start it, stop it, open it. No shell.</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="{{ "img/ui/task-saga.png" | relURL }}" width="1440" height="756"
+             alt="Tasks page with an app.deploy job expanded into its steps and a replayable event stream"
+             loading="lazy" decoding="async">
+        <figcaption>Tasks — every change is a job with steps and a replayable event stream.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="band">
   <div class="wrap">
     <h2>Straight answers before you flash</h2>
     <ul class="honest">
@@ -75,7 +104,7 @@
   </div>
 </section>
 
-<section class="band" id="partners">
+<section class="band band-alt" id="partners">
   <div class="wrap">
     <h2>Design partners wanted</h2>
     <div class="partner-cols">
@@ -97,7 +126,7 @@
   </div>
 </section>
 
-<section class="band band-alt" id="updates">
+<section class="band" id="updates">
   <div class="wrap narrow">
     <h2>Follow the build</h2>
     <p>A weekly-ish devlog — what shipped, one honest problem, one number — plus release
@@ -106,7 +135,7 @@
   </div>
 </section>
 
-<section class="band">
+<section class="band band-alt">
   <div class="wrap">
     <div class="row-head">
       <h2>Devlog</h2>
