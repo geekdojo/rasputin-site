@@ -50,8 +50,8 @@ dashboard: a hex grid with one node in it — yours, online.
 
 One thing left: a banner on the dashboard points at the **setup wizard**. Finish it to
 fully configure the cluster — give the installation a name, optionally turn on remote
-access (a private mesh, so you can reach the dashboard when you're away from home), and
-click **Finish**. It's re-runnable any time, so nothing there is a one-way door.
+access (a private mesh), and click **Finish**. It's re-runnable any time, so nothing
+there is a one-way door.
 
 No config management, no YAML, no shell required. If the browser warns that the node's
 certificate is **expired** on a freshly flashed node, the clock is the first thing to
