@@ -10,6 +10,7 @@ Current stable: Rasputin OS {{ .os.version }} · firewall {{ .firewall.version }
 {{ with site.GetPage "/docs/agents" }}
 - [{{ .Title }}]({{ (.OutputFormats.Get "markdown").Permalink }}): {{ .Description }}
 {{ end }}- [Packaged skill/plugin](https://github.com/geekdojo/rasputin-agents): Claude Code — `/plugin marketplace add geekdojo/rasputin-agents` then `/plugin install rasputin@geekdojo`; Codex/Agent-Skills clients — clone the repo and the skill auto-discovers.
+- [Skill, raw](https://raw.githubusercontent.com/geekdojo/rasputin-agents/main/.agents/skills/rasputin-setup/SKILL.md): the rasputin-setup skill as plain markdown (no clone needed); [AGENTS.md, raw](https://raw.githubusercontent.com/geekdojo/rasputin-agents/main/AGENTS.md).
 
 ## Docs (raw markdown)
 {{ range (site.GetPage "/docs").RegularPages.ByWeight }}{{ $p := . }}{{ with .OutputFormats.Get "markdown" }}- [{{ $p.Title }}]({{ .Permalink }}): {{ $p.Description }}
