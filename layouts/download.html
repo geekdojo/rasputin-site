@@ -4,7 +4,7 @@
     <p class="eyebrow">Downloads · AGPL-3.0 · pre-alpha</p>
     <h1>Get <span class="accent">Rasputin</span></h1>
     <p class="lede">Flashable images for the node OS and the firewall, published straight from the
-    source repositories. Every image is signed and ships a <code>manifest.json</code> with a
+    source repositories. Every release is signed and ships a <code>manifest.json</code> with a
     SHA-256 checksum for each artifact — verify before you flash.</p>
   </div>
 </section>
@@ -65,8 +65,11 @@
     release). The authoritative pointer is each repo's
     <code>releases/latest/download/manifest.json</code> — a stable URL serving plain JSON with
     every artifact's SHA-256; also mirrored as <a href="{{ "releases.json" | relURL }}">/releases.json</a>
-    on this site. Scripting an install — or pointing an AI agent at it? See
-    <a href="{{ "docs/agents/" | relURL }}">Install with an AI agent</a>.</p>
+    on this site. Signatures chain to the public
+    <a href="{{ "rasputin-root-ca.pem" | relURL }}">Rasputin root CA</a> — exact verify
+    commands, and what is and isn't signed, are on
+    <a href="{{ "docs/agents/" | relURL }}">Install with an AI agent</a>, which is also the
+    page to hand an AI agent driving your install.</p>
     {{ else }}
     <h2>Latest images</h2>
     <p class="lede">Grab the newest signed images straight from the source repositories:</p>

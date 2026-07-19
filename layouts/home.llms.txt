@@ -18,6 +18,7 @@ Current stable: Rasputin OS {{ .os.version }} · firewall {{ .firewall.version }
 - [Latest stable pointer]({{ "releases.json" | absURL }}): versions + image download URLs, regenerated daily and on every release.
 - [OS release manifest](https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json): authoritative — per-artifact SHA-256 checksums, sizes, signer.
 - [Firewall release manifest](https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest/download/manifest.json): same, for the firewall image.
+- [Rasputin root CA]({{ "rasputin-root-ca.pem" | absURL }}): public trust anchor for release signatures (verify commands in the agents doc).
 
 ## Install
 
