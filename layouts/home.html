@@ -14,7 +14,7 @@
     <p class="hero-fine muted">Flash a card, boot, open <code>http://rasputin.local</code>.
     Cold start to working dashboard in under ten minutes — if it's slower, that's a bug and we want it filed.</p>
     <figure class="shot hero-media">
-      <img src="{{ "img/ui/dashboard.png" | relURL }}" width="1644" height="888"
+      <img src="{{ "img/ui/dashboard.png" | relURL }}" width="3200" height="1800"
            alt="Rasputin control plane dashboard: a hexagonal grid of 24 nodes, all online, beside a node-controls panel with reboot, update, ping, and log actions"
            decoding="async">
       <figcaption>The control plane, captured live from the 24-node bench rack — real hardware, real data.</figcaption>
@@ -70,14 +70,14 @@
     <a href="{{ "devlog/004-bitscope-rack-24-nodes/" | relURL }}">watch the whole rack come online in 121 seconds →</a></p>
     <div class="shot-grid">
       <figure class="shot">
-        <img src="{{ "img/ui/apps.png" | relURL }}" width="1440" height="756"
-             alt="Apps page listing Docker Compose apps deployed to the cluster, with navidrome and uptime-kuma running"
+        <img src="{{ "img/ui/updates.png" | relURL }}" width="3200" height="1800"
+             alt="Updates page listing signed OS bundles per architecture, with a deploy history showing each node's A/B slot flip committed"
              loading="lazy" decoding="async">
-        <figcaption>Apps — deploy a compose stack, start it, stop it, open it. No shell.</figcaption>
+        <figcaption>Updates — signed A/B bundles, staged then deployed, with per-node slot history.</figcaption>
       </figure>
       <figure class="shot">
-        <img src="{{ "img/ui/task-saga.png" | relURL }}" width="1440" height="756"
-             alt="Tasks page with an app.deploy job expanded into its steps and a replayable event stream"
+        <img src="{{ "img/ui/tasks.png" | relURL }}" width="3200" height="1800"
+             alt="Tasks page with a reconcile job expanded into its steps and live event stream, above a queue of succeeded jobs"
              loading="lazy" decoding="async">
         <figcaption>Tasks — every change is a job with steps and a replayable event stream.</figcaption>
       </figure>
