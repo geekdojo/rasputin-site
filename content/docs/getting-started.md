@@ -48,6 +48,12 @@ machine on the same network. The first-run wizard walks you through trusting the
 cluster's certificate authority and registering a passkey, then lands you on the
 dashboard: a hex grid with one node in it — yours, online.
 
+Two things worth knowing while it boots. First boot takes a few minutes, and until the
+control plane is up the browser just says it can't connect — that's the boot, not a
+failure. And if `rasputin.local` never resolves at all — routine on Windows without
+mDNS, and behind some routers — find the node in your router's DHCP lease list (the
+control plane shows up named `rasputin`) and browse to its IP address directly.
+
 One thing left: a banner on the dashboard points at the **setup wizard**. Finish it to
 fully configure the cluster — give the installation a name, optionally turn on remote
 access (a private mesh), and click **Finish**. It's re-runnable any time, so nothing
