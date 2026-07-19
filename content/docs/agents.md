@@ -125,9 +125,20 @@ What's signed, precisely:
   Devices do this on every update against the baked-in root — you're re-running their
   check.
 
-- **OS flashable images** (`.img.xz`) are **not individually signed today** — their
-  integrity story is the `imageSha256` in `manifest.json`, fetched over HTTPS from the
-  release. Verify the checksum; don't hunt for a `.sig` that doesn't exist.
+- **OS flashable images** (`.img.xz`) carry no per-image `.sig`; they chain to the root
+  through the **signed release manifest**. `manifest.json` ships a detached DER CMS
+  signature (`manifest.json.sig`) on the release — verify it, then check the image's
+  SHA-256 against the manifest's `imageSha256`:
+
+  ```sh
+  openssl cms -verify -binary -inform DER \
+    -in  manifest.json.sig \
+    -content manifest.json \
+    -CAfile rasputin-root-ca.pem -out /dev/null
+  ```
+
+  Releases cut before the manifest signature landed have no `manifest.json.sig`; for
+  those, the HTTPS-fetched `imageSha256` is the whole integrity story.
 
 ## Where the agent must hand off
 
