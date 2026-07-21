@@ -22,7 +22,7 @@ disableKinds = ["taxonomy", "term"]
   githubUrl = "https://github.com/geekdojo"
   blueskyUrl = "https://bsky.app/profile/hoodoo5x5.bsky.social"
   lemmyUrl = "https://lemmy.world/u/hoodoo5x5"
-  # mastodonUrl = "https://hachyderm.io/@hoodoo5x5"  # enable once the instance approves the account
+  mastodonUrl = "https://hachyderm.io/@hoodoo5x5"
   parentUrl = "https://geekdojo.com"
 
 [mediaTypes."text/markdown"]
