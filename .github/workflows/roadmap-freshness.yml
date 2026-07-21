@@ -1,0 +1,64 @@
+name: roadmap-freshness
+
+# Staleness canary for the public roadmap (content/docs/roadmap.md).
+#
+# The roadmap's credibility rests on it tracking reality — a stale public
+# roadmap is worse than none. The page carries a `reviewed: YYYY-MM-DD` front
+# matter field, bumped whenever a human actually re-reads the page against the
+# internal backlog (not on every mechanical edit). This workflow checks that
+# stamp weekly and files ONE issue when it exceeds the threshold, so the
+# reminder lands in the normal triage flow instead of relying on anyone
+# remembering. It updates/reuses the open issue rather than piling up
+# duplicates, and says nothing when the page is fresh.
+
+on:
+  schedule:
+    - cron: "23 9 * * 1" # Mondays
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      MAX_AGE_DAYS: "45"
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the reviewed stamp
+        run: |
+          set -euo pipefail
+          PAGE=content/docs/roadmap.md
+          REVIEWED=$(awk -F': *' '/^reviewed:/ {print $2; exit}' "$PAGE")
+          if [ -z "$REVIEWED" ]; then
+            echo "::error::$PAGE has no 'reviewed:' front matter field"
+            exit 1
+          fi
+          NOW=$(date -u +%s)
+          THEN=$(date -u -d "$REVIEWED" +%s)
+          AGE_DAYS=$(( (NOW - THEN) / 86400 ))
+          echo "roadmap last reviewed $REVIEWED (${AGE_DAYS}d ago; threshold ${MAX_AGE_DAYS}d)"
+
+          TITLE="Roadmap freshness: last reviewed $REVIEWED"
+          EXISTING=$(gh issue list --label roadmap-freshness --state open --json number --jq '.[0].number // empty')
+
+          if [ "$AGE_DAYS" -le "$MAX_AGE_DAYS" ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue close "$EXISTING" --comment "Roadmap reviewed $REVIEWED — fresh again."
+            fi
+            exit 0
+          fi
+
+          BODY=$(printf '%s\n' \
+            "The public roadmap (\`content/docs/roadmap.md\`) was last reviewed **$REVIEWED** — ${AGE_DAYS} days ago, past the ${MAX_AGE_DAYS}-day threshold." \
+            "" \
+            "Re-read it against the internal epics view (geekdojo-brain \`projects/rasputin/backlog/epics.md\`), move anything that shipped or resequenced, and bump the \`reviewed:\` stamp (plus the visible \"Last reviewed\" line) in the same PR. If nothing changed, a stamp-only bump is a valid review.")
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --title "$TITLE" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label roadmap-freshness
+          fi

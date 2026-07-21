@@ -21,3 +21,9 @@ Working in this repo:
   cascade. Keep code blocks in docs copy-paste-exact: plain fences (no language
   annotation) for seed files, since highlight spans corrupt text-stripped copies.
 - Never claim remote/away-from-home access works in public copy (untested).
+- `content/docs/roadmap.md` is the public mirror of the internal epics view
+  (geekdojo-brain `projects/rasputin/backlog/epics.md`). When work you're publishing
+  (devlog, release, docs) completes or resequences a roadmap item, update the roadmap in
+  the same PR and bump its `reviewed:` front matter + the visible "Last reviewed" line.
+  No dates on deliverables — Now/Next/Later only. A weekly `roadmap-freshness` workflow
+  files an issue if the stamp exceeds 45 days.
