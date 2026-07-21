@@ -1,0 +1,43 @@
+name: ci
+
+# PR-time build gate for the site. The real publish path is deploy.yml on push
+# to main (post-merge), so before this workflow a broken template, bad ref, or
+# malformed front matter could only be discovered AFTER it had already merged.
+# This runs the same Hugo build on the pull request so a build break is caught
+# at the merge button instead of on main.
+#
+# Faithful-but-hermetic: same Hugo version and `--minify` as deploy.yml, but it
+# deliberately SKIPS scripts/fetch-releases.sh (the "resolve latest releases"
+# step). That script only refreshes data/releases.json, which is COMMITTED and
+# best-effort by design (a fetch failure leaves the committed file in place), so
+# the build has everything it needs without hitting the GitHub API — which keeps
+# this gate token-free, network-independent, and identical on fork PRs.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hugo-build:
+    runs-on: ubuntu-latest
+    env:
+      # Keep in lockstep with deploy.yml so the gate reflects the real build.
+      HUGO_VERSION: "0.164.0"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Hugo
+        run: |
+          curl -sSL -o "${{ runner.temp }}/hugo.deb" \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          sudo dpkg -i "${{ runner.temp }}/hugo.deb"
+      - name: Build
+        # --gc surfaces dangling references; a broken ref/relref or template
+        # error makes hugo exit non-zero, failing the gate.
+        run: hugo --minify --gc
