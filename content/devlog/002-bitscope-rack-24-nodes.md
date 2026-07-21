@@ -3,6 +3,10 @@ title: "24 nodes, one control plane: loading the BitScope rack"
 date: 2026-07-14
 description: "A full BitScope rack onto one Pi 5 control plane: 23 nodes enrolled in 44 minutes, power-on to 24/24 online in 121 seconds. With a time-lapse of the hex grid filling up."
 summary: "A full BitScope rack onto one Pi 5 control plane: 23 nodes enrolled in 44 minutes, power-on to 24/24 online in 121 seconds. With a time-lapse of the hex grid filling up."
+# Renumbered from 004 to publish order (2026-07-20); alias preserves the
+# syndicated URL.
+aliases:
+  - /devlog/004-bitscope-rack-24-nodes/
 ---
 
 <video controls muted playsinline preload="metadata" poster="/video/bitscope-rack-load-poster.png" style="width:100%">

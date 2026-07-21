@@ -23,7 +23,7 @@ Two ground rules:
 **Real power control and serial console.** Power a node on or off and open its serial
 console from the web UI — on real hardware, not a mock. First target is the 24-node
 BitScope rack on our bench (the one from
-[devlog #4](/devlog/004-bitscope-rack-24-nodes/)), driven over its blade management bus;
+[devlog #2](/devlog/002-bitscope-rack-24-nodes/)), driven over its blade management bus;
 a Turing Pi backend follows as the second transport. Same interface the eventual Rasputin
 chassis will use, proven on hardware you can buy today.
 
