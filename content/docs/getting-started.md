@@ -87,7 +87,7 @@ config:
 Repeat per node. A cluster currently caps at **24 nodes** — a deliberate limit the UI
 is designed around, and enough for a very serious homelab. (For the curious: a full
 24-node rack bring-up takes about
-[two minutes of software time](/devlog/004-bitscope-rack-24-nodes/).)
+[two minutes of software time](/devlog/002-bitscope-rack-24-nodes/).)
 
 ## 4. Deploy your first app
 
