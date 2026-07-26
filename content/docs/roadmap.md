@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — no dates, honestly sequenced, kept current as reality changes."
 weight: 12
-reviewed: 2026-07-20
+reviewed: 2026-07-26
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -18,14 +18,18 @@ Two ground rules:
 - **This page changes when reality changes.** The "last reviewed" stamp at the bottom is
   checked automatically — if it goes stale, our own CI files an issue against us.
 
-## Now
+## Recently shipped
 
 **Real power control and serial console.** Power a node on or off and open its serial
-console from the web UI — on real hardware, not a mock. First target is the 24-node
-BitScope rack on our bench (the one from
-[devlog #2](/devlog/002-bitscope-rack-24-nodes/)), driven over its blade management bus;
-a Turing Pi backend follows as the second transport. Same interface the eventual Rasputin
-chassis will use, proven on hardware you can buy today.
+console from the web UI — on real hardware, not a mock. Live on the 24-node BitScope
+rack from [devlog #2](/devlog/002-bitscope-rack-24-nodes/), driven over its blade
+management bus: hard power verbs with honest post-verb state, per-node gating so
+controls only appear where a management path actually exists, and a browser serial
+console that reaches a login shell on a powered node. Same interface the eventual
+Rasputin chassis will use, proven on hardware you can buy today. A Turing Pi backend
+follows as the second transport, and the console grows a full terminal next.
+
+## Now
 
 **Cluster identity and discovery on real networks.** Homelab networks have VLANs,
 multiple experiments running at once, and sometimes two clusters on one LAN. Every
@@ -97,5 +101,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-07-20. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-07-26. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
