@@ -92,9 +92,11 @@ on 2026-07-18, which is what the bench run below used, and went stable
 
 ![c02's own Containers drawer: uptime-kuma alongside rasputin-obs-collector, each reporting real per-container memory. The whole per-node chain in one frame, captured with the control plane on dev.114.](/img/005-c02-containers-drawer.png)
 
-Two polish items are still on the bench — confirming `c13`'s auto-retry lands
-clean and spot-checking the disable→teardown path — so treat this as shipped
-and validated, not swept.
+Both tail items closed the same day. `c13`'s deploy self-healed on the next
+reconcile, which is what the 30-minute cooldown is for. The disable→teardown
+check found a real bug — the reconcile's 6-hour freshness throttle keyed on the
+last deploy and ignored a teardown since, so an obs off→on left collectors
+stopped for up to six hours — fixed in `48d8248` and regression-tested.
 
 **Takeaway:** an unauthenticated metrics store can still collect from the whole
 fleet — put an mTLS ingress in front of it and let the client cert's CN be the
