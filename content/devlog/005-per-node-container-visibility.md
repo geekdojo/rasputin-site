@@ -66,9 +66,11 @@ was invisible in `c02`'s own view.
   containers across nodes (every node runs a `rasputin-obs-collector`) collapse
   into one merged, wrong row.
 
-**What shipped (2026-07-18):** CP `v2026.07.4-dev.56` + OS `2026.07.4-dev.110`,
-both SKUs signed on the dev channel — pieces 1–5 plus the cAdvisor data-root
-fix (`8e6d311`) and the 24-node cap guard, cut together.
+**What shipped:** CP `v2026.07.4` + OS `2026.07.4`, both SKUs signed — pieces
+1–5 plus the cAdvisor data-root fix (`8e6d311`) and the 24-node cap guard, cut
+together. They went out on the dev channel first as CP `dev.56` / OS `dev.110`
+on 2026-07-18, which is what the bench run below used, and went stable
+2026-07-19.
 
 **Bench validation (2026-07-18, the 24-node cluster):**
 
