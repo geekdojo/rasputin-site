@@ -30,7 +30,7 @@ during an outage. If you don't see CONSOLE on a board, the table below says why.
 
 | Board | Power / restart | Console | Notes |
 |---|---|---|---|
-| **Turing Pi 2 / 2.5** | Yes | **No** — see below | Over the board's REST API. Needs BMC firmware 2.0.0+. |
+| **Turing Pi 2 / 2.5** | Yes | Use the board's own — [why](#why-the-turing-pi-has-no-console) | Over the board's REST API. Needs BMC firmware 2.0.0+. |
 | **BitScope CB04B blades** | Yes | Yes, full character mode | Over the rack's serial control bus. |
 
 Other hardware is not supported yet. Rasputin is pre-alpha and the list is short on
@@ -39,30 +39,28 @@ purpose — each entry is a driver we run on our own bench, not a spec we read.
 ## Why the Turing Pi has no console
 
 The Turing Pi's BMC does expose the nodes' serial ports, so this looks like something we
-skipped. It isn't — we built the driver, ran it on the board, and decided against
-shipping a console on it. Two reasons, and the second is the one that settles it:
+skipped. It isn't. We built the driver, ran it on the board, and found its serial
+interface is shaped for a different job than the one Rasputin's console does.
 
-**It cannot do character mode.** The board's serial interface takes one whole line per
-request. There is no keystroke channel, so no `Ctrl-C`, no arrow keys, no ANSI, no
-password masking. The most it could ever be is a text box that submits a line at a time.
+The board's UART access is **request-based**: you ask for the output that has accumulated
+since last time, and you send input a line at a time. That's a good fit for scripting and
+for checking in on a node — it's what `tpi uart` is built on, and it does that job well.
+What it isn't is a continuous stream. There's no per-keystroke channel, so no `Ctrl-C`,
+arrow keys or ANSI; and because output collects in a fixed buffer between requests, a
+burst longer than the buffer can roll over before the next read picks it up.
 
-**It drops output.** Reads come from a small ring buffer that keeps overwriting itself —
-a little over a second of output at 115200 baud. Whatever lands between two reads is
-gone, with nothing to indicate anything was missed.
+Rasputin's console is pointed at one case in particular: watching a node boot when nothing
+else about it is working. That wants an uninterrupted stream, since the line you need is
+usually the one you didn't know to wait for. Built on periodic reads, it would be fine most
+of the time and patchy during exactly the fast console output you were trying to catch —
+and those gaps would look like our bug rather than the shape of the interface underneath.
 
-That second point is fatal for the job a console exists to do. You open a serial console
-to watch a node boot when nothing else about it works. A console that silently loses
-arbitrary chunks of exactly that output is at its least trustworthy at the moment you
-depend on it most — and when it eats the line you needed, it looks like a Rasputin bug
-rather than a limit of the board.
+So we don't offer one here. Power and restart work fully on a Turing Pi; console is absent
+on purpose, and the dashboard shows you that rather than a button that disappoints.
 
-So we don't offer it. Power and restart work fully on a Turing Pi; console is absent, on
-purpose, and the dashboard shows you that rather than a button that disappoints.
-
-**If you need a serial console on a Turing Pi**, the board has its own — `tpi uart`, or
-the console in the Turing Pi BMC web interface. It talks to the same hardware without
-pretending to be something it isn't, and we would rather point you at the right tool than
-reimplement it badly.
+**If you want a serial console on a Turing Pi**, the board already has one — `tpi uart`,
+or the console in the Turing Pi BMC web interface. It's built for that interface and does
+it properly, so we'd rather send you there than ship a second-best version of it.
 
 ## Why this varies at all
 

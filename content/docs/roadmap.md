@@ -34,9 +34,9 @@ proven on hardware you can buy today.
 **A second BMC transport: Turing Pi.** The power interface above was built deliberately
 transport-agnostic, and the way to prove that is a second, very different transport: the
 Turing Pi's REST-driven BMC — hardware already on our bench. Power and restart work
-fully; **console does not, and won't** — that board's serial interface is line-at-a-time
-and drops output, so we advertise no console there rather than ship one that fails when
-you need it ([why](/docs/bmc/#why-the-turing-pi-has-no-console)). That result is the
+fully; **console won't** — that board's serial access is request-based rather than a
+continuous stream, which suits scripting but not watching a node boot, so we advertise no
+console there and point you at the board's own ([why](/docs/bmc/#why-the-turing-pi-has-no-console)). That result is the
 useful part: proving the seam generalizes also meant finding where it doesn't, and each
 node now advertises what its hardware can actually do rather than one blanket claim.
 Every transport added hardens the seam the eventual Rasputin chassis plugs into.
