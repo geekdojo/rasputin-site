@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — no dates, honestly sequenced, kept current as reality changes."
 weight: 12
-reviewed: 2026-07-27
+reviewed: 2026-07-28
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -31,11 +31,15 @@ proven on hardware you can buy today.
 
 ## Now
 
-**A second BMC transport: Turing Pi.** The power-and-console interface above was built
-deliberately transport-agnostic, and the way to prove that is a second, very different
-transport: the Turing Pi's REST-driven BMC — hardware already on our bench. Same
-operator surface, different wire underneath; every transport added hardens the seam the
-eventual Rasputin chassis plugs into.
+**A second BMC transport: Turing Pi.** The power interface above was built deliberately
+transport-agnostic, and the way to prove that is a second, very different transport: the
+Turing Pi's REST-driven BMC — hardware already on our bench. Power and restart work
+fully; **console won't** — that board's serial access is request-based rather than a
+continuous stream, which suits scripting but not watching a node boot, so we advertise no
+console there and point you at the board's own ([why](/docs/bmc/#why-the-turing-pi-has-no-console)). That result is the
+useful part: proving the seam generalizes also meant finding where it doesn't, and each
+node now advertises what its hardware can actually do rather than one blanket claim.
+Every transport added hardens the seam the eventual Rasputin chassis plugs into.
 
 **Cluster identity and discovery on real networks.** Homelab networks have VLANs,
 multiple experiments running at once, and sometimes two clusters on one LAN. Every
@@ -107,5 +111,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-07-27. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-07-28. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
