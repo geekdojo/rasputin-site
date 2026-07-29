@@ -19,21 +19,46 @@ hardware.
 The CM4's single SDIO0 bus is hardwired to on-module eMMC on non-Lite parts, so the microSD
 slot on the Turing Pi's CM4 adapter **only works with Lite modules**.
 
-With a Lite module, installing Rasputin is the same as on any other Raspberry Pi: follow the
-[download page](/download/), which flashes the card for you. Put the finished card in the CM4
-adapter's microSD slot, seat the adapter in a node slot, and power it on.
+Which kind you have decides which half of this page you follow:
 
-Everything between here and [Provision the cluster](#provision-the-cluster) is only needed for
-eMMC modules.
-
-With an eMMC module there is no card slot to use, so the image has to be written to the eMMC
-over the board — which is the rest of this page. It works fine and it is not difficult, but it
-takes about 17 minutes per node and a few steps you would otherwise skip.
+| Module | Path |
+|---|---|
+| **CM4 Lite** (no eMMC) | [Lite modules — the short path](#lite-modules--the-short-path). The card slot works, so this is the ordinary Rasputin install. |
+| **CM4 with eMMC** | [eMMC modules — flashing over the BMC](#emmc-modules--flashing-over-the-bmc). No usable card slot, so the board writes the image itself. |
 
 Either kind makes a perfectly good Rasputin node once it is running. This only affects how you
 install.
 
-## What you need for an eMMC install
+## Lite modules — the short path
+
+Nothing here is Turing Pi specific. A Lite module boots from the adapter's microSD slot, so it
+installs like any other Raspberry Pi.
+
+**The control-plane node.** Follow the [download page](/download/). Its one-line installer
+flashes the card *and* writes the node's seed, so the card comes out ready to boot.
+
+**Every other node.** Once the control plane is up, use its own **Add node** wizard. It hands
+you a one-liner with that node's enrollment seed already baked in — you do not create seeds by
+hand.
+
+For each node: put the finished card in the CM4 adapter's microSD slot, seat the adapter in a
+board slot, and power it on.
+
+That is the whole install. You can skip to [Power control from the
+dashboard](#power-control-from-the-dashboard) — the sections in between exist only because
+eMMC modules cannot use a card.
+
+## eMMC modules — flashing over the BMC
+
+An eMMC module has no usable card slot, so the image has to be written to the on-module eMMC
+by the board itself. The one-line installer on the download page cannot help here — it flashes
+a drive attached to *your* machine — so this path is manual: generate the cluster's seeds
+yourself, stage the image on the BMC, flash each node, and seed it afterwards.
+
+It works reliably. It just takes about 17 minutes per node and several steps the Lite path
+does not have.
+
+### What you need
 
 | | |
 |---|---|
@@ -73,7 +98,7 @@ report upstream (BMC-Firmware #134) of a 1.0.2 → 1.1.0 update leaving a board 
 if you are on an older version it is worth reading up before updating rather than doing it
 as a reflex.
 
-## Generate the matched set
+### Generate the matched set
 
 One entry for the control plane, one per additional node:
 
@@ -103,7 +128,7 @@ credentials.**
 The SSH key is load-bearing. Rasputin images bake **no** SSH key of any kind, so without one
 your only way in is the serial console.
 
-## Stage the image on the BMC's card
+### Stage the image on the BMC's card
 
 The card is not mounted automatically — and until it is, the BMC will report its own 144 MB of
 internal storage, which is misleading if you are checking for free space.
@@ -119,7 +144,7 @@ across takes about 8 minutes.
 
 Stage it once: the same file flashes every node.
 
-## Flash a node
+### Flash a node
 
 Drive the BMC's REST API directly:
 
@@ -151,7 +176,7 @@ Expect roughly 17 minutes per node.
 > six power cycles. The BMC path above needs no USB cable at all, so that is what we use and
 > what this guide covers.
 
-## First boot
+### First boot
 
 Power the node and watch it come up through the BMC's console:
 
@@ -170,7 +195,7 @@ That is expected and safe. Firstboot does not mark itself complete, so it runs a
 a seed appears. No image changes are needed for the console — the `rpi` image already enables
 the UART the Turing Pi routes to its BMC.
 
-## Install your SSH key over the console
+### Install your SSH key over the console
 
 Since the image bakes no key, the first one goes in over the serial console. Writes are one
 command at a time:
@@ -186,10 +211,10 @@ u "echo '<your-ssh-public-key>' > /var/lib/rasputin/dropbear/authorized_keys"
 u "chmod 600 /var/lib/rasputin/dropbear/authorized_keys"
 ```
 
-## Provision the cluster
+### Seed each node
 
 The seed partition is mounted read-write on a running node, so seeding is a copy and a reboot —
-no reflash, no card removal:
+no reflash, and nothing to remove from the board.
 
 Do the control plane first. `<node-ip>` is that node's address on your LAN — find it in your
 router's DHCP leases, or read it off the node's console with the `uart` command above, which
@@ -211,6 +236,8 @@ From here it is ordinary Rasputin — see [Provisioning & the seed
 file](/docs/provisioning/).
 
 ## Power control from the dashboard
+
+This applies however you installed — Lite or eMMC, it is the board's BMC either way.
 
 Rasputin can drive the Turing Pi's BMC, so nodes get **BMC ON/OFF** and **FORCE RESTART** in
 their panel. Console is deliberately not offered on this board — use the Turing Pi's own
