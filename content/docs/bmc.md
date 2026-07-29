@@ -147,10 +147,10 @@ you yet.
 
 ### The form
 
-- **SERIAL DEVICE** — enter `/dev/ttyS0`. The field suggests `/dev/serial0`, the conventional
-  Raspberry Pi alias for the header UART, and that is also what you get if you leave the field
-  blank — but the Rasputin `rpi` image does not create that alias, so the bus fails to open.
-  Type `/dev/ttyS0` until this is fixed.
+- **SERIAL DEVICE** — `/dev/ttyS0`, the Pi's 40-pin-header UART. Type it in: on Rasputin
+  **2026.07.7** the field defaults to `/dev/serial0`, the Raspberry Pi OS name for the same
+  port, which the Rasputin image does not create — so leaving it blank fails to open the bus.
+  A later release defaults it correctly and you can leave it blank; typing it works on both.
 - **UNLOCK SEQUENCE** — leave it blank. The blades' BMCs ship locked and blank means the
   factory unlock sequence. Fill this in only if you have written a different one into the
   blades' EEPROMs yourself.
