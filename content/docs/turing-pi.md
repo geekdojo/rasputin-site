@@ -8,7 +8,7 @@ The [Turing Pi 2](https://turingpi.com/) puts four compute modules on one mini-I
 flash and reach the serial console of every slot over the network. That maps closely onto
 what Rasputin already does, so a Turing Pi makes a tidy Rasputin cluster.
 
-This guide is written against **Rasputin OS 2026.07.6**, Turing Pi board revision 2.5.1, Turing
+This guide is written against **Rasputin OS 2026.07.7**, Turing Pi board revision 2.5.1, Turing
 Pi BMC firmware 2.3.2, and Raspberry Pi Compute Module 4. Everything here was run on that
 hardware.
 
@@ -135,11 +135,11 @@ internal storage, which is misleading if you are checking for free space.
 
 ```bash
 ssh root@<bmc-ip> 'mkdir -p /mnt/sdcard && mount /dev/mmcblk0p1 /mnt/sdcard'
-scp -O rasputin-os-rpi-2026.07.6.img root@<bmc-ip>:/mnt/sdcard/rasputin-rpi.img
+scp -O rasputin-os-rpi-2026.07.7.img root@<bmc-ip>:/mnt/sdcard/rasputin-rpi.img
 ```
 
 The `rpi` image from the [download page](/download/) is compressed, and the BMC needs it
-**decompressed** — `xz -d rasputin-os-rpi-2026.07.6.img.xz` gives roughly 3.1 GB. Copying it
+**decompressed** — `xz -d rasputin-os-rpi-2026.07.7.img.xz` gives roughly 3.1 GB. Copying it
 across takes about 8 minutes.
 
 Stage it once: the same file flashes every node.
@@ -242,10 +242,6 @@ This applies however you installed — Lite or eMMC, it is the board's BMC eithe
 Once configured, every node gets **BMC ON/OFF** and **FORCE RESTART** in its panel. Console is
 deliberately not offered on this board — use the Turing Pi's own `tpi uart` or its web console
 instead, and see [BMC — power and console](/docs/bmc/#why-the-turing-pi-has-no-console) for why.
-
-> Configuring this from Settings needs Rasputin **2026.07.7 or newer**. On 2026.07.6 the
-> backend exists but the Settings form does not, so there is no supported way to turn it on —
-> the rest of this guide works fine on 2026.07.6; only this section needs the newer release.
 
 Go to **Settings → BMC** and choose **Turing Pi 2 / 2.5**, then pick the node that will talk to
 the board — the control plane is the usual choice, and it has to be on the board's network.
