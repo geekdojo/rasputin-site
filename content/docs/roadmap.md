@@ -28,7 +28,7 @@ deliberately not offered on that board ([why](/docs/bmc/#why-the-turing-pi-has-n
 and every node now advertises what its own hardware can actually do —
 [guide](/docs/turing-pi/).
 
-**Real power control and serial console** — `2026.07.5`, 27 Jul 2026. Power any node on or
+**BMC support: real power control and serial console** — `2026.07.5`, 27 Jul 2026. Power any node on or
 off and open its serial console from the web UI, on real hardware rather than a mock — live
 on the 24-node BitScope rack ([devlog #2](/devlog/002-bitscope-rack-24-nodes/)). Controls
 appear only where a management path actually exists.
