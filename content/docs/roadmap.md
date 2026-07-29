@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — no dates, honestly sequenced, kept current as reality changes."
 weight: 13
-reviewed: 2026-07-28
+reviewed: 2026-07-29
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -20,6 +20,30 @@ Two ground rules:
 
 ## Recently shipped
 
+**A second BMC transport: Turing Pi.** The power control below — built on the BitScope
+rack's blade bus — was written to be transport-agnostic, and a second, very different
+transport is the only honest way to test that: the [Turing Pi 2](https://turingpi.com/)'s
+network BMC, driven over its REST API. Power and restart work on all four slots, configured from Settings — the control plane
+finds the board on your network, shows you the certificate it presents, and sends your
+credentials only after you accept it. It then reads each slot's console to work out which
+node is where, so you are confirming a filled-in list rather than typing one.
+
+**Console is deliberately not offered on that board**, and that is the more useful result.
+Its serial access is request-based — you ask for the output collected since last time —
+which is a good fit for scripting and for checking in on a node, and it is what the board's
+own console tooling is built on. Rasputin's console is aimed at a narrower case: watching a
+node boot when nothing else about it works, which needs an uninterrupted stream. Rather than
+ship a version that would be patchy during exactly the fast output you were trying to read,
+we advertise no console there and send you to the board's own
+([the longer answer](/docs/bmc/#why-the-turing-pi-has-no-console)).
+
+Proving the seam generalizes meant finding where it has to bend. Every node now advertises
+what its own hardware can actually do — power, restart and console declared separately,
+with a console stating its fidelity — instead of one blanket claim per cluster. That is the
+seam the eventual Rasputin chassis plugs into, and it has now been pushed on by two
+transports that share almost nothing. Guides: [Turing Pi](/docs/turing-pi/) and
+[BMC](/docs/bmc/).
+
 **Real power control and serial console.** Power a node on or off and open its serial
 console from the web UI — on real hardware, not a mock. Live on the 24-node BitScope
 rack from [devlog #2](/devlog/002-bitscope-rack-24-nodes/), driven over its blade
@@ -30,16 +54,6 @@ login shell on a powered node. Same interface the eventual Rasputin chassis will
 proven on hardware you can buy today.
 
 ## Now
-
-**A second BMC transport: Turing Pi.** The power interface above was built deliberately
-transport-agnostic, and the way to prove that is a second, very different transport: the
-Turing Pi's REST-driven BMC — hardware already on our bench. Power and restart work
-fully; **console won't** — that board's serial access is request-based rather than a
-continuous stream, which suits scripting but not watching a node boot, so we advertise no
-console there and point you at the board's own ([why](/docs/bmc/#why-the-turing-pi-has-no-console)). That result is the
-useful part: proving the seam generalizes also meant finding where it doesn't, and each
-node now advertises what its hardware can actually do rather than one blanket claim.
-Every transport added hardens the seam the eventual Rasputin chassis plugs into.
 
 **Cluster identity and discovery on real networks.** Homelab networks have VLANs,
 multiple experiments running at once, and sometimes two clusters on one LAN. Every
@@ -111,5 +125,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-07-28. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-07-29. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
