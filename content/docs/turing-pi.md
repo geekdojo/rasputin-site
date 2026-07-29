@@ -139,7 +139,8 @@ scp -O rasputin-os-rpi-2026.07.7.img root@<bmc-ip>:/mnt/sdcard/rasputin-rpi.img
 ```
 
 The `rpi` image from the [download page](/download/) is compressed, and the BMC needs it
-**decompressed** — `xz -d rasputin-os-rpi-2026.07.7.img.xz` gives roughly 3.1 GB. Copying it
+**decompressed** — `xz -d rasputin-os-rpi-2026.07.7.img.xz` gives roughly 3.1 GB. Substitute
+whichever version you downloaded for `2026.07.7`, here and in the `scp` above. Copying it
 across takes about 8 minutes.
 
 Stage it once: the same file flashes every node.
