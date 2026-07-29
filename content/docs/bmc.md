@@ -1,7 +1,7 @@
 ---
 title: "BMC — power and console"
 description: "Out-of-band control of nodes that aren't answering: which management hardware Rasputin drives, and what each one can actually do."
-weight: 11
+weight: 12
 ---
 
 BMC control is for the case where a node stops answering. The agent is gone, SSH is gone,

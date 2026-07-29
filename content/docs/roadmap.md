@@ -1,7 +1,7 @@
 ---
 title: "Roadmap"
 description: "What we're building now, next, and later — no dates, honestly sequenced, kept current as reality changes."
-weight: 12
+weight: 13
 reviewed: 2026-07-28
 ---
 
