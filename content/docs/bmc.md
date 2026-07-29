@@ -164,12 +164,13 @@ a list of rack positions and which Rasputin node is in each one.
 
 A position is `ROW-SLOT`:
 
-- **Rows are `A` to `F`, bottom to top** — `A` is the lowest blade in the rack.
+- **Rows are `A` to `F`, top to bottom** — `A` is the topmost blade in the rack.
 - **Slots are `0` to `3`, right to left** as you face the front — `0` is the rightmost node on
   a blade.
 
-So `A-0` is the bottom-right node and `F-3` the top-left. BitScope's own ER24A assembly guide
-uses the same numbering.
+So `A-0` is the **top-right** node and `F-3` the **bottom-left**. Both axes count from the
+top-right corner, which is worth fixing in your head before you start typing: it is the
+opposite of the bottom-up numbering most racks use.
 
 One JSON row per node:
 
