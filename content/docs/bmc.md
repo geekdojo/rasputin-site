@@ -73,6 +73,31 @@ Turing Pi that is: press **DETECT BOARD** to find it and read its certificate, c
 certificate, enter the BMC password, press it again to fill in which node is in which slot.
 See the [Turing Pi guide](/docs/turing-pi/).
 
+### About that certificate
+
+The board's certificate is self-signed and dated 1970 — it has no clock at boot — so it always
+reads as expired and no certificate authority can vouch for it. Rasputin pins the exact
+certificate instead, which is stricter than CA trust: it accepts one certificate rather than
+anything chaining to an authority.
+
+Accepting it is deliberately a separate button, because that is the moment you decide to trust
+this board. **It works the way `ssh` does when it asks about an unknown host key.** Once
+accepted, a changed certificate is refused rather than silently trusted, and Rasputin tells you
+the two things that cause it — the BMC firmware was reinstalled, or something else is answering
+in the board's place.
+
+The honest limitation, same as `ssh`: nothing independently verifies the certificate the
+*first* time you are shown it. If you want that assurance, the board displays the same
+fingerprint in its own web interface — compare the two before accepting. Most homelabs won't
+bother, and that is a reasonable choice on a network you control; the option is there if your
+situation is different.
+
+One thing worth being clear about: Rasputin recognises a Turing Pi by how its BMC answers an
+unauthenticated request. That identifies the board so the page can say "found a Turing Pi"
+before you have typed a password. It is not a security check — anything can imitate that
+response — which is exactly why the certificate is the thing you accept, and why your password
+is only ever sent to a board presenting the one you accepted.
+
 ### The environment override
 
 A node can also be pinned to a backend through `RASPUTIN_BMC_BACKEND` and its matching
