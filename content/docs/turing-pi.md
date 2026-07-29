@@ -19,17 +19,12 @@ hardware.
 The CM4's single SDIO0 bus is hardwired to on-module eMMC on non-Lite parts, so the microSD
 slot on the Turing Pi's CM4 adapter **only works with Lite modules**.
 
-With a Lite module, installing Rasputin is the same as any other Raspberry Pi:
+With a Lite module, installing Rasputin is the same as on any other Raspberry Pi: follow the
+[download page](/download/), which flashes the card for you. Put the finished card in the CM4
+adapter's microSD slot, seat the adapter in a node slot, and power it on.
 
-1. Download the `rpi` image from the [download page](/download/).
-2. Write it to a microSD card with [Raspberry Pi
-   Imager](https://www.raspberrypi.com/software/), balenaEtcher, or `dd` — the same way you
-   would flash any Pi. (Use *Use custom* / *Flash from file* and pick the downloaded image.)
-3. Put the card in the CM4 adapter's microSD slot, seat the adapter in a node slot, power the
-   node on.
-
-Then skip ahead to [Provision the cluster](#provision-the-cluster) — everything between here
-and there is only needed for eMMC modules.
+Everything between here and [Provision the cluster](#provision-the-cluster) is only needed for
+eMMC modules.
 
 With an eMMC module there is no card slot to use, so the image has to be written to the eMMC
 over the board — which is the rest of this page. It works fine and it is not difficult, but it
@@ -118,9 +113,9 @@ ssh root@<bmc-ip> 'mkdir -p /mnt/sdcard && mount /dev/mmcblk0p1 /mnt/sdcard'
 scp -O rasputin-os-rpi-2026.07.6.img root@<bmc-ip>:/mnt/sdcard/rasputin-rpi.img
 ```
 
-The `rpi` image downloads as a compressed `.img.xz`, and the BMC needs it **decompressed**.
-Unpack it first — `xz -d rasputin-os-rpi-2026.07.6.img.xz` on Linux or macOS, or 7-Zip on
-Windows — which gives roughly 3.1 GB. Copying it across takes about 8 minutes.
+The `rpi` image from the [download page](/download/) is compressed, and the BMC needs it
+**decompressed** — `xz -d rasputin-os-rpi-2026.07.6.img.xz` gives roughly 3.1 GB. Copying it
+across takes about 8 minutes.
 
 Stage it once: the same file flashes every node.
 
