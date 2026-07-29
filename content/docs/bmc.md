@@ -62,6 +62,32 @@ on purpose, and the dashboard shows you that rather than a button that disappoin
 or the console in the Turing Pi BMC web interface. It's built for that interface and does
 it properly, so we'd rather send you there than ship a second-best version of it.
 
+## Turning it on
+
+BMC is off until you select a backend in **Settings → BMC**. Nothing registers, nothing is
+advertised, and the control plane refuses every BMC operation until then — a cluster that has
+not been told about management hardware does not guess.
+
+Pick the backend, pick which node talks to it, fill in what it asks for, and apply. For a
+Turing Pi that is: press **DETECT BOARD** to find it and read its certificate, confirm the
+certificate, enter the BMC password, press it again to fill in which node is in which slot.
+See the [Turing Pi guide](/docs/turing-pi/).
+
+### The environment override
+
+A node can also be pinned to a backend through `RASPUTIN_BMC_BACKEND` and its matching
+`RASPUTIN_BMC_*` settings in `/var/lib/rasputin/node.env`. This exists for development and
+bench work, and there are two things to know before reaching for it:
+
+- **It is not a seed option.** First boot does not read these; they only take effect if you
+  edit `node.env` on a running node and restart the agent.
+- **It disables Settings for that node.** A pinned node reports itself as pinned and refuses
+  configuration pushes — Settings shows it read-only and tells you to remove the variable.
+  That is deliberate: two sources of truth for the same hardware is worse than one
+  inconvenient one.
+
+Use Settings unless you are specifically working on Rasputin itself.
+
 ## Why this varies at all
 
 Rasputin models BMC ability per node, not per cluster: each management host tells the

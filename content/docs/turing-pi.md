@@ -239,43 +239,36 @@ file](/docs/provisioning/).
 
 This applies however you installed — Lite or eMMC, it is the board's BMC either way.
 
-Rasputin can drive the Turing Pi's BMC, so nodes get **BMC ON/OFF** and **FORCE RESTART** in
-their panel. Console is deliberately not offered on this board — use the Turing Pi's own
-`tpi uart` or its web console instead, and see [BMC — power and console](/docs/bmc/) for why.
+Once configured, every node gets **BMC ON/OFF** and **FORCE RESTART** in its panel. Console is
+deliberately not offered on this board — use the Turing Pi's own `tpi uart` or its web console
+instead, and see [BMC — power and console](/docs/bmc/#why-the-turing-pi-has-no-console) for why.
 
-Configuration currently lives in the control-plane node's environment file. SSH to the control
-plane and add:
+> Configuring this from Settings needs Rasputin **2026.07.7 or newer**. On 2026.07.6 the
+> backend exists but the Settings form does not, so there is no supported way to turn it on —
+> the rest of this guide works fine on 2026.07.6; only this section needs the newer release.
 
-```bash
-# /var/lib/rasputin/node.env
-RASPUTIN_BMC_BACKEND=turingpi
-RASPUTIN_BMC_TURINGPI_ENDPOINT=turingpi.local
-RASPUTIN_BMC_TURINGPI_USER=root
-RASPUTIN_BMC_TURINGPI_PASS=<your-bmc-password>
-RASPUTIN_BMC_TURINGPI_MAP=cp-1:1,node-1:2
-RASPUTIN_BMC_TURINGPI_FINGERPRINT=<sha256-of-the-bmc-cert>
-```
+Go to **Settings → BMC** and choose **Turing Pi 2 / 2.5**, then pick the node that will talk to
+the board — the control plane is the usual choice, and it has to be on the board's network.
 
-`MAP` tells Rasputin which board slot each node sits in: `<node-id>:<slot>`, comma-separated,
-using the node names you chose earlier and the slot numbers printed on the board (1–4). List
-only the slots you have filled.
+1. **Enter the BMC username and password.** Defaults are `root` / `turing`. If yours are still
+   the defaults, change them on the board first: its BMC is reachable on your LAN and that
+   account also has SSH.
+2. **Press DETECT BOARD.** Leave the address blank and it finds the board itself, then shows
+   you the certificate it presented. You do not need to know the board's IP, and you do not
+   need to read the certificate out yourself.
+3. **Check the certificate, then press DETECT BOARD again.** The second press reads each slot's
+   console and fills in which node is in which slot. Your password is only ever sent to a board
+   presenting the certificate you accepted.
+4. **Adjust the slot list if you need to and press APPLY.** Slots the board could not identify
+   — powered off, or running something that is not Rasputin — are left for you to set.
 
-The fingerprint pins the BMC's TLS certificate. The board presents a self-signed certificate
-minted at the Unix epoch — it has no clock at boot — so it reads as permanently expired and no
-certificate-authority trust can accept it. Pinning the exact certificate is both stricter and
-the only thing that works. Get it with:
+The controls appear as soon as the node running the BMC re-registers.
 
-```bash
-echo | openssl s_client -connect <bmc-ip>:443 2>/dev/null \
-  | openssl x509 -noout -fingerprint -sha256
-```
-
-Then restart the agent (`systemctl restart rasputin-agent`) and the controls appear.
-
-> Editing a file over SSH is the current mechanism, not the intended one. A Settings form for
-> this — discovering the board, confirming its certificate, and holding the credentials — is
-> designed and on the [roadmap](/docs/roadmap/). Until it lands, the environment file is the
-> supported path, and the Settings picker cannot configure this backend.
+**About that certificate.** The board's is self-signed and dated 1970, because the BMC has no
+clock at boot. It therefore always reads as expired, and no certificate-authority trust can
+accept it — pinning the exact certificate is both stricter and the only thing that works. If it
+ever changes, Rasputin refuses to connect rather than trusting the new one silently; clear the
+fingerprint and detect again if you deliberately reinstalled the BMC firmware.
 
 ## Notes
 
