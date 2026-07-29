@@ -4,22 +4,32 @@ description: "Provisioning a Turing Pi 2 cluster board with Rasputin — includi
 weight: 11
 ---
 
-The Turing Pi 2 puts four compute modules on one mini-ITX board with a BMC that can power,
+The [Turing Pi 2](https://turingpi.com/) puts four compute modules on one mini-ITX board with a BMC that can power,
 flash and reach the serial console of every slot over the network. That maps closely onto
 what Rasputin already does, so a Turing Pi makes a tidy Rasputin cluster.
 
-This guide is written against **Rasputin OS 2026.07.6**, board revision 2.5.1, BMC firmware
-2.3.2, and Compute Module 4. Everything here was run on that hardware.
+This guide is written against **Rasputin OS 2026.07.6**, Turing Pi board revision 2.5.1, Turing
+Pi BMC firmware 2.3.2, and Raspberry Pi Compute Module 4. Everything here was run on that
+hardware.
 
 ## Read this before you buy modules
 
 **If you have the choice, get CM4 *Lite* modules — the ones without on-board eMMC.**
 
 The CM4's single SDIO0 bus is hardwired to on-module eMMC on non-Lite parts, so the microSD
-slot on the Turing Pi's CM4 adapter **only works with Lite modules**. With a Lite module,
-installing Rasputin is the same as any other Pi: write the image to a microSD on your laptop,
-put the card in the adapter, boot. You can stop reading at [Provision the
-cluster](#provision-the-cluster).
+slot on the Turing Pi's CM4 adapter **only works with Lite modules**.
+
+With a Lite module, installing Rasputin is the same as any other Raspberry Pi:
+
+1. Download the `rpi` image from the [download page](/download/).
+2. Write it to a microSD card with [Raspberry Pi
+   Imager](https://www.raspberrypi.com/software/), balenaEtcher, or `dd` — the same way you
+   would flash any Pi. (Use *Use custom* / *Flash from file* and pick the downloaded image.)
+3. Put the card in the CM4 adapter's microSD slot, seat the adapter in a node slot, power the
+   node on.
+
+Then skip ahead to [Provision the cluster](#provision-the-cluster) — everything between here
+and there is only needed for eMMC modules.
 
 With an eMMC module there is no card slot to use, so the image has to be written to the eMMC
 over the board — which is the rest of this page. It works fine and it is not difficult, but it
@@ -28,19 +38,39 @@ takes about 17 minutes per node and a few steps you would otherwise skip.
 Either kind makes a perfectly good Rasputin node once it is running. This only affects how you
 install.
 
-## What you need
+## What you need for an eMMC install
 
 | | |
 |---|---|
 | **A microSD card in the *BMC's* own slot** | Not a node slot. The BMC's internal storage is about 144 MB — too small to hold a multi-GB image. 64 GB exFAT worked here; the BMC also reads ext2/3/4, vfat and f2fs. |
-| **The BMC on your LAN, and its address** | `turingpi.local` resolves over mDNS on the same segment. |
+| **The BMC on your LAN, and its address** | See the note below on finding it. |
 | **BMC credentials** | Default `root` / `turing`. Authentication is required as of BMC firmware 2.0.0. |
-| **`rasputin-provision`** | From the control-plane repo — generates the cluster's matched set of seed files. |
+| **The `rasputin-provision` tool** | You install this yourself — see below. It generates the cluster's seed files. |
+
+**Finding the BMC's address.** `turingpi.local` resolves over mDNS if your machine is on the
+same network segment. If that name does not resolve for you, look up the BMC's IP in your
+router's DHCP lease list. Everywhere this guide writes `<bmc-ip>`, substitute whichever one
+works for you.
+
+**Installing `rasputin-provision`.** It is not part of the OS image — it runs on *your*
+machine, not on a node. Build it from the control-plane source with
+[Go](https://go.dev/dl/) 1.26 or newer installed:
+
+```bash
+git clone https://github.com/geekdojo/rasputin-control-plane.git
+cd rasputin-control-plane/api
+go build -o ../rasputin-provision ./cmd/rasputin-provision
+cd ..
+```
+
+That leaves a `rasputin-provision` binary in the `rasputin-control-plane` directory. Run it as
+`./rasputin-provision` from there, or copy it somewhere on your `PATH` — the examples below
+write it without a path.
 
 Check your BMC firmware version before starting:
 
 ```bash
-curl -sk -u root:turing "https://<bmc>/api/bmc?opt=get&type=about"
+curl -sk -u root:turing "https://<bmc-ip>/api/bmc?opt=get&type=about"
 ```
 
 This guide was written against 2.3.2 and we left the firmware where it was. There is an open
@@ -54,12 +84,26 @@ One entry for the control plane, one per additional node:
 
 ```bash
 rasputin-provision \
-  --cluster-id turingpi \
-  --node controlplane:tp-cp1 \
-  --node compute:tp-n1 \
-  --ssh-authorized-key-file ~/.ssh/id_ed25519.pub \
-  --out ./matched-sets/turingpi
+  --cluster-id my-cluster \
+  --node controlplane:cp-1 \
+  --node compute:node-1 \
+  --ssh-authorized-key-file ~/.ssh/<your-key>.pub \
+  --out ./my-cluster
 ```
+
+Substitute your own values:
+
+- `--cluster-id` — any short lowercase name for this cluster.
+- `--node <role>:<name>` — one `controlplane` entry, plus one `compute` entry per other node.
+  The names are yours to choose; they are how each node appears in the dashboard.
+- `--ssh-authorized-key-file` — your SSH **public** key, the `.pub` file. If you do not have
+  one, `ssh-keygen -t ed25519` creates a pair; the public half is the `.pub`.
+- `--out` — a directory to write into.
+
+That directory will then contain one `seed-<name>.env` per node — `seed-cp-1.env` and
+`seed-node-1.env` for the example above — plus `controlplane-bus-tokens.json` and a
+`manifest.json` audit record. **Keep the whole directory; the seeds contain join
+credentials.**
 
 The SSH key is load-bearing. Rasputin images bake **no** SSH key of any kind, so without one
 your only way in is the serial console.
@@ -70,12 +114,15 @@ The card is not mounted automatically — and until it is, the BMC will report i
 internal storage, which is misleading if you are checking for free space.
 
 ```bash
-ssh root@<bmc> 'mkdir -p /mnt/sdcard && mount /dev/mmcblk0p1 /mnt/sdcard'
-scp -O rasputin-os-rpi-2026.07.6.img root@<bmc>:/mnt/sdcard/rasputin-rpi.img
+ssh root@<bmc-ip> 'mkdir -p /mnt/sdcard && mount /dev/mmcblk0p1 /mnt/sdcard'
+scp -O rasputin-os-rpi-2026.07.6.img root@<bmc-ip>:/mnt/sdcard/rasputin-rpi.img
 ```
 
-Use the **decompressed** `.img`. About 8 minutes for 3.1 GB. Stage it once — the same file
-flashes every node.
+The `rpi` image downloads as a compressed `.img.xz`, and the BMC needs it **decompressed**.
+Unpack it first — `xz -d rasputin-os-rpi-2026.07.6.img.xz` on Linux or macOS, or 7-Zip on
+Windows — which gives roughly 3.1 GB. Copying it across takes about 8 minutes.
+
+Stage it once: the same file flashes every node.
 
 ## Flash a node
 
@@ -84,11 +131,11 @@ Drive the BMC's REST API directly:
 ```bash
 # node is 0-BASED here: node=0 is slot 1, node=1 is slot 2
 curl -sk -u root:turing \
-  "https://<bmc>/api/bmc?opt=set&type=flash&node=0&file=/mnt/sdcard/rasputin-rpi.img&local=true"
+  "https://<bmc-ip>/api/bmc?opt=set&type=flash&node=0&file=/mnt/sdcard/rasputin-rpi.img&local=true"
 # -> {"handle":<id>}
 
 # poll for progress
-curl -sk -u root:turing "https://<bmc>/api/bmc?opt=get&type=flash"
+curl -sk -u root:turing "https://<bmc-ip>/api/bmc?opt=get&type=flash"
 ```
 
 `local=true` is required — without it the BMC expects an upload body rather than a path it
@@ -115,7 +162,7 @@ Power the node and watch it come up through the BMC's console:
 
 ```bash
 # uart is 0-based too
-curl -sk -u root:turing "https://<bmc>/api/bmc?opt=get&type=uart&node=0"
+curl -sk -u root:turing "https://<bmc-ip>/api/bmc?opt=get&type=uart&node=0"
 ```
 
 You should see:
@@ -136,7 +183,7 @@ command at a time:
 ```bash
 u(){ curl -sk -u root:turing --get \
   --data-urlencode "opt=set" --data-urlencode "type=uart" --data-urlencode "node=0" \
-  --data-urlencode "cmd=$1" "https://<bmc>/api/bmc"; }
+  --data-urlencode "cmd=$1" "https://<bmc-ip>/api/bmc"; }
 
 u "root"; u "rasputin"
 u "mkdir -p /var/lib/rasputin/dropbear && chmod 700 /var/lib/rasputin/dropbear"
@@ -149,14 +196,24 @@ u "chmod 600 /var/lib/rasputin/dropbear/authorized_keys"
 The seed partition is mounted read-write on a running node, so seeding is a copy and a reboot —
 no reflash, no card removal:
 
+Do the control plane first. `<node-ip>` is that node's address on your LAN — find it in your
+router's DHCP leases, or read it off the node's console with the `uart` command above, which
+prints an `IP address:` line at the login prompt.
+
 ```bash
-scp -O ./matched-sets/turingpi/seed-tp-cp1.env \
-  root@<node>:/run/rasputin-seed/rasputin-seed.env
-ssh root@<node> reboot
+scp -O ./my-cluster/seed-cp-1.env \
+  root@<node-ip>:/run/rasputin-seed/rasputin-seed.env
+ssh root@<node-ip> reboot
 ```
 
-Bring up the control plane first, then each compute node. From here it is ordinary Rasputin —
-see [Provisioning & the seed file](/docs/provisioning/).
+The file must be named `rasputin-seed.env` on the node — that is the name firstboot looks for.
+
+Wait for the control plane to come back, then open `https://rasputin.local` and register a
+passkey. Repeat the two commands above for each compute node using its own `seed-<name>.env`;
+they will find the control plane and enroll themselves.
+
+From here it is ordinary Rasputin — see [Provisioning & the seed
+file](/docs/provisioning/).
 
 ## Power control from the dashboard
 
@@ -173,11 +230,13 @@ RASPUTIN_BMC_BACKEND=turingpi
 RASPUTIN_BMC_TURINGPI_ENDPOINT=turingpi.local
 RASPUTIN_BMC_TURINGPI_USER=root
 RASPUTIN_BMC_TURINGPI_PASS=<your-bmc-password>
-RASPUTIN_BMC_TURINGPI_MAP=tp-cp1:1,tp-n1:2
+RASPUTIN_BMC_TURINGPI_MAP=cp-1:1,node-1:2
 RASPUTIN_BMC_TURINGPI_FINGERPRINT=<sha256-of-the-bmc-cert>
 ```
 
-`MAP` is `<node-id>:<slot>`, slots numbered 1–4 as they are on the board.
+`MAP` tells Rasputin which board slot each node sits in: `<node-id>:<slot>`, comma-separated,
+using the node names you chose earlier and the slot numbers printed on the board (1–4). List
+only the slots you have filled.
 
 The fingerprint pins the BMC's TLS certificate. The board presents a self-signed certificate
 minted at the Unix epoch — it has no clock at boot — so it reads as permanently expired and no
@@ -185,7 +244,7 @@ certificate-authority trust can accept it. Pinning the exact certificate is both
 the only thing that works. Get it with:
 
 ```bash
-echo | openssl s_client -connect <bmc>:443 2>/dev/null \
+echo | openssl s_client -connect <bmc-ip>:443 2>/dev/null \
   | openssl x509 -noout -fingerprint -sha256
 ```
 
@@ -207,3 +266,9 @@ Then restart the agent (`systemctl restart rasputin-agent`) and the controls app
   its eMMC or SD card. Keep write-heavy workloads off CM4 nodes.
 - **DHCP leases move.** A node's address is not its identity — reach the cluster by name, and
   the BMC by `turingpi.local`.
+- **There is no RK1 image yet.** Rasputin currently ships images for Raspberry Pi (`rpi`) and
+  x86 (`n100`), so the Turing RK1 module is not supported as a Rasputin node today. It is a
+  genuine build target rather than a refusal — if you would like one, [open an
+  issue](https://github.com/geekdojo/rasputin-os/issues) and tell us. Demand is how we decide
+  what to add next. An RK1 can still sit in a slot running something else; Rasputin's BMC
+  controls work per slot regardless of what is in them.
