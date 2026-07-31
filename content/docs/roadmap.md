@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 13
-reviewed: 2026-07-29
+reviewed: 2026-07-30
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -62,8 +62,14 @@ Pi + N100 cluster and measured — real memory, real time-to-first-delight — b
 as a tile. [Design partners](/#partners) vote on the final set.
 
 **The first hour, hardened.** The setup wizard's three deployment modes validated end to end
-on every major browser and platform, plus an honest hardware buying guide and a living
-validated-devices page per node role, so nobody guesses what to order.
+on every major browser and platform — including Linux desktops, where you sign in with your
+phone or a security key because the desktop itself can't hold a passkey — plus an honest
+hardware buying guide and a living validated-devices page per node role, so nobody guesses
+what to order.
+
+**Your passkey on every device you own.** Add a passkey to the account you already have,
+give it a name, and revoke it when a device goes away — so a new laptop, phone or desktop
+enrolls in seconds instead of leaning on a credential that lives somewhere else.
 
 **Day-2 trust operations.** Rotation and revocation as first-class operations: scheduled
 node-credential rotation, certificate authority rollover with an operator-paced re-trust
@@ -98,5 +104,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-07-29. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-07-30. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
