@@ -62,10 +62,10 @@ Pi + N100 cluster and measured — real memory, real time-to-first-delight — b
 as a tile. [Design partners](/#partners) vote on the final set.
 
 **The first hour, hardened.** The setup wizard's three deployment modes validated end to end
-on every major browser and platform — including Linux desktops, where you sign in with your
-phone or a security key because the desktop itself can't hold a passkey — plus an honest
-hardware buying guide and a living validated-devices page per node role, so nobody guesses
-what to order.
+on every major browser and platform — including Linux desktops, where your passkey comes from
+a password manager, a security key, or your phone rather than from the desktop itself — plus
+an honest hardware buying guide and a living validated-devices page per node role, so nobody
+guesses what to order.
 
 **Your passkey on every device you own.** Add a passkey to the account you already have,
 give it a name, and revoke it when a device goes away — so a new laptop, phone or desktop
