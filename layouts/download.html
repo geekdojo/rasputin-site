@@ -10,6 +10,69 @@
 </section>
 
 <section class="band">
+  <div class="wrap narrow">
+    <h2>Flash it in one command</h2>
+    <p>On macOS or Linux, plug in the first node's microSD card or SSD and paste this into a
+    terminal:</p>
+    <pre class="cmd">curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | sudo bash</pre>
+    <p class="fine"><strong>Review the script without running it</strong> — read it
+    <a href="https://github.com/geekdojo/rasputin-site/blob/main/static/bootstrap.sh">on GitHub</a>
+    (AGPL-3.0, same repo as this site), or read exactly what you'd be running:
+    <code>curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | less</code></p>
+    <p>It asks three questions — which hardware, a name for the node, which SSH key — then
+    downloads the latest stable image, verifies its SHA-256 against the release manifest,
+    flashes the drive (external drives only, behind a typed confirmation), writes your
+    control-plane seed, and reads it back from the medium to prove it landed. Then power the
+    node on and open <code>http://rasputin.local</code> — the first-run wizard registers a
+    passkey and lands you on the dashboard. Under ten minutes, cold start to working cluster.</p>
+    {{ with hugo.Data.releases }}{{ with .os }}{{ with .version }}
+    <p class="fine">The script resolves the current stable release itself — <strong>{{ . }}</strong>
+    at this build — so there is no version to choose and nothing to download by hand.
+    <a href="#images">Prefer the image files, or flashing manually? They're just below.</a></p>
+    {{ end }}{{ end }}{{ end }}
+    <p>&nbsp;</p>
+    <p class="fine">Adding a node to a cluster that's already running? Use the control plane's
+    own <em>Add node</em> wizard instead — it hands you an equivalent one-liner with the node's
+    enrollment seed baked in.</p>
+
+    <details class="manual-flash">
+      <summary>Prefer to flash manually? (Windows, or by hand)</summary>
+      <ol class="steps">
+      <li><strong>Verify.</strong> Check the image's SHA-256 against its
+      <code>manifest.json</code> — the stable URL is
+      <a href="https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json"><code>releases/latest/download/manifest.json</code></a>
+      on each repo (field <code>imageSha256</code>). Authenticity rides on the signature, not on
+      where the file is hosted:
+      <pre class="cmd">curl -fsSLO https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json
+shasum -a 256 rasputin-os-*.img.xz   # compare to imageSha256 in manifest.json</pre></li>
+      <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive.
+      Raspberry Pi Imager (custom image) and balenaEtcher take the compressed files as-is;
+      flashing with <code>dd</code>, decompress first (<code>xz -d</code> for the OS image,
+      <code>gzip -d</code> for the firewall's <code>.img.gz</code>). On Windows, Rufus works
+      too — fair warning: we don't bench-test Windows flashing, so if something's weird,
+      <a href="https://github.com/geekdojo/rasputin-site/issues/new?title=Docs Issue">say so</a>.
+      <span class="fine">macOS + Etcher note: a "validation failed" at the very end is usually
+      benign — macOS auto-mounts the freshly written seed volume and dirties it behind
+      Etcher's back. The write itself succeeded; check the seed file landed and carry on.</span></li>
+      <li><strong>Seed.</strong> Mount the volume labeled <code>RASPUTIN-OS</code> (<code>RASPUTIN-FW</code> on the firewall image) and drop a <code>rasputin-seed.env</code> —
+      a short <code>KEY=value</code> file (<a href="{{ "rasputin-seed.env.example" | relURL }}">copy-exact template</a>;
+      save with Unix <abbr title="line feed">LF</abbr> line endings — the file is read by <code>sh</code>,
+      and stray <code>CR</code>s corrupt the values). For your first node (the control plane) it's three lines:
+      <pre class="seed">RASPUTIN_NODE_ROLE=controlplane
+RASPUTIN_NODE_ID=cp-1
+RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
+      <code>RASPUTIN_NODE_ID</code> names the control plane — any short lowercase name (letters, digits, hyphens) works.
+      Use your own SSH public key and keep the quotes — no key is baked in, yours is the only one.
+      <a href="{{ "docs/provisioning/" | relURL }}">Full seed options →</a></li>
+      <li><strong>Boot.</strong> Power on and open <code>http://rasputin.local</code>. The
+      first-run wizard registers a passkey and lands you on the dashboard — under ten minutes,
+      cold start to working cluster.</li>
+    </ol>
+    </details>
+  </div>
+</section>
+
+<section class="band band-alt" id="images">
   <div class="wrap">
     {{ with hugo.Data.releases }}
     <div class="row-head">
@@ -78,60 +141,6 @@
       <a class="btn btn-primary" href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest">Firewall releases</a>
     </div>
     {{ end }}
-  </div>
-</section>
-
-<section class="band band-alt">
-  <div class="wrap narrow">
-    <h2>Flash it in one command</h2>
-    <p>On macOS or Linux, plug in the first node's microSD card or SSD and paste this into a
-    terminal:</p>
-    <pre class="cmd">curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | sudo bash</pre>
-    <p>It asks three questions — which hardware, a name for the node, which SSH key — then
-    downloads the latest stable image, verifies its SHA-256 against the release manifest,
-    flashes the drive (external drives only, behind a typed confirmation), writes your
-    control-plane seed, and reads it back from the medium to prove it landed. Then power the
-    node on and open <code>http://rasputin.local</code> — the first-run wizard registers a
-    passkey and lands you on the dashboard. Under ten minutes, cold start to working cluster.</p>
-    <p>&nbsp;</p>
-    <p class="fine">Adding a node to a cluster that's already running? Use the control plane's
-    own <em>Add node</em> wizard instead — it hands you an equivalent one-liner with the node's
-    enrollment seed baked in.</p>
-
-    <details class="manual-flash">
-      <summary>Prefer to flash manually? (Windows, or by hand)</summary>
-      <ol class="steps">
-      <li><strong>Verify.</strong> Check the image's SHA-256 against its
-      <code>manifest.json</code> — the stable URL is
-      <a href="https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json"><code>releases/latest/download/manifest.json</code></a>
-      on each repo (field <code>imageSha256</code>). Authenticity rides on the signature, not on
-      where the file is hosted:
-      <pre class="cmd">curl -fsSLO https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json
-shasum -a 256 rasputin-os-*.img.xz   # compare to imageSha256 in manifest.json</pre></li>
-      <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive.
-      Raspberry Pi Imager (custom image) and balenaEtcher take the compressed files as-is;
-      flashing with <code>dd</code>, decompress first (<code>xz -d</code> for the OS image,
-      <code>gzip -d</code> for the firewall's <code>.img.gz</code>). On Windows, Rufus works
-      too — fair warning: we don't bench-test Windows flashing, so if something's weird,
-      <a href="https://github.com/geekdojo/rasputin-site/issues/new?title=Docs Issue">say so</a>.
-      <span class="fine">macOS + Etcher note: a "validation failed" at the very end is usually
-      benign — macOS auto-mounts the freshly written seed volume and dirties it behind
-      Etcher's back. The write itself succeeded; check the seed file landed and carry on.</span></li>
-      <li><strong>Seed.</strong> Mount the volume labeled <code>RASPUTIN-OS</code> (<code>RASPUTIN-FW</code> on the firewall image) and drop a <code>rasputin-seed.env</code> —
-      a short <code>KEY=value</code> file (<a href="{{ "rasputin-seed.env.example" | relURL }}">copy-exact template</a>;
-      save with Unix <abbr title="line feed">LF</abbr> line endings — the file is read by <code>sh</code>,
-      and stray <code>CR</code>s corrupt the values). For your first node (the control plane) it's three lines:
-      <pre class="seed">RASPUTIN_NODE_ROLE=controlplane
-RASPUTIN_NODE_ID=cp-1
-RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
-      <code>RASPUTIN_NODE_ID</code> names the control plane — any short lowercase name (letters, digits, hyphens) works.
-      Use your own SSH public key and keep the quotes — no key is baked in, yours is the only one.
-      <a href="{{ "docs/provisioning/" | relURL }}">Full seed options →</a></li>
-      <li><strong>Boot.</strong> Power on and open <code>http://rasputin.local</code>. The
-      first-run wizard registers a passkey and lands you on the dashboard — under ten minutes,
-      cold start to working cluster.</li>
-    </ol>
-    </details>
   </div>
 </section>
 
