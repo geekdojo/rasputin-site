@@ -10,27 +10,27 @@
 </section>
 
 <section class="band">
-  <div class="wrap narrow">
+  <div class="wrap">
+   <div class="measure">
     <h2>Flash it in one command</h2>
     <p>On macOS or Linux, plug in the first node's microSD card or SSD and paste this into a
     terminal:</p>
     <pre class="cmd">curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | sudo bash</pre>
-    <p class="fine"><strong>Review the script without running it</strong> — read it
-    <a href="https://github.com/geekdojo/rasputin-site/blob/main/static/bootstrap.sh">on GitHub</a>
-    (AGPL-3.0, same repo as this site), or read exactly what you'd be running:
-    <code>curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | less</code></p>
     <p>It asks three questions — which hardware, a name for the node, which SSH key — then
     downloads the latest stable image, verifies its SHA-256 against the release manifest,
     flashes the drive (external drives only, behind a typed confirmation), writes your
     control-plane seed, and reads it back from the medium to prove it landed. Then power the
     node on and open <code>http://rasputin.local</code> — the first-run wizard registers a
     passkey and lands you on the dashboard. Under ten minutes, cold start to working cluster.</p>
+    <p class="fine"><strong>Review the script without running it</strong> — read it
+    <a href="https://github.com/geekdojo/rasputin-site/blob/main/static/bootstrap.sh">on GitHub</a>
+    (AGPL-3.0, same repo as this site), or read exactly what you'd be running:
+    <code>curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | less</code></p>
     {{ with hugo.Data.releases }}{{ with .os }}{{ with .version }}
     <p class="fine">The script resolves the current stable release itself — <strong>{{ . }}</strong>
     at this build — so there is no version to choose and nothing to download by hand.
     <a href="#images">Prefer the image files, or flashing manually? They're just below.</a></p>
     {{ end }}{{ end }}{{ end }}
-    <p>&nbsp;</p>
     <p class="fine">Adding a node to a cluster that's already running? Use the control plane's
     own <em>Add node</em> wizard instead — it hands you an equivalent one-liner with the node's
     enrollment seed baked in.</p>
@@ -69,6 +69,7 @@ RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
       cold start to working cluster.</li>
     </ol>
     </details>
+   </div>
   </div>
 </section>
 

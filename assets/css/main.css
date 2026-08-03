@@ -447,6 +447,20 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 
 /* ---- bootstrap one-liner + manual-flash disclosure (download page) ---- */
 
+/* The one-command section keeps a readable ~720px measure but aligns its LEFT
+   EDGE to the 1060px .wrap grid, so the page has one left edge from the hero
+   down. A centered .wrap.narrow here put a 170px jog directly beneath the hero
+   (hero 127 / one-command 297 / images 127) — the widths were always mixed, but
+   ordering the narrow section first moved the jog to the most visible spot. */
+.measure { max-width: 720px; }
+
+/* The global reset zeroes every margin, so plain <p> has no spacing of its own;
+   this section's rhythm previously came only from .cmd's margin plus a
+   <p>&nbsp;</p> spacer. Give its paragraphs real spacing instead — adjacent
+   margins collapse with .cmd's 14px, so the one-liner keeps its current gap. */
+.measure > p { margin-bottom: 14px; }
+.measure > p:last-of-type { margin-bottom: 0; }
+
 .cmd {
   background: var(--bg);
   border: 1px solid var(--line);
