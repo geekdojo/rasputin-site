@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 13
-reviewed: 2026-07-30
+reviewed: 2026-08-05
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -21,6 +21,14 @@ Two ground rules:
 
 ## Recently shipped
 
+**Cluster identity and discovery on real networks** — `2026.07.9`, 5 Aug 2026. Every
+cluster now takes its own derived name (`<cluster>.local`), so two Rasputins coexist on
+one LAN without a fight — with startup collision detection that surfaces a conflict
+instead of silently misrouting. Discovery gained fallbacks beyond mDNS (the control
+plane's IP and a QR on the trust page; a unicast record served by the firewall), MagicDNS
+names on the mesh, an IP banner on the firewall console, and a single one-command flasher
+that takes a blank drive to a seeded, enrolled node — firewall included.
+
 **A second BMC transport: Turing Pi** — `2026.07.8`, 29 Jul 2026. Power and restart for all
 four slots of a [Turing Pi 2](https://turingpi.com/) over its REST BMC, configured from
 Settings with the board's certificate pinned the first time you see it. Console is
@@ -34,11 +42,6 @@ on the 24-node BitScope rack ([devlog #2](/devlog/002-bitscope-rack-24-nodes/)).
 appear only where a management path actually exists.
 
 ## Now
-
-**Cluster identity and discovery on real networks.** Every cluster gets its own derived
-name, discovery gains fallback paths beyond mDNS, and a re-flashed node finds its control
-plane again unaided. Dogfood-driven — we run two clusters side by side daily, so we hit
-these edges before you do.
 
 **Progressive fleet updates.** Fleet updates move to the pattern you already trust from
 your day job: canary one node, verify, fan out in bounded batches, report per-node results.
@@ -104,5 +107,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-07-30. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-08-05. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
