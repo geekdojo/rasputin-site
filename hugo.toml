@@ -20,6 +20,8 @@ disableKinds = ["taxonomy", "term"]
   docIssueUrl = "https://github.com/geekdojo/rasputin-site/issues/new?title=Docs Issue"
   partnerIssueUrl = "https://github.com/geekdojo/rasputin-control-plane/issues/new?title=design%20partner"
   githubUrl = "https://github.com/geekdojo"
+  # Org-level GitHub Sponsors profile (funds geekdojo; Rasputin is the flagship).
+  sponsorUrl = "https://github.com/sponsors/geekdojo"
   blueskyUrl = "https://bsky.app/profile/hoodoo5x5.bsky.social"
   lemmyUrl = "https://lemmy.world/u/hoodoo5x5"
   mastodonUrl = "https://hachyderm.io/@hoodoo5x5"
