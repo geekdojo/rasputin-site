@@ -447,10 +447,11 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 
 /* ---- bootstrap one-liner + manual-flash disclosure (download page) ---- */
 
-/* The one-command section keeps a readable ~720px measure, LEFT-aligned at the
-   .wrap rail — the same left edge as the hero above it and every home-page
-   section. Margins that work like the home page, not a centered one-off. */
-.measure { max-width: 720px; }
+/* The one-command section reads like the home page's body text: LEFT-aligned at
+   the .wrap rail and capped at the same 52em measure the home sections use
+   (.band-lede / .honest), so BOTH margins line up with the home page rather than
+   ending short on the right. */
+.measure { max-width: 52em; }
 
 /* The global reset zeroes every margin, so plain <p> has no spacing of its own;
    this section's rhythm previously came only from .cmd's margin plus a
