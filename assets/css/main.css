@@ -447,18 +447,15 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 
 /* ---- bootstrap one-liner + manual-flash disclosure (download page) ---- */
 
-/* The one-command section reads like the home page's body text: LEFT-aligned at
-   the .wrap rail and capped at the same 52em measure the home sections use
-   (.band-lede / .honest), so BOTH margins line up with the home page rather than
-   ending short on the right. */
-.measure { max-width: 52em; }
+/* The one-command copy fills the .wrap, so its right edge lines up with the page
+   rail — the nav, the eyebrow, and the images grid below — instead of a narrow
+   measure. .copy is just a rhythm wrapper (no width of its own). */
 
 /* The global reset zeroes every margin, so plain <p> has no spacing of its own;
-   this section's rhythm previously came only from .cmd's margin plus a
-   <p>&nbsp;</p> spacer. Give its paragraphs real spacing instead — adjacent
-   margins collapse with .cmd's 14px, so the one-liner keeps its current gap. */
-.measure > p { margin-bottom: 14px; }
-.measure > p:last-of-type { margin-bottom: 0; }
+   give this section's paragraphs real rhythm (adjacent margins collapse with
+   .cmd's 14px, so the one-liner keeps its gap). */
+.copy > p { margin-bottom: 14px; }
+.copy > p:last-of-type { margin-bottom: 0; }
 
 .cmd {
   background: var(--bg);
