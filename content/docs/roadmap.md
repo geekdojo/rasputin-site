@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 13
-reviewed: 2026-08-05
+reviewed: 2026-08-07
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -20,6 +20,13 @@ Two ground rules:
   checked automatically — if it goes stale, our own CI files an issue against us.
 
 ## Recently shipped
+
+**Security currency, proven on hardware** — `2026.08.1`, 7 Aug 2026. The continuous
+machine — scheduled canary builds and CVE watch on every image — turned into a shipped
+stable: each image moved to its latest upstream base (Buildroot 2025.02.16, OpenWrt
+25.12.5) and the whole cluster was brought up end to end on real hardware before the
+release went out. The update path also gained crash capture on the persistent partition,
+so a rare failure during an A/B update leaves a backtrace to act on instead of a shrug.
 
 **Cluster identity and discovery on real networks** — `2026.07.9`, 5 Aug 2026. Every
 cluster now takes its own derived name (`<cluster>.local`), so two Rasputins coexist on
@@ -107,5 +114,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-08-05. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-08-07. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
