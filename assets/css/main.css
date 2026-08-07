@@ -370,7 +370,7 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 
 /* ---- download page ---- */
 
-.hero-sub { padding: 60px 0 40px; }
+.hero-sub { padding: 60px 0 40px; border-bottom: 0; }
 .hero-sub h1 { font-size: clamp(1.9rem, 4.6vw, 2.8rem); margin-bottom: 16px; }
 
 .dl-grid {
@@ -447,19 +447,15 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 
 /* ---- bootstrap one-liner + manual-flash disclosure (download page) ---- */
 
-/* The one-command section keeps a readable ~720px measure but aligns its LEFT
-   EDGE to the 1060px .wrap grid, so the page has one left edge from the hero
-   down. A centered .wrap.narrow here put a 170px jog directly beneath the hero
-   (hero 127 / one-command 297 / images 127) — the widths were always mixed, but
-   ordering the narrow section first moved the jog to the most visible spot. */
-.measure { max-width: 720px; }
+/* The one-command copy fills the .wrap, so its right edge lines up with the page
+   rail — the nav, the eyebrow, and the images grid below — instead of a narrow
+   measure. .copy is just a rhythm wrapper (no width of its own). */
 
 /* The global reset zeroes every margin, so plain <p> has no spacing of its own;
-   this section's rhythm previously came only from .cmd's margin plus a
-   <p>&nbsp;</p> spacer. Give its paragraphs real spacing instead — adjacent
-   margins collapse with .cmd's 14px, so the one-liner keeps its current gap. */
-.measure > p { margin-bottom: 14px; }
-.measure > p:last-of-type { margin-bottom: 0; }
+   give this section's paragraphs real rhythm (adjacent margins collapse with
+   .cmd's 14px, so the one-liner keeps its gap). */
+.copy > p { margin-bottom: 14px; }
+.copy > p:last-of-type { margin-bottom: 0; }
 
 .cmd {
   background: var(--bg);
