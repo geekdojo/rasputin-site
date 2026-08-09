@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 13
-reviewed: 2026-08-07
+reviewed: 2026-08-09
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -50,6 +50,17 @@ appear only where a management path actually exists.
 
 ## Now
 
+**A real URL for every app.** Install an app and get a proper name with a valid
+certificate — a name like `jellyfin.lan.<cluster>.internal`, not an IP address and a port
+number you have to remember. The cluster runs its own authoritative nameserver for its own
+domain, mints every app a certificate from the cluster's own authority, and stands a
+reverse proxy in front of it on the node where the app actually runs. Apps are reachable
+over the cluster's mesh by default; putting one on the wider LAN is a per-app choice you
+make when you install it. This is working end to end on the bench today — it moves to
+*shipped* here when it lands on a stable release, not before.
+
+## Next
+
 **Progressive fleet updates.** Fleet updates move to the pattern you already trust from
 your day job: canary one node, verify, fan out in bounded batches, report per-node results.
 Release-channel selection moves into the UI; A/B boot with automatic rollback stays the
@@ -60,12 +71,6 @@ analysis and fuzzing on attacker-reachable parsers in CI, a bill of materials fo
 shipped artifact, and tamper/downgrade rejection tests on the signed update chain. It ends
 in an external penetration test and a published hardening guide — before we ask anyone for
 money.
-
-## Next
-
-**A real URL for every app.** Install an app and get a proper name with a valid certificate
-— DNS, reverse proxy and TLS handled by the cluster, with opt-in paths for reaching apps
-beyond the LAN. No port numbers to memorize, no certificate warnings to click through.
 
 **The app catalog earns its launch set.** Every candidate app is deployed on the reference
 Pi + N100 cluster and measured — real memory, real time-to-first-delight — before it ships
@@ -114,5 +119,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-08-07. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-08-09. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
