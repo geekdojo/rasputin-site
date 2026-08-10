@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 13
-reviewed: 2026-08-09
+reviewed: 2026-08-10
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -20,6 +20,15 @@ Two ground rules:
   checked automatically — if it goes stale, our own CI files an issue against us.
 
 ## Recently shipped
+
+**A real URL for every app** — `2026.08.2`, 10 Aug 2026. Install an app and it comes up
+under a proper name with a valid certificate — `jellyfin.lan.<cluster>.internal`, not an IP
+address and a port number to remember. The cluster runs its own authoritative nameserver for
+its own domain, mints every app a certificate from the cluster's own authority, and stands a
+reverse proxy in front of it on the node where the app actually runs. Apps are reachable over
+the cluster's mesh by default; putting one on the wider LAN is a per-app choice you make when
+you install it. With a Rasputin firewall in front, those names resolve across your whole
+network with no setup. Proven end to end on real hardware before the release went out.
 
 **Security currency, proven on hardware** — `2026.08.1`, 7 Aug 2026. The continuous
 machine — scheduled canary builds and CVE watch on every image — turned into a shipped
@@ -50,21 +59,12 @@ appear only where a management path actually exists.
 
 ## Now
 
-**A real URL for every app.** Install an app and get a proper name with a valid
-certificate — a name like `jellyfin.lan.<cluster>.internal`, not an IP address and a port
-number you have to remember. The cluster runs its own authoritative nameserver for its own
-domain, mints every app a certificate from the cluster's own authority, and stands a
-reverse proxy in front of it on the node where the app actually runs. Apps are reachable
-over the cluster's mesh by default; putting one on the wider LAN is a per-app choice you
-make when you install it. This is working end to end on the bench today — it moves to
-*shipped* here when it lands on a stable release, not before.
-
-## Next
-
 **Progressive fleet updates.** Fleet updates move to the pattern you already trust from
 your day job: canary one node, verify, fan out in bounded batches, report per-node results.
 Release-channel selection moves into the UI; A/B boot with automatic rollback stays the
 per-node safety net underneath.
+
+## Next
 
 **Security validation program.** A STRIDE threat model over the whole system, static
 analysis and fuzzing on attacker-reachable parsers in CI, a bill of materials for every
@@ -119,5 +119,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-08-09. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-08-10. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
