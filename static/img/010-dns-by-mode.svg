@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 628" width="760" height="628" role="img" aria-label="How a device resolves DNS in each Rasputin mode. Mode A/C: the firewall's DNS server sends .internal names to the control plane and everything else to the internet, zero-touch. Mode B default: your router handles the internet, but .internal needs a forward to the control plane or you reach the app at its node address and port. Mode B with the forwarding stub: the control plane is your DNS, answers .internal itself, and forwards the rest to the internet.">
+  <style>
+    :root{
+      --bg:#ffffff; --panel:#f7f8fa; --panel-bd:#e2e5ea;
+      --node:#ffffff; --node-bd:#cfd4dc; --node-tx:#1b2026;
+      --muted:#6b7280; --title:#11151a;
+      --net:#8b929c; --net-bd:#c3c9d1;
+      --accent:#f4511e; --accent-bd:#f4511e; --accent-soft:#fdece6;
+      --chip-tx:#ffffff;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#15181d; --panel:#1c2027; --panel-bd:#2b313a;
+        --node:#232830; --node-bd:#3a414c; --node-tx:#e7ebf1;
+        --muted:#9aa2ad; --title:#f1f4f8;
+        --net:#9aa2ad; --net-bd:#3a414c;
+        --accent:#ff6d3f; --accent-bd:#ff6d3f; --accent-soft:#3a251c;
+        --chip-tx:#15181d;
+      }
+    }
+    .t{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+    .title{font-size:20px;font-weight:700;fill:var(--title);}
+    .lead{font-size:12.5px;fill:var(--muted);}
+    .chip{font-size:12px;font-weight:700;fill:var(--chip-tx);}
+    .rownote{font-size:12px;font-weight:600;fill:var(--muted);}
+    .node{font-size:13.5px;font-weight:600;fill:var(--node-tx);}
+    .sub{font-size:11px;fill:var(--muted);}
+    .alab{font-size:11.5px;font-weight:600;fill:var(--accent);}
+    .nlab{font-size:11.5px;font-weight:600;fill:var(--net);}
+    .cap{font-size:11.5px;fill:var(--muted);}
+    .box{fill:var(--node);stroke:var(--node-bd);stroke-width:1.5;}
+    .panel{fill:var(--panel);stroke:var(--panel-bd);stroke-width:1.5;}
+    .cpbox{fill:var(--accent-soft);stroke:var(--accent-bd);stroke-width:1.6;}
+    .netbox{fill:var(--node);stroke:var(--net-bd);stroke-width:1.5;}
+    .aline{stroke:var(--accent);stroke-width:2.2;fill:none;}
+    .nline{stroke:var(--net);stroke-width:2.2;fill:none;}
+    .dline{stroke:var(--node-bd);stroke-width:2.2;fill:none;}
+    .dash{stroke-dasharray:5 4;}
+  </style>
+  <defs>
+    <marker id="aH" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker>
+    <marker id="nH" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--net)"/></marker>
+    <marker id="dH" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--node-bd)"/></marker>
+  </defs>
+
+  <rect x="0" y="0" width="760" height="628" fill="var(--bg)"/>
+  <g class="t">
+    <text x="20" y="30" class="title">How a device finds a name, by mode</text>
+    <!-- legend -->
+    <rect x="20" y="44" width="14" height="10" rx="2" fill="var(--accent)"/>
+    <text x="40" y="53" class="lead">names Rasputin owns (<tspan font-weight="700">.internal</tspan>)</text>
+    <rect x="238" y="44" width="14" height="10" rx="2" fill="var(--net)"/>
+    <text x="258" y="53" class="lead">the internet (everything else)</text>
+
+    <!-- ================= MODE A / C ================= -->
+    <rect x="20" y="74" width="118" height="21" rx="5" fill="var(--accent)"/>
+    <text x="34" y="89" class="chip">MODE A / C</text>
+    <text x="150" y="89" class="rownote">A Rasputin firewall is in the path — zero-touch, you do nothing.</text>
+    <rect x="20" y="102" width="720" height="128" rx="10" class="panel"/>
+    <!-- device -->
+    <rect x="40" y="142" width="112" height="48" rx="8" class="box"/>
+    <text x="96" y="163" text-anchor="middle" class="node">Your device</text>
+    <text x="96" y="179" text-anchor="middle" class="sub">asks its resolver</text>
+    <!-- resolver -->
+    <rect x="252" y="142" width="196" height="48" rx="8" class="box"/>
+    <text x="350" y="162" text-anchor="middle" class="node">Firewall DNS</text>
+    <text x="350" y="178" text-anchor="middle" class="sub">dnsmasq · handed out by DHCP</text>
+    <!-- right nodes -->
+    <rect x="560" y="120" width="180" height="42" rx="8" class="cpbox"/>
+    <text x="650" y="146" text-anchor="middle" class="node">Control plane</text>
+    <rect x="560" y="176" width="180" height="42" rx="8" class="netbox"/>
+    <text x="650" y="202" text-anchor="middle" class="node">The internet</text>
+    <!-- arrows -->
+    <path d="M152 166 L246 166" class="dline" marker-end="url(#dH)"/>
+    <path d="M448 160 L556 143" class="aline" marker-end="url(#aH)"/>
+    <path d="M448 172 L556 197" class="nline" marker-end="url(#nH)"/>
+    <text x="503" y="145" text-anchor="middle" class="alab">.internal</text>
+    <text x="503" y="192" text-anchor="middle" class="nlab">everything else</text>
+
+    <!-- ================= MODE B (default) ================= -->
+    <rect x="20" y="260" width="98" height="21" rx="5" fill="var(--net)"/>
+    <text x="34" y="275" class="chip">MODE B</text>
+    <text x="130" y="275" class="rownote">No firewall — the internet works; .internal is the gap.</text>
+    <rect x="20" y="288" width="720" height="128" rx="10" class="panel"/>
+    <!-- device -->
+    <rect x="40" y="328" width="112" height="48" rx="8" class="box"/>
+    <text x="96" y="349" text-anchor="middle" class="node">Your device</text>
+    <text x="96" y="365" text-anchor="middle" class="sub">asks its resolver</text>
+    <!-- resolver -->
+    <rect x="252" y="328" width="196" height="48" rx="8" class="box"/>
+    <text x="350" y="348" text-anchor="middle" class="node">Your own router</text>
+    <text x="350" y="364" text-anchor="middle" class="sub">unchanged</text>
+    <!-- right nodes -->
+    <rect x="560" y="306" width="180" height="42" rx="8" class="box" stroke-dasharray="5 4"/>
+    <text x="650" y="327" text-anchor="middle" class="node">doesn't know .internal</text>
+    <text x="650" y="341" text-anchor="middle" class="sub">router has no answer</text>
+    <rect x="560" y="362" width="180" height="42" rx="8" class="netbox"/>
+    <text x="650" y="388" text-anchor="middle" class="node">The internet</text>
+    <!-- arrows -->
+    <path d="M152 352 L246 352" class="dline" marker-end="url(#dH)"/>
+    <path d="M448 346 L556 329" class="aline dash" marker-end="url(#aH)"/>
+    <path d="M448 358 L556 383" class="nline" marker-end="url(#nH)"/>
+    <text x="503" y="331" text-anchor="middle" class="alab">.internal</text>
+    <text x="503" y="378" text-anchor="middle" class="nlab">everything else</text>
+    <!-- caption -->
+    <text x="20" y="410" class="cap">To reach an app: add one forward on your router (<tspan font-weight="700">.internal</tspan> → control plane), or open it at its node address and port.</text>
+
+    <!-- ================= MODE B + forwarding stub ================= -->
+    <rect x="20" y="446" width="250" height="21" rx="5" fill="var(--accent)"/>
+    <text x="34" y="461" class="chip">MODE B + FORWARDING STUB</text>
+    <text x="282" y="461" class="rownote">One DNS setting; the control plane does both.</text>
+    <rect x="20" y="474" width="720" height="128" rx="10" class="panel"/>
+    <!-- device -->
+    <rect x="40" y="514" width="112" height="48" rx="8" class="box"/>
+    <text x="96" y="535" text-anchor="middle" class="node">Your device</text>
+    <text x="96" y="551" text-anchor="middle" class="sub">asks its resolver</text>
+    <!-- resolver -->
+    <rect x="252" y="514" width="196" height="48" rx="8" class="cpbox"/>
+    <text x="350" y="534" text-anchor="middle" class="node">Control plane</text>
+    <text x="350" y="550" text-anchor="middle" class="sub">set as your router's DNS</text>
+    <!-- right nodes -->
+    <rect x="560" y="492" width="180" height="42" rx="8" class="cpbox"/>
+    <text x="650" y="513" text-anchor="middle" class="node">answers it here</text>
+    <text x="650" y="527" text-anchor="middle" class="sub">from its own records</text>
+    <rect x="560" y="548" width="180" height="42" rx="8" class="netbox"/>
+    <text x="650" y="569" text-anchor="middle" class="node">forwards upstream</text>
+    <text x="650" y="583" text-anchor="middle" class="sub">→ the internet</text>
+    <!-- arrows -->
+    <path d="M152 538 L246 538" class="dline" marker-end="url(#dH)"/>
+    <path d="M448 532 L556 515" class="aline" marker-end="url(#aH)"/>
+    <path d="M448 544 L556 569" class="nline" marker-end="url(#nH)"/>
+    <text x="503" y="517" text-anchor="middle" class="alab">.internal</text>
+    <text x="503" y="564" text-anchor="middle" class="nlab">everything else</text>
+  </g>
+</svg>
