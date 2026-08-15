@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 13
-reviewed: 2026-08-10
+reviewed: 2026-08-15
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -61,8 +61,9 @@ appear only where a management path actually exists.
 
 **Progressive fleet updates.** Fleet updates move to the pattern you already trust from
 your day job: canary one node, verify, fan out in bounded batches, report per-node results.
-Release-channel selection moves into the UI; A/B boot with automatic rollback stays the
-per-node safety net underneath.
+A failing rollout stops itself rather than marching through your fleet, and a mixed
+Pi-and-x86 cluster updates every node with the right image for its own architecture. A/B
+boot with automatic rollback stays the per-node safety net underneath.
 
 ## Next
 
@@ -105,6 +106,12 @@ restore-before-first-boot path, then real data-disk management for storage-heavy
 **Roles and audit.** Operator/viewer roles enforced on every dangerous action, and an
 audit history of who did what, when.
 
+**Fleet update depth.** The rollout itself comes first; the controls around it follow —
+hold specific nodes back from a fleet-wide update, stop a run you've changed your mind
+about, and choose which release channel a cluster tracks. The batch-size and
+failure-budget defaults get tuned against a larger test fleet than any single cluster
+here can stand in for.
+
 **Rasputin hardware.** A purpose-built appliance is the long game — but the software
 proves itself on commodity hardware first. Everything above runs on gear you can buy
 today, and that stays true.
@@ -119,5 +126,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-08-10. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-08-15. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
