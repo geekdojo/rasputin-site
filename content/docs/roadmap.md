@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 13
-reviewed: 2026-08-16
+reviewed: 2026-08-15
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -65,11 +65,11 @@ appear only where a management path actually exists.
 
 ## Now
 
-**Security validation program.** A STRIDE threat model over the whole system, static
-analysis and fuzzing on attacker-reachable parsers in CI, a bill of materials for every
-shipped artifact, and tamper/downgrade rejection tests on the signed update chain. It ends
-in an external penetration test and a published hardening guide — before we ask anyone for
-money.
+**Security, hardened and proven.** A threat model over the whole system, static analysis
+and fuzzing on attacker-reachable parsers in CI, a bill of materials for every shipped
+artifact, and tamper/downgrade rejection tests on the signed update chain. The work lands
+in the images themselves — the cluster is hardened when it boots, not by a checklist we
+hand you afterwards.
 
 ## Next
 
@@ -126,5 +126,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-08-16. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-08-15. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
