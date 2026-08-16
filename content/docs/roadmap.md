@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 13
-reviewed: 2026-08-15
+reviewed: 2026-08-16
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -20,6 +20,12 @@ Two ground rules:
   checked automatically — if it goes stale, our own CI files an issue against us.
 
 ## Recently shipped
+
+**Fleet updates that behave like a rollout** — `2026.08.3`, 15 Aug 2026. One node updates
+first as a canary and has to come back healthy before the rest follow, a few at a time; a
+failed node is a red cell in a per-node report rather than a wall, and a run going wrong
+stops itself. Mixed Pi and x86 clusters each get the right image, and "update all" now
+includes the node running the control plane.
 
 **A real URL for every app** — `2026.08.2`, 10 Aug 2026. Install an app and it comes up
 under a proper name with a valid certificate — `jellyfin.lan.<cluster>.internal`, not an IP
@@ -59,19 +65,13 @@ appear only where a management path actually exists.
 
 ## Now
 
-**Progressive fleet updates.** Fleet updates move to the pattern you already trust from
-your day job: canary one node, verify, fan out in bounded batches, report per-node results.
-A failing rollout stops itself rather than marching through your fleet, and a mixed
-Pi-and-x86 cluster updates every node with the right image for its own architecture. A/B
-boot with automatic rollback stays the per-node safety net underneath.
-
-## Next
-
 **Security validation program.** A STRIDE threat model over the whole system, static
 analysis and fuzzing on attacker-reachable parsers in CI, a bill of materials for every
 shipped artifact, and tamper/downgrade rejection tests on the signed update chain. It ends
 in an external penetration test and a published hardening guide — before we ask anyone for
 money.
+
+## Next
 
 **The app catalog earns its launch set.** Every candidate app is deployed on the reference
 Pi + N100 cluster and measured — real memory, real time-to-first-delight — before it ships
@@ -106,7 +106,7 @@ restore-before-first-boot path, then real data-disk management for storage-heavy
 **Roles and audit.** Operator/viewer roles enforced on every dangerous action, and an
 audit history of who did what, when.
 
-**Fleet update depth.** The rollout itself comes first; the controls around it follow —
+**Fleet update depth.** The rollout itself has shipped; the controls around it follow —
 hold specific nodes back from a fleet-wide update, stop a run you've changed your mind
 about, and choose which release channel a cluster tracks. The batch-size and
 failure-budget defaults get tuned against a larger test fleet than any single cluster
@@ -126,5 +126,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-08-15. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-08-16. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
