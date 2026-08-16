@@ -21,17 +21,11 @@ Two ground rules:
 
 ## Recently shipped
 
-**Fleet updates that behave like a rollout** — `2026.08.3`, 15 Aug 2026. Updating a cluster
-now follows the pattern you already trust from your day job: one node goes first as a canary,
-it has to come back healthy and prove it is running what you sent, and only then does the rest
-of the fleet update — a few at a time, never all at once. A node that fails is a red cell in a
-per-node report, not a wall that stops everything; a run that starts going wrong stops itself
-rather than marching through your hardware. Mixed clusters are handled properly — a fleet of
-Raspberry Pis and x86 boxes updates every node with the right image for its own architecture,
-with a canary for each. And "update all" now genuinely means all: the node running the control
-plane updates itself, last, and the run reports its own result on the far side of the reboot.
-A/B boot with automatic rollback stays the per-node safety net underneath. Proven on real
-hardware — including deliberately broken updates — before the release went out.
+**Fleet updates that behave like a rollout** — `2026.08.3`, 15 Aug 2026. One node updates
+first as a canary and has to come back healthy before the rest follow, a few at a time; a
+failed node is a red cell in a per-node report rather than a wall, and a run going wrong
+stops itself. Mixed Pi and x86 clusters each get the right image, and "update all" now
+includes the node running the control plane.
 
 **A real URL for every app** — `2026.08.2`, 10 Aug 2026. Install an app and it comes up
 under a proper name with a valid certificate — `jellyfin.lan.<cluster>.internal`, not an IP
