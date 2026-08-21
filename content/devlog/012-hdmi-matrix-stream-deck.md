@@ -1,7 +1,7 @@
 ---
 title: "Some fun - fixing the bench HDMI mess!"
 date: 2026-08-20
-description: Ok, a little bit of fun for this devlog. As I've said before, working with Rasputin takes a lot of hardware of different makes, models, and architectures. Some of the hardware can, at times, be a little cantankerous to bring up. Working with all the various nodes was requiring me to constantly switch back and forth between HDMI inputs and the bench monitor. I really needed an easy way to swap HDMI inputs to the monitor and to manage the cables."
+description: "Ok, a little bit of fun for this devlog. As I've said before, working with Rasputin takes a lot of hardware of different makes, models, and architectures. Some of the hardware can, at times, be a little cantankerous to bring up. Working with all the various nodes was requiring me to constantly switch back and forth between HDMI inputs and the bench monitor. I really needed an easy way to swap HDMI inputs to the monitor and to manage the cables."
 summary: "Ok, a little bit of fun for this devlog. As I've said before, working with Rasputin takes a lot of hardware of different makes, models, and architectures. Some of the hardware can, at times, be a little cantankerous to bring up. Working with all the various nodes was requiring me to constantly switch back and forth between HDMI inputs and the bench monitor. I really needed an easy way to swap HDMI inputs to the monitor and to manage the cables."
 ---
 
