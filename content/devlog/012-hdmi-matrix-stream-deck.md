@@ -1,8 +1,8 @@
 ---
-title: "My HDMI matrix answers at 9600, and returns a status line its manual never mentions"
+title: "Some fun - fixing the bench HDMI mess!"
 date: 2026-08-20
-description: "I wanted to stop reaching behind the bench to swap the monitor between nodes, so a Stream Deck now drives an 8x8 HDMI matrix through a small stdlib-Python daemon over RS232. The manual specifies 115200 and documents no response at all; the unit on my bench runs at 9600 and answers every routing command with its entire crosspoint table. That echo is what lets the daemon verify a switch rather than assume it."
-summary: "I wanted to stop reaching behind the bench to swap the monitor between nodes, so a Stream Deck now drives an 8x8 HDMI matrix through a small stdlib-Python daemon over RS232. The manual specifies 115200 and documents no response at all; the unit on my bench runs at 9600 and answers every routing command with its entire crosspoint table. That echo is what lets the daemon verify a switch rather than assume it."
+description: Ok, a little bit of fun for this devlog. As I've said before, working with Rasputin takes a lot of hardware of different makes, models, and architectures. Some of the hardware can, at times, be a little cantankerous to bring up. Working with all the various nodes was requiring me to constantly switch back and forth between HDMI inputs and the bench monitor. I really needed an easy way to swap HDMI inputs to the monitor and to manage the cables."
+summary: "Ok, a little bit of fun for this devlog. As I've said before, working with Rasputin takes a lot of hardware of different makes, models, and architectures. Some of the hardware can, at times, be a little cantankerous to bring up. Working with all the various nodes was requiring me to constantly switch back and forth between HDMI inputs and the bench monitor. I really needed an easy way to swap HDMI inputs to the monitor and to manage the cables."
 ---
 
 Ok, a little bit of fun for this devlog. As I've said before, working with 
