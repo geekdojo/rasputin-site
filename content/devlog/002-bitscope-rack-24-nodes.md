@@ -72,8 +72,4 @@ There's a 21-second time-lapse of the grid filling up from 1 node to 24 at
 the top of this post — the UTC clock in the header ticking through the real
 hour is the only editing trick.
 
-*Rasputin is an open-source (AGPL) homelab cluster system — a control plane,
-node OS, and firewall image that make a few Raspberry Pis or N100 boxes behave
-like one appliance. It's pre-alpha, on
-[GitHub](https://github.com/geekdojo/rasputin-control-plane), and I'm looking for a
-handful of [design partners](/#partners) to run it and tell me what's broken.*
+{{< devlog-footer >}}

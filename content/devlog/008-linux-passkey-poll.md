@@ -100,8 +100,4 @@ hatches everywhere.
 couple of angles I hadn't considered — which is exactly why I joined Hachyderm
 in the first place. Huge thanks to the folks at Hachyderm.
 
-*Rasputin is an open-source (AGPL) homelab cluster system — a control plane,
-node OS, and firewall image that make a few Raspberry Pis or N100 boxes behave
-like one appliance. It's pre-alpha, on
-[GitHub](https://github.com/geekdojo/rasputin-control-plane), and I'm looking for a
-handful of [design partners](/#partners) to run it and tell me what's broken.*
+{{< devlog-footer >}}

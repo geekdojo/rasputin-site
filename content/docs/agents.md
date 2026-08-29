@@ -16,7 +16,7 @@ Read https://rasputin.geekdojo.com/llms.txt and
 https://rasputin.geekdojo.com/docs/agents/index.md, then help me install
 Rasputin. Plan the flash with RASPUTIN_DRY_RUN=1 first and show me the plan;
 only write to a disk after I confirm. My first node's hardware is:
-<Raspberry Pi 4/5/CM5, or an Intel N100 / amd64 box>.
+<a Raspberry Pi, or a UEFI amd64 box — name the exact model>.
 ```
 
 Or skip the prompt: this contract ships packaged as an agent skill in
@@ -50,7 +50,7 @@ an agent can drive it deterministically:
 
 | Variable | Meaning |
 | --- | --- |
-| `RASPUTIN_ARCH` | Target hardware: `arm64` (Raspberry Pi 4/5/CM5) or `amd64` (Intel N100 / any amd64 box). |
+| `RASPUTIN_ARCH` | Target hardware: `arm64` (a Raspberry Pi) or `amd64` (any UEFI amd64 box). See [supported hardware](../hardware/). |
 | `RASPUTIN_NODE_ID` | Control-plane node id (default `cp-1`). Short lowercase name: letters, digits, hyphens. |
 | `RASPUTIN_SSH_AUTHORIZED_KEY` | Your SSH **public** key line. Or set `RASPUTIN_SSH_KEY_FILE` to a `.pub` path instead. |
 | `RASPUTIN_RELEASE` | Pin a release tag. Default: latest stable. |

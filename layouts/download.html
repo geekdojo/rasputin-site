@@ -151,8 +151,10 @@ RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
     <ul class="honest">
       <li><strong>It's pre-alpha.</strong> Image layouts and update formats still change without
       notice. Don't put it in front of a network you care about — yet.</li>
-      <li><strong>Two supported targets.</strong> Raspberry Pi 4 / 5 / CM5 (arm64) and Intel
-      N100 / amd64 for nodes; an N100 box for the firewall. Everything else is community territory.</li>
+      <li><strong>Nodes: a Raspberry Pi, or any UEFI amd64 box.</strong> The firewall is
+      narrower — a separate x86-only image, with an Intel N100 box as the reference target.
+      <a href="{{ "docs/hardware/" | relURL }}">Supported hardware</a> lists what has actually
+      been booted, and what is only expected to work.</li>
       <li><strong>There is nothing to buy.</strong> Rasputin runs on hardware you already own,
       and the software is AGPL-3.0 — free, no paywall, no open core.</li>
       <li><strong>These images are for first flashes.</strong> A running cluster updates itself:

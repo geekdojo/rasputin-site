@@ -1,7 +1,8 @@
 # Rasputin
 
-> Open-source homelab cluster system: Raspberry Pi and Intel N100 nodes plus a dedicated
-> firewall node, managed from one web UI. Flash a card, boot, open http://rasputin.local.
+> Open-source homelab cluster system: nodes are a Raspberry Pi or any UEFI amd64 box, plus
+> a dedicated x86 firewall node, managed from one web UI. Flash a card, boot, open
+> http://rasputin.local. Tested hardware: https://rasputin.geekdojo.com/docs/hardware/
 > Pre-alpha, AGPL-3.0 — image layouts and update formats still change without notice.
 {{ with hugo.Data.releases }}
 Current stable: Rasputin OS {{ .os.version }} · firewall {{ .firewall.version }}.

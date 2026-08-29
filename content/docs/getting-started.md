@@ -10,9 +10,10 @@ and we want it filed.
 
 ## What you need
 
-- **A first node** — Raspberry Pi 4, Pi 5, or CM5 (arm64), or an Intel N100 / any amd64
-  mini-PC. This one becomes the **control plane**: the web UI and API your browser talks
-  to. More nodes can follow later; one is enough to start.
+- **A first node** — a Raspberry Pi, or any UEFI amd64 box. This one becomes the
+  **control plane**: the web UI and API your browser talks to. More nodes can follow
+  later; one is enough to start. See [supported hardware](../hardware/) for what has
+  actually been booted, and what is only expected to work.
 - **Storage for it** — a microSD card, NVMe, or USB drive to flash.
 - **A wired network with DHCP** — the boring kind you already have. (IPv4 only, by design.)
 - **A computer to flash from** — macOS or Linux for the one-command path; Windows works
