@@ -83,8 +83,4 @@ part that has to survive. I'll re-run the audit in September and report the numb
 either way — if it's back above fifty I'd rather publish that than quietly do the
 cleanup again.
 
-*Rasputin is an open-source (AGPL) homelab cluster system — a control plane,
-node OS, and firewall image that make a few Raspberry Pis or N100 boxes behave
-like one appliance. It's pre-alpha, on
-[GitHub](https://github.com/geekdojo/rasputin-control-plane), and I'm looking for a
-handful of [design partners](/#partners) to run it and tell me what's broken.*
+{{< devlog-footer >}}

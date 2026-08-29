@@ -1,0 +1,41 @@
+{{/*
+  Renders the hardware matrix from data/hardware.yaml.
+  Page copy states the category; this states the models. Edit the data file,
+  never this template, to add hardware.
+*/}}
+
+<h2 id="nodes">Nodes</h2>
+<table>
+  <thead>
+    <tr><th>Hardware</th><th>Arch</th><th>Status</th><th>Where that comes from</th></tr>
+  </thead>
+  <tbody>
+    {{ range hugo.Data.hardware.nodes }}
+    <tr>
+      <td><strong>{{ .name }}</strong></td>
+      <td><code>{{ .arch }}</code></td>
+      <td>{{ partial "hardware-status.html" .status }}</td>
+      <td>{{ .evidence }}</td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+
+<h2 id="carriers">Carrier boards</h2>
+<p>Multi-node carriers Rasputin has been run on, and whether it drives their
+baseboard management controller.</p>
+<table>
+  <thead>
+    <tr><th>Carrier</th><th>BMC backend</th><th>Status</th><th>Where that comes from</th></tr>
+  </thead>
+  <tbody>
+    {{ range hugo.Data.hardware.carriers }}
+    <tr>
+      <td><strong>{{ .name }}</strong><br><span class="muted">{{ .detail }}</span></td>
+      <td><code>{{ .backend }}</code><br><span class="muted">{{ .transport }}</span></td>
+      <td>{{ partial "hardware-status.html" .status }}</td>
+      <td>{{ .evidence }}{{ with .note }}<br><span class="muted">{{ . }}</span>{{ end }}</td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>

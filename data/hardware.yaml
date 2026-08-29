@@ -1,0 +1,62 @@
+# Single source of truth for every hardware claim on this site.
+#
+# Prose says the CATEGORY ("a Raspberry Pi, or any UEFI amd64 box"); this file
+# says the MATRIX. Add a row here and every surface updates — never put model
+# numbers back into page copy, or they rot in a dozen places at once.
+#
+# status:
+#   tested   — booted and run on real hardware. `evidence` says where.
+#   expected — should work by construction, never validated. Say so plainly.
+
+nodes:
+  - name: Raspberry Pi 4
+    arch: arm64
+    status: tested
+    evidence: 23 compute nodes in a BitScope ER24A rack, OS 2026.07.2-dev.101
+
+  - name: Raspberry Pi 5
+    arch: arm64
+    status: tested
+    evidence: Control-plane node, provisioned 2026-07-07
+
+  - name: Compute Module 4
+    arch: arm64
+    status: tested
+    evidence: 2 nodes on a Turing Pi 2, stock OS 2026.07.6, no image changes
+
+  - name: Compute Module 5
+    arch: arm64
+    status: expected
+    evidence: Same SoC as the Pi 5, and its device tree ships in the image — but
+      no CM5 has ever been booted. Treat it as untested.
+
+  - name: LattePanda Mu + Lite Carrier
+    arch: amd64
+    status: tested
+    evidence: Primary development bench
+
+  - name: CWWK x86-p5-n100
+    arch: amd64
+    status: tested
+    evidence: Firewall reference hardware
+
+# Multi-node carrier boards, and whether Rasputin drives their BMC.
+carriers:
+  - name: BitScope ER24A Edge Rack
+    detail: Six CB04B cluster blades, 24 Raspberry Pi slots
+    backend: bitscope
+    transport: RS-485 serial, one manager reaches all 24
+    status: tested
+    evidence: 23 nodes enrolled in 44 minutes; 24/24 online in 121 seconds.
+      Power and serial-over-LAN.
+    note: BitScope has been dormant for years — this is validation evidence, not
+      a buying recommendation.
+
+  - name: Turing Pi 2
+    detail: Four compute-module slots, board rev 2.5.1, BMC firmware 2.3.2
+    backend: turingpi
+    transport: REST over HTTPS with certificate pinning, mDNS discovery
+    status: tested
+    evidence: Two CM4 nodes provisioned and running. Power and serial-over-LAN
+      are implemented against this board's API; driving them from the control
+      plane on hardware is not yet verified.

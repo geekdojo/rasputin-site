@@ -55,8 +55,4 @@ catches it; the mirror that would end it is still on the backlog.
 the day the repos went public. This was the worst one. If you find another,
 file it.
 
-*Rasputin is an open-source (AGPL) homelab cluster system — a control plane,
-node OS, and firewall image that make a few Raspberry Pis or N100 boxes behave
-like one appliance. It's pre-alpha, on
-[GitHub](https://github.com/geekdojo/rasputin-control-plane), and I'm looking for a
-handful of [design partners](/#partners) to run it and tell me what's broken.*
+{{< devlog-footer >}}

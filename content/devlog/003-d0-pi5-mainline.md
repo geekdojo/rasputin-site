@@ -69,8 +69,4 @@ Pi 5 PCIe is off by default). Two days end to end, most of it diagnosis.
 requirement — current-stepping boards don't exist in mainline's device trees.
 Test on the hardware your users will buy, not the revision you already own.
 
-*Rasputin is an open-source (AGPL) homelab cluster system — a control plane,
-node OS, and firewall image that make a few Raspberry Pis or N100 boxes behave
-like one appliance. It's pre-alpha, on
-[GitHub](https://github.com/geekdojo/rasputin-control-plane), and I'm looking for a
-handful of [design partners](/#partners) to run it and tell me what's broken.*
+{{< devlog-footer >}}

@@ -3,7 +3,7 @@
   <div class="wrap">
     <p class="eyebrow">Pre-alpha · AGPL-3.0 · runs on hardware you already own</p>
     <h1>The homelab cluster<br>that works in the <span class="accent">first hour</span>.</h1>
-    <p class="lede">Rasputin turns a few Raspberry Pis or Intel N100 mini-PCs into one managed
+    <p class="lede">Rasputin turns a few Raspberry Pis or amd64 boxes into one managed
     system: a web control plane, a node OS with atomic updates and automatic rollback, and a
     dedicated firewall node. Opinionated where you want guidance, open where you want control —
     and every line of it is open source. No paywall, no open core.</p>
@@ -97,9 +97,10 @@
       prevention at 1&nbsp;Gbps line rate, so Rasputin runs detection in tap mode and doesn't
       pretend otherwise.</li>
       <li><strong>IPv4-only, by design.</strong> IPv6 is disabled across the whole stack.</li>
-      <li><strong>There is nothing to buy.</strong> Rasputin runs on a Pi 4/5, CM5, or any
-      N100/amd64 box you already own. Down the road geekdojo plans purpose-built hardware for
-      it — the software stays free either way.</li>
+      <li><strong>There is nothing to buy.</strong> Rasputin runs on a Raspberry Pi, or any
+      UEFI amd64 box you already own — see <a href="{{ "docs/hardware/" | relURL }}">supported
+      hardware</a> for what has actually been booted and what hasn't. Down the road geekdojo
+      plans purpose-built hardware for it — the software stays free either way.</li>
       <li><strong>Every download is verifiable.</strong> Each release ships a manifest with
       SHA-256 checksums for every artifact.</li>
     </ul>
@@ -112,7 +113,7 @@
     <div class="partner-cols">
       <div class="card">
         <h3>The ask</h3>
-        <p>Run Rasputin on your own hardware — a Raspberry Pi 4/5, CM5, or an Intel N100
+        <p>Run Rasputin on your own hardware — a Raspberry Pi, or any UEFI amd64
         box — for two weeks or more, and tell us in writing what's broken and what's
         missing. That's it. Blunt feedback is the valuable kind.</p>
       </div>

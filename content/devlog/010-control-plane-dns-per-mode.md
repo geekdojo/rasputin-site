@@ -109,8 +109,4 @@ modes truly zero-touch is still owed before the first stable release, and the
 forwarder's hardening is part of a later security-review pass. Expect this to
 tighten as that review runs.
 
-*Rasputin is an open-source (AGPL) homelab cluster system — a control plane,
-node OS, and firewall image that make a few Raspberry Pis or N100 boxes behave
-like one appliance. It's pre-alpha, on
-[GitHub](https://github.com/geekdojo/rasputin-control-plane), and I'm looking for a
-handful of [design partners](/#partners) to run it and tell me what's broken.*
+{{< devlog-footer >}}
