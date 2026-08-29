@@ -57,6 +57,7 @@ carriers:
     backend: turingpi
     transport: REST over HTTPS with certificate pinning, mDNS discovery
     status: tested
-    evidence: Two CM4 nodes provisioned and running. Power and serial-over-LAN
-      are implemented against this board's API; driving them from the control
-      plane on hardware is not yet verified.
+    evidence: Two CM4 nodes provisioned and running, and power control driven
+      from the control plane against the board itself. Shipped 2026.07.6.
+    note: Serial-over-LAN is declined on purpose — this board exposes no console
+      the backend can honestly serve, so it errors rather than faking one.
