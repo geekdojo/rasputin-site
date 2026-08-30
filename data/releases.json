@@ -1,34 +1,34 @@
 {
-  "generated": "2026-08-10",
+  "generated": "2026-08-30",
   "os": {
-    "version": "2026.08.2",
-    "releaseUrl": "https://github.com/geekdojo/rasputin-os/releases/tag/2026.08.2",
+    "version": "2026.08.4",
+    "releaseUrl": "https://github.com/geekdojo/rasputin-os/releases/tag/2026.08.4",
     "latestUrl": "https://github.com/geekdojo/rasputin-os/releases/latest",
     "images": [
       {
         "label": "Raspberry Pi 4 / 5 / CM5",
         "arch": "arm64",
-        "name": "rasputin-os-rpi-2026.08.2.img.xz",
-        "url": "https://github.com/geekdojo/rasputin-os/releases/download/2026.08.2/rasputin-os-rpi-2026.08.2.img.xz"
+        "name": "rasputin-os-rpi-2026.08.4.img.xz",
+        "url": "https://github.com/geekdojo/rasputin-os/releases/download/2026.08.4/rasputin-os-rpi-2026.08.4.img.xz"
       },
       {
         "label": "Intel N100 / any amd64 box",
         "arch": "amd64",
-        "name": "rasputin-os-n100-2026.08.2.img.xz",
-        "url": "https://github.com/geekdojo/rasputin-os/releases/download/2026.08.2/rasputin-os-n100-2026.08.2.img.xz"
+        "name": "rasputin-os-n100-2026.08.4.img.xz",
+        "url": "https://github.com/geekdojo/rasputin-os/releases/download/2026.08.4/rasputin-os-n100-2026.08.4.img.xz"
       }
     ]
   },
   "firewall": {
-    "version": "2026.08.2",
-    "releaseUrl": "https://github.com/geekdojo/rasputin-openwrt-firewall/releases/tag/2026.08.2",
+    "version": "2026.08.4",
+    "releaseUrl": "https://github.com/geekdojo/rasputin-openwrt-firewall/releases/tag/2026.08.4",
     "latestUrl": "https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest",
     "images": [
       {
         "label": "Intel N100 firewall (x86-64)",
         "arch": "amd64",
-        "name": "rasputin-fw-n100-2026.08.2-ab.img.gz",
-        "url": "https://github.com/geekdojo/rasputin-openwrt-firewall/releases/download/2026.08.2/rasputin-fw-n100-2026.08.2-ab.img.gz"
+        "name": "rasputin-fw-n100-2026.08.4-ab.img.gz",
+        "url": "https://github.com/geekdojo/rasputin-openwrt-firewall/releases/download/2026.08.4/rasputin-fw-n100-2026.08.4-ab.img.gz"
       }
     ]
   }
