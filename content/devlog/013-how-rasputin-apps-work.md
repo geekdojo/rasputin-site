@@ -160,8 +160,4 @@ backup nobody has restored is not a backup. I'm holding all of it until after
 alpha so the catalog goes first, and when the backup job lands with that restore
 proven, that's the line I'll call beta.
 
-*Rasputin is an open-source (AGPL) homelab cluster system — a control plane,
-node OS, and firewall image that make a few Raspberry Pis or N100 boxes behave
-like one appliance. It's alpha, on
-[GitHub](https://github.com/geekdojo/rasputin-control-plane), and I'm looking for a
-handful of [design partners](/#partners) to run it and tell me what's broken.*
+{{< devlog-footer >}}
