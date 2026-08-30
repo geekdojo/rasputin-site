@@ -169,7 +169,7 @@ Two steps are deliberately human-only:
 | Seed didn't take; first boot waits forever | The seed must be named `rasputin-seed.env`, at the **root** of the FAT volume labeled `RASPUTIN-OS` — go by label, not size; the Pi image has several FAT partitions. The SSH key line must be double-quoted. |
 | First hour took more than an hour | That's a bug by definition. [File it](https://github.com/geekdojo/rasputin-control-plane/issues) — blunt reports are the valuable kind. |
 
-It's pre-alpha: image layouts and update formats still change without notice, and this
+It's alpha: image layouts and update formats still change without notice, and this
 contract can change with them — re-read this page rather than caching it. Something wrong
 or missing here blocks *every* agent-driven install, so
 [docs bugs count double](https://github.com/geekdojo/rasputin-site/issues/new?title=Docs%20Issue).

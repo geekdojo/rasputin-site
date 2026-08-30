@@ -33,7 +33,7 @@ during an outage. If you don't see CONSOLE on a board, the table below says why.
 | **Turing Pi 2 / 2.5** | Yes | Use the board's own — [why](#why-the-turing-pi-has-no-console) | Over the board's REST API. Needs BMC firmware 2.0.0+. [Setting one up](#setting-up-a-turing-pi-2). |
 | **BitScope CB04B blades** | Yes | Yes, full character mode | Over the rack's serial control bus. [Setting one up](#setting-up-a-bitscope-rack). |
 
-Other hardware is not supported yet. Rasputin is pre-alpha and the list is short on
+Other hardware is not supported yet. Rasputin is alpha and the list is short on
 purpose — each entry is a driver we run on our own bench, not a spec we read.
 
 ## Turning it on
