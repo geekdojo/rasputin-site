@@ -21,6 +21,12 @@ Two ground rules:
 
 ## Recently shipped
 
+**The app catalog earns its launch set** — `2026.08.4`, 30 Aug 2026. Sixteen apps ship as a
+benched launch set, each one deployed and checked on the reference Pi + N100 cluster before
+release, and new apps now arrive on their own — signed and verified — without you flashing
+anything. Apps with no web page, like a game server, are first-class: they install and get a
+name on your network instead of pretending to have a page to open.
+
 **Fleet updates that behave like a rollout** — `2026.08.3`, 15 Aug 2026. One node updates
 first as a canary and has to come back healthy before the rest follow, a few at a time; a
 failed node is a red cell in a per-node report rather than a wall, and a run going wrong
@@ -73,10 +79,6 @@ hand you afterwards.
 
 ## Next
 
-**The app catalog earns its launch set.** Every candidate app is deployed on the reference
-Pi + N100 cluster and measured — real memory, real time-to-first-delight — before it ships
-as a tile. [Design partners](/#partners) vote on the final set.
-
 **The first hour, hardened.** The setup wizard's three deployment modes validated end to end
 on every major browser and platform — including Linux desktops, where your passkey comes from
 a password manager, a security key, or your phone rather than from the desktop itself — plus
@@ -126,5 +128,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-08-15. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-08-30. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
