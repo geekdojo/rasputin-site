@@ -42,6 +42,13 @@ is empty the page shows a GitHub-watch/RSS fallback instead of the form.
 hugo server
 ```
 
+## AI-assisted development
+
+This project is developed by a human maintainer working with AI coding assistants;
+AI-assisted commits carry `Co-Authored-By` trailers naming the model. Per-process levels:
+[AI-DECLARATION.md](AI-DECLARATION.md). Approach, accountability, and provenance:
+[AI_DISCLOSURE.md](AI_DISCLOSURE.md).
+
 ## License
 
 Site content © geekdojo, [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/).
