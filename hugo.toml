@@ -6,7 +6,7 @@ enableRobotsTXT = true
 disableKinds = ["taxonomy", "term"]
 
 [params]
-  description = "Rasputin is an open-source homelab cluster system: a Raspberry Pi or any UEFI amd64 box, plus a dedicated firewall node, managed from one web UI — opinionated where you want guidance, open where you want control, and built to work in the first hour."
+  description = "Rasputin is an open-source homelab cluster system: Raspberry Pis and UEFI amd64 boxes in any combination, plus an optional firewall node, managed from one web UI — opinionated where you want guidance, open where you want control, and built to work in the first hour."
   # Kit (ConvertKit) form ID — leave empty to show the GitHub-watch fallback
   # instead of the email form. Set it and the form goes live; nothing else to do.
   kitFormId = "9667090"
