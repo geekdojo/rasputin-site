@@ -16,11 +16,13 @@
     <p>On macOS or Linux, plug in the first node's microSD card or SSD and paste this into a
     terminal:</p>
     <pre class="cmd">curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | sudo bash</pre>
-    <p>It asks three questions — which hardware, a name for the node, which SSH key — then
+    <p>It asks four questions — which hardware, a name for the cluster, a name for the node,
+    which SSH key — then
     downloads the latest stable image, verifies its SHA-256 against the release manifest,
     flashes the drive (external drives only, behind a typed confirmation), writes your
     control-plane seed, and reads it back from the medium to prove it landed. Then power the
-    node on and open <code>http://rasputin.local</code> — the first-run wizard registers a
+    node on and open <code>http://&lt;your-cluster&gt;.local</code> (<code>http://rasputin.local</code>
+    if you kept the default name) — the first-run wizard registers a
     passkey and lands you on the dashboard. Under ten minutes, cold start to working cluster.</p>
     <p class="fine"><strong>Review the script without running it</strong> — read it
     <a href="https://github.com/geekdojo/rasputin-site/blob/main/static/bootstrap.sh">on GitHub</a>
@@ -57,14 +59,19 @@ shasum -a 256 rasputin-os-*.img.xz   # compare to imageSha256 in manifest.json</
       <li><strong>Seed.</strong> Mount the volume labeled <code>RASPUTIN-OS</code> (<code>RASPUTIN-FW</code> on the firewall image) and drop a <code>rasputin-seed.env</code> —
       a short <code>KEY=value</code> file (<a href="{{ "rasputin-seed.env.example" | relURL }}">copy-exact template</a>;
       save with Unix <abbr title="line feed">LF</abbr> line endings — the file is read by <code>sh</code>,
-      and stray <code>CR</code>s corrupt the values). For your first node (the control plane) it's three lines:
+      and stray <code>CR</code>s corrupt the values). For your first node (the control plane) it's four lines:
       <pre class="seed">RASPUTIN_NODE_ROLE=controlplane
+RASPUTIN_CLUSTER_ID=rasputin
 RASPUTIN_NODE_ID=cp-1
 RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
-      <code>RASPUTIN_NODE_ID</code> names the control plane — any short lowercase name (letters, digits, hyphens) works.
+      <code>RASPUTIN_CLUSTER_ID</code> names the <em>cluster</em> — you browse it at
+      <code>https://&lt;name&gt;.local</code>, and it's fixed for the life of the installation, so set it
+      here or not at all. Leave it <code>rasputin</code> unless a second Rasputin cluster might share
+      your network. <code>RASPUTIN_NODE_ID</code> names <em>this box</em> within that cluster — any short
+      lowercase name (letters, digits, hyphens) works for either.
       Use your own SSH public key and keep the quotes — no key is baked in, yours is the only one.
       <a href="{{ "docs/provisioning/" | relURL }}">Full seed options →</a></li>
-      <li><strong>Boot.</strong> Power on and open <code>http://rasputin.local</code>. The
+      <li><strong>Boot.</strong> Power on and open <code>http://&lt;your-cluster&gt;.local</code>. The
       first-run wizard registers a passkey and lands you on the dashboard — under ten minutes,
       cold start to working cluster.</li>
     </ol>

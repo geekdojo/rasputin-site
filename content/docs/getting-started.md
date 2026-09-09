@@ -31,13 +31,14 @@ On macOS or Linux, plug the first node's card or drive into your computer and ru
 curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | sudo bash
 ```
 
-It asks three questions — which hardware, a name for the node, which SSH key — then
+It asks four questions — which hardware, a name for the cluster, a name for the node, which
+SSH key — then
 downloads the latest stable image, verifies its SHA-256 against the release manifest,
 flashes the drive (external drives only, behind a typed confirmation), writes your
 control-plane seed, and reads it back from the medium to prove it landed.
 
 On Windows, or if you'd rather do each step by hand: grab an image from the
-[Download page](/download/), verify it, flash it, and drop a three-line
+[Download page](/download/), verify it, flash it, and drop a four-line
 `rasputin-seed.env` on the volume labeled `RASPUTIN-OS` — the
 [manual steps](/download/) and the full
 [seed-file reference](/docs/provisioning/) cover it.
@@ -48,8 +49,10 @@ override, including a no-write dry run. The whole contract is on
 
 ## 2. Boot and sign in
 
-Slot the card, connect ethernet, power on, and open <http://rasputin.local> from any
-machine on the same network. You land on a **trust page** first: your cluster generates
+Slot the card, connect ethernet, power on, and open `http://<your-cluster>.local` from any
+machine on the same network — that's <http://rasputin.local> unless you named the cluster
+something else when you flashed it. (The rest of this page writes `rasputin.local`; substitute
+your own name throughout if you chose one.) You land on a **trust page** first: your cluster generates
 its own certificate authority, and this page hands it to you per-OS — a profile link for
 iPhones and iPads, a one-line `curl` for laptops, Windows steps — with a
 proceed-past-the-browser-warning escape hatch if you'd rather skip it. Then **Continue

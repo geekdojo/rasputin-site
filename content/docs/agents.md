@@ -45,12 +45,13 @@ and image URLs.
 
 ## Non-interactive install
 
-`bootstrap.sh` prompts a human for three things; every prompt has an env-var override, so
+`bootstrap.sh` prompts a human for four things; every prompt has an env-var override, so
 an agent can drive it deterministically:
 
 | Variable | Meaning |
 | --- | --- |
 | `RASPUTIN_ARCH` | Target hardware: `arm64` (a Raspberry Pi) or `amd64` (any UEFI amd64 box). See [supported hardware](../hardware/). |
+| `RASPUTIN_CLUSTER_ID` | Cluster name (default `rasputin`). Becomes `https://<name>.local`, the WebAuthn RP ID, and the `<name>.internal` DNS zone — **fixed for the life of the installation**, so set it deliberately. Short lowercase name: letters, digits, hyphens. Two clusters that both take the default collide on `rasputin.local`. |
 | `RASPUTIN_NODE_ID` | Control-plane node id (default `cp-1`). Short lowercase name: letters, digits, hyphens. |
 | `RASPUTIN_SSH_AUTHORIZED_KEY` | Your SSH **public** key line. Or set `RASPUTIN_SSH_KEY_FILE` to a `.pub` path instead. |
 | `RASPUTIN_RELEASE` | Pin a release tag. Default: latest stable. |
@@ -66,13 +67,13 @@ flow, in order:
 ```sh
 # 1. Preflight — no writes, prove the plan to the user first.
 curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | sudo \
-  RASPUTIN_ARCH=arm64 RASPUTIN_NODE_ID=cp-1 \
+  RASPUTIN_ARCH=arm64 RASPUTIN_CLUSTER_ID=rasputin RASPUTIN_NODE_ID=cp-1 \
   RASPUTIN_SSH_KEY_FILE=$HOME/.ssh/id_ed25519.pub \
   RASPUTIN_DRY_RUN=1 bash
 
 # 2. Flash — same command, dry-run swapped for the confirmed target disk.
 curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | sudo \
-  RASPUTIN_ARCH=arm64 RASPUTIN_NODE_ID=cp-1 \
+  RASPUTIN_ARCH=arm64 RASPUTIN_CLUSTER_ID=rasputin RASPUTIN_NODE_ID=cp-1 \
   RASPUTIN_SSH_KEY_FILE=$HOME/.ssh/id_ed25519.pub \
   RASPUTIN_DISK=/dev/disk4 RASPUTIN_ASSUME_YES=1 bash
 ```
