@@ -41,3 +41,19 @@ jobs:
         # --gc surfaces dangling references; a broken ref/relref or template
         # error makes hugo exit non-zero, failing the gate.
         run: hugo --minify --gc
+
+  # bootstrap.sh is served verbatim from static/ and is the first thing a new
+  # operator runs as root, so it gets a gate of its own. The seed it writes is a
+  # CONTRACT shared with rasputin-provision and the control plane's Add-Node
+  # wizard; a dropped field there boots a healthy-looking node under the wrong
+  # cluster name (control-plane #71), which no build step would ever notice.
+  bootstrap-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax
+        run: bash -n static/bootstrap.sh
+      - name: Seed contract and prompts
+        # Drives the real script under a pty — `ask()` reads /dev/tty so that the
+        # prompts survive `curl … | sudo bash`, and only a pty exercises that.
+        run: python3 test/bootstrap_test.py

@@ -9,18 +9,19 @@ weight: 10
 Your first node runs the **control plane** (the web UI + API). Flash the [OS image](/download/), then:
 
 1. Plug the flashed card or drive into your computer and mount the volume labeled **`RASPUTIN-OS`** — the small FAT seed partition. Go by the label, not size: the Pi image has several FAT partitions.
-2. Create a file named `rasputin-seed.env` at its root with three lines:
+2. Create a file named `rasputin-seed.env` at its root with four lines:
 
    ```
    RASPUTIN_NODE_ROLE=controlplane
+   RASPUTIN_CLUSTER_ID=rasputin
    RASPUTIN_NODE_ID=cp-1
    RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"
    ```
 
    (Copy-exact template: [rasputin-seed.env.example](/rasputin-seed.env.example).)
 
-   `RASPUTIN_NODE_ID` names the control plane on the fleet — any short lowercase name works (`cp-1`, `home-cp`). Use your own SSH **public** key, and keep the double quotes — the file is read by `sh` and the key contains spaces.
-3. Boot the node and open <http://rasputin.local>. The first-run wizard registers a passkey and lands you on the dashboard.
+   `RASPUTIN_CLUSTER_ID` names the **cluster** — you browse it at `https://<name>.local`, and it is fixed for the life of the installation, so set it now or leave it `rasputin` forever. `RASPUTIN_NODE_ID` names **this box** within that cluster — any short lowercase name works for either (`cp-1`, `home-cp`). Use your own SSH **public** key, and keep the double quotes — the file is read by `sh` and the key contains spaces.
+3. Boot the node and open `http://<your-cluster>.local` (<http://rasputin.local> if you kept the default). The first-run wizard registers a passkey and lands you on the dashboard.
 
 That's the whole happy path. The first control plane self-initializes against its own embedded NATS — it needs no join token or NATS URL, just its role, an id, and your key.
 
@@ -32,6 +33,7 @@ That's the whole happy path. The first control plane self-initializes against it
 | --- | --- | --- |
 | `RASPUTIN_NODE_ROLE` | **all** | `controlplane` or `compute`. Required — first boot waits for it. (The firewall node runs the separate OpenWrt image, not this one.) |
 | `RASPUTIN_SSH_AUTHORIZED_KEY` | all | Your SSH **public** key for `root`, **double-quoted**. The image bakes no key, so this is the only way in over the network — leave it blank and SSH is unusable (the local console still works). One key line. |
+| `RASPUTIN_CLUSTER_ID` | **all** | Names the cluster, and with it the name you browse (`https://<cluster>.local`), the WebAuthn RP ID your passkeys bind to, the NATS URL nodes dial, and the `<cluster>.internal` DNS zone the control plane serves. Optional; blank → `rasputin`. **Fixed at provision time** — renaming a live cluster is not supported, so a new name means re-provisioning every node. Set it if a second Rasputin cluster might ever share the network: two clusters that both take the default collide on `rasputin.local`. |
 | `RASPUTIN_NODE_ID` | **all** | Names the node on the fleet. **Required on the control plane** — a control-plane seed without it stops first boot with an error, since the control plane's identity must be stable. On a compute node it's optional and defaults to the hardware serial; the Add-Node flow and `rasputin-provision` assign it and bind the join token to it. |
 | `RASPUTIN_NTP_SERVER` | all | Optional NTP server to pin (host or IP; **double-quote** a space-separated list). Only needed to force a homelab-local time server — see [Time sync](#time-sync). |
 | `RASPUTIN_NATS_URL` | compute | The control plane's NATS URL. The **first** control plane self-inits against its own embedded NATS and doesn't need this. |

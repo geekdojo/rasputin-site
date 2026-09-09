@@ -37,6 +37,9 @@
 # Env knobs (all optional — the script prompts for anything missing):
 #   RASPUTIN_ARCH            target CPU arch: arm64 (Raspberry Pi 4/5/CM5) or
 #                            amd64 (Intel N100 / any amd64 box)
+#   RASPUTIN_CLUSTER_ID      cluster name — the mDNS name you browse
+#                            (https://<name>.local), the WebAuthn RP ID, and the
+#                            <name>.internal DNS zone (default: rasputin)
 #   RASPUTIN_NODE_ID         control-plane node id (default: cp-1)
 #   RASPUTIN_SSH_AUTHORIZED_KEY  your SSH public key line ("ssh-ed25519 AAAA… you@laptop")
 #   RASPUTIN_SSH_KEY_FILE    path to a .pub file to read the key from
@@ -62,6 +65,12 @@ ask()  { # ask <prompt> ; reads from the terminal even under `curl | bash`
 	printf '%s' "$__v"
 }
 have() { command -v "$1" >/dev/null 2>&1; }
+# One DNS label per RFC 1123: lowercase alphanumerics and hyphens, starting AND
+# ending alphanumeric, 1-63 characters. Both names this script collects become
+# hostname labels — the cluster name is also a TLS SAN and the WebAuthn RP ID
+# (`<cluster>.local`), and a node is addressable at `<node>.<cluster>.internal` —
+# so a trailing hyphen is not merely untidy, it is an uncertifiable host.
+valid_label() { printf '%s' "$1" | grep -Eq '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$'; }
 
 OS="$(uname -s)"
 case "$OS" in
@@ -94,16 +103,42 @@ if [ -z "$ARCH" ]; then
 fi
 case "$ARCH" in arm64|amd64) ;; *) die "RASPUTIN_ARCH must be arm64 or amd64 (got '$ARCH')." ;; esac
 
-# --- 2. node id -----------------------------------------------------------------
+# --- 2. cluster name ------------------------------------------------------------
+# The cluster's name is its identity for the life of the installation: the mDNS
+# name you browse (`https://<cluster>.local`), the WebAuthn RP ID every passkey
+# binds to, the NATS URL each node dials, the Headscale server_url, and the
+# `<cluster>.internal` zone the control plane serves DNS for. It is fixed at
+# provision time and renaming a live cluster is unsupported (ADR-0003) — which is
+# exactly why the question belongs here, while nothing has been committed yet.
+# The `rasputin` default keeps the zero-config path intact for the common case of
+# one cluster on a LAN.
+CLUSTER_ID="${RASPUTIN_CLUSTER_ID:-}"
+if [ -z "$CLUSTER_ID" ]; then
+	say ""
+	say "${BLD}What should this cluster be called?${RST}"
+	say "  You'll browse it at https://<name>.local, and the name is fixed for the life"
+	say "  of the installation — changing it later means re-provisioning every node."
+	say "  Press Enter for ${BLD}rasputin${RST}; pick a name if a second Rasputin cluster"
+	say "  might ever share this network."
+	say ""
+	CLUSTER_ID="$(ask "Cluster name [rasputin]: ")"
+	[ -n "$CLUSTER_ID" ] || CLUSTER_ID="rasputin"
+fi
+valid_label "$CLUSTER_ID" \
+	|| die "cluster name '$CLUSTER_ID' — use one DNS label: lowercase letters, digits and hyphens, starting and ending with a letter or digit, 63 characters or fewer (e.g. home1)."
+
+# --- 3. node id -----------------------------------------------------------------
+# This names the BOX, not the cluster: it is how this control plane appears in the
+# node list and at `<node>.<cluster>.internal`. Most people never change it.
 NODE_ID="${RASPUTIN_NODE_ID:-}"
 if [ -z "$NODE_ID" ]; then
-	NODE_ID="$(ask "Name this control plane [cp-1]: ")"
+	NODE_ID="$(ask "Name this control-plane node, as it appears in the cluster [cp-1]: ")"
 	[ -n "$NODE_ID" ] || NODE_ID="cp-1"
 fi
-printf '%s' "$NODE_ID" | grep -Eq '^[a-z0-9][a-z0-9-]*$' \
-	|| die "node id '$NODE_ID' — use short lowercase letters, digits, and hyphens (e.g. cp-1)."
+valid_label "$NODE_ID" \
+	|| die "node id '$NODE_ID' — use one DNS label: lowercase letters, digits and hyphens, starting and ending with a letter or digit, 63 characters or fewer (e.g. cp-1)."
 
-# --- 3. SSH public key ------------------------------------------------------------
+# --- 4. SSH public key ------------------------------------------------------------
 # No key is baked into public images (by design); the seed's key is the only way
 # in. Sources, in order: env, key file, the invoking user's ~/.ssh, paste.
 invoker_home() {
@@ -144,7 +179,7 @@ if [ -z "$SSH_KEY" ]; then
 fi
 valid_pubkey "$SSH_KEY" || die "that doesn't look like an SSH public key (expected something like 'ssh-ed25519 AAAA… you@laptop')."
 
-# --- 4. resolve the image from the latest public stable release -------------------
+# --- 5. resolve the image from the latest public stable release -------------------
 # releases/latest/download/<asset> follows GitHub's redirect to the newest
 # STABLE release (prereleases excluded) — no API call, no token, no rate limit.
 if [ -n "${RASPUTIN_RELEASE:-}" ]; then
@@ -170,7 +205,7 @@ IMG_SHA="$(pluck imageSha256 "$ART")"
 	|| die "the release manifest didn't parse (version='$IMG_VERSION' image='$IMG_NAME') — file a bug at github.com/${REPO_OWNER}/${OS_REPO}."
 IMG_URL="$GH_DL/download/${IMG_VERSION}/${IMG_NAME}"
 
-info "First node ${BLD}${NODE_ID}${RST} (controlplane) → Rasputin OS ${BLD}${IMG_VERSION}${RST} (${ARCH})"
+info "Cluster ${BLD}${CLUSTER_ID}${RST} — first node ${BLD}${NODE_ID}${RST} (controlplane) → Rasputin OS ${BLD}${IMG_VERSION}${RST} (${ARCH})"
 
 # --- pick the target disk -----------------------------------------------------
 # list_disks prints one "<device>\t<size>\t<model>" line per candidate.
@@ -233,7 +268,8 @@ fi
 DISK_DESC="$(list_disks | awk -F'\t' -v d="$DISK" '$1==d{print $2"  "$3}')"
 say ""
 warn "About to ${BLD}ERASE ALL DATA${RST}${YEL} on ${BLD}${DISK}${RST}${YEL}  ${DISK_DESC}${RST}"
-say   "        and flash Rasputin OS ${IMG_VERSION}, seeded as ${NODE_ID} (controlplane)."
+say   "        and flash Rasputin OS ${IMG_VERSION}, seeded as ${NODE_ID} (controlplane)"
+say   "        in cluster ${BLD}${CLUSTER_ID}${RST} — reachable at ${BLD}https://${CLUSTER_ID}.local${RST}."
 if [ "${RASPUTIN_DRY_RUN:-}" = "1" ]; then info "DRY RUN — stopping before any write. Disk=$DISK Image=$IMG_URL"; exit 0; fi
 if [ "${RASPUTIN_ASSUME_YES:-}" != "1" ]; then
 	short="$(basename "$DISK")"
@@ -302,6 +338,7 @@ info "Seed volume: ${PART} (RASPUTIN-OS)"
 
 # --- write the seed onto the seed FAT, then READ IT BACK ----------------------
 SEED="RASPUTIN_NODE_ROLE=controlplane
+RASPUTIN_CLUSTER_ID=$CLUSTER_ID
 RASPUTIN_NODE_ID=$NODE_ID
 RASPUTIN_SSH_AUTHORIZED_KEY=\"$SSH_KEY\"
 "
@@ -358,6 +395,6 @@ if [ "$OS" = "Darwin" ]; then diskutil eject "$DISK" >/dev/null 2>&1 || true; el
 	sync; have udisksctl && udisksctl power-off -b "$DISK" >/dev/null 2>&1 || true
 fi
 say ""
-info "${GRN}${BLD}Done.${RST} Flashed Rasputin OS ${IMG_VERSION}, seeded as ${NODE_ID} (controlplane)."
+info "${GRN}${BLD}Done.${RST} Flashed Rasputin OS ${IMG_VERSION}, seeded as ${NODE_ID} (controlplane) in cluster ${BLD}${CLUSTER_ID}${RST}."
 say   "      Seat the disk in the node and power it on. In a minute or two, open"
-say   "      ${BLD}http://rasputin.local${RST} — the first-run wizard takes it from there."
+say   "      ${BLD}http://${CLUSTER_ID}.local${RST} — the first-run wizard takes it from there."
