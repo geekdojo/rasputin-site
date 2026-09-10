@@ -115,7 +115,7 @@ treatment either way — a hand-written stack is not a second-class citizen.
 
 ## The catalog
 
-![The Rasputin app catalog: sixteen tiles grouped into collections, with the catalog version, tile count and last-checked time above the grid.](./media/013-app-catalog.png)
+![The Rasputin app catalog: sixteen tiles grouped into collections, with the catalog version, tile count and last-checked time above the grid.](/img/013-app-catalog.png)
 
 A tile is a template — a `tile.json` and a `docker-compose.yml` per app, every
 image pinned by digest. Until this week the catalog was compiled into the
