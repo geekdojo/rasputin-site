@@ -169,6 +169,11 @@ Two things worth knowing:
   new one starts, so a `Done` you did not just cause means no job started — not success.
 - **Power only the node you are flashing.** With two modules enumerating, slot-targeted USB
   operations fail with `Several supported devices found`.
+- **The progress counter runs twice.** `bytes_written` climbs to the image size, then **resets to
+  zero and climbs again**: the BMC writes the image and then reads it back to verify, both under
+  the one `handle`. Treating that reset as a failed restart — or treating a full counter as
+  completion — misreads a healthy flash. Wait for `Done`, which reports the elapsed seconds and
+  the byte count together, e.g. `{"Done":[{"secs":994,...},3288336384]}`.
 
 Expect roughly 17 minutes per node.
 
@@ -217,6 +222,16 @@ u "chmod 600 /var/lib/rasputin/dropbear/authorized_keys"
 The seed partition is mounted read-write on a running node, so seeding is a copy and a reboot —
 no reflash, and nothing to remove from the board.
 
+That holds for a node that has **not** finished provisioning — which is exactly the state the
+console error above reports, and why it is safe. When firstboot does complete, it stamps
+`/var/lib/rasputin/.provisioned`, and its systemd unit runs only while that marker is *absent*
+(`ConditionPathExists=!/var/lib/rasputin/.provisioned`). So **copying a new seed onto a node that
+has already provisioned does nothing** — no error, no re-read, no change, and the node keeps the
+cluster it joined the first time. Moving a working node to a different cluster is therefore not a
+copy-and-reboot: flash it again from the steps above and seed it fresh. Reflashing is also what
+clears `/var/lib/rasputin`, which still holds the previous cluster's identity, its mesh trust and
+any app volumes that lived on that node.
+
 Do the control plane first. `<node-ip>` is that node's address on your LAN — find it in your
 router's DHCP leases, or read it off the node's console with the `uart` command above, which
 prints an `IP address:` line at the login prompt.
@@ -229,8 +244,11 @@ ssh root@<node-ip> reboot
 
 The file must be named `rasputin-seed.env` on the node — that is the name firstboot looks for.
 
-Wait for the control plane to come back, then open `https://rasputin.local` and register a
-passkey. Repeat the two commands above for each compute node using its own `seed-<name>.env`;
+Wait for the control plane to come back, then open **`https://<cluster-id>.local`** — for the
+example above, `https://my-cluster.local` — and register a passkey. A cluster answers to the name
+you gave `--cluster-id`, not to a fixed `rasputin.local`; that name is also its WebAuthn identity,
+which is why two clusters on one LAN need different ones. A cluster provisioned with no
+`--cluster-id` takes the default name `rasputin` and answers `https://rasputin.local`. Repeat the two commands above for each compute node using its own `seed-<name>.env`;
 they will find the control plane and enroll themselves.
 
 From here it is ordinary Rasputin — see [Provisioning & the seed
