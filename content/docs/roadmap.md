@@ -2,7 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 13
-reviewed: 2026-08-15
+reviewed: 2026-09-10
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -20,6 +20,12 @@ Two ground rules:
   checked automatically — if it goes stale, our own CI files an issue against us.
 
 ## Recently shipped
+
+**Backups that survive losing the box** — `2026.08.5`, 10 Sep 2026. Point the cluster at a USB
+disk or a second NVMe and it backs itself up on a schedule: the control plane's identity and
+your apps' data, media libraries aside, sealed so the disk is useless to anyone without your
+passphrase or recovery code. After a reflash, the setup wizard finds that disk and brings the
+cluster back as it was, and any app's data can be restored on its own from that app's page.
 
 **The app catalog earns its launch set** — `2026.08.4`, 30 Aug 2026. Sixteen apps ship as a
 benched launch set, each one deployed and checked on the reference Pi + N100 cluster before
@@ -102,9 +108,6 @@ the out-of-box experience — pre-built dashboards per node role and sensible de
 **Firewall depth.** Deterministic rule ordering and priorities, live WAN status in the
 UI, and intrusion-detection rules that update independently of image releases.
 
-**Storage and backup.** Scheduled cluster backup to an external disk with a
-restore-before-first-boot path, then real data-disk management for storage-heavy nodes.
-
 **Roles and audit.** Operator/viewer roles enforced on every dangerous action, and an
 audit history of who did what, when.
 
@@ -128,5 +131,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-08-30. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-09-10. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
