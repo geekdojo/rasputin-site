@@ -5,7 +5,7 @@
   <div class="wrap narrow">
     <p class="post-date muted"><a href="{{ "learn/" | relURL }}">Learn</a> › {{ $e.topicTitle }} ›</p>
     <h1>{{ $e.title }}</h1>
-    <p class="post-date muted">{{ humanize $e.level }} · about {{ $e.minutes }} minutes · lab: {{ $e.lab }}</p>
+    <p class="post-date muted">{{ humanize $e.level }} · about {{ $e.minutes }} minutes · {{ partial "learn-lab-label.html" $e.lab }}</p>
     {{ with $e.prereqs }}
     <p class="muted">Before this: {{ range $i, $id := . }}{{ if $i }}, {{ end }}{{ with index (where site.RegularPages "Params.lesson" $id) 0 }}{{ $pe := partial "learn-lesson.html" . }}<a href="{{ .RelPermalink }}">{{ $pe.title }}</a>{{ end }}{{ end }}.</p>
     {{ end }}
@@ -16,7 +16,7 @@
       {{ end }}
     {{ end }}
     {{ with $tracks }}
-    <p class="muted">In {{ cond (eq (len .) 1) "the track" "the tracks" }}: {{ range $i, $t := . }}{{ if $i }}, {{ end }}<a href="{{ "learn/" | relURL }}#{{ $t.id }}">{{ humanize $t.id }}</a>{{ end }}.</p>
+    <p class="muted">In {{ cond (eq (len .) 1) "the track" "the tracks" }}: {{ range $i, $t := . }}{{ if $i }}, {{ end }}<a href="{{ "learn/" | relURL }}#{{ $t.id }}">{{ $t.title }}</a>{{ end }}.</p>
     {{ end }}
     <div class="prose">
       {{ .Content }}

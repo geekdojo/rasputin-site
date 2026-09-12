@@ -181,6 +181,11 @@ itself, whichever server you name.
 
 ## Where to go next
 
-- **Intermediate — names you cannot change:** why a name used across a whole system becomes
-  permanent, and what giving up renaming bought.
-- **Names with no DNS server:** mDNS and `.local` names, which need a local network to try.
+- **Which name to use where:** [What the mesh gives you](https://rasputin.geekdojo.com/docs/the-mesh/#names-and-which-one-to-use-where),
+  in Rasputin's manual, shows both name forms and which network each one answers on.
+- **A nameserver for your whole network:** the
+  [Network DNS setting](https://rasputin.geekdojo.com/docs/settings/#network-dns) explains what
+  Rasputin's nameserver answers and what it passes on to the internet.
+- **The code:** the nameserver's
+  [source](https://github.com/geekdojo/rasputin-control-plane/tree/v2026.08.5/api/internal/nameserver)
+  in the public `rasputin-control-plane` repository.

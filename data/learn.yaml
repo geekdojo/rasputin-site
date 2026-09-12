@@ -41,14 +41,18 @@ lessons:
 # intermediates, then the advanced lessons of the topics in `advanced`.
 tracks:
   - id: network-engineer
+    title: Network engineer
     topics: [system-shape, engineering-records, names, firewalls, overlay-networks, certificates, intrusion-detection, monitoring]
     advanced: [names, overlay-networks]
   - id: software-developer
+    title: Software developer
     topics: [system-shape, engineering-records, changing-state, messaging, compatibility, passkeys, version-numbers, ci-gates]
     advanced: [changing-state, messaging, compatibility]
   - id: devops
+    title: DevOps
     topics: [system-shape, engineering-records, version-numbers, ci-gates, signing, updates, provisioning]
     advanced: [signing, updates, provisioning]
   - id: operations
+    title: Operations
     topics: [system-shape, engineering-records, provisioning, monitoring, updates, backup, certificates]
     advanced: [provisioning, updates, backup]

@@ -38,6 +38,11 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- range hugo.Data.learn.tracks -}}
+  {{- if not .title -}}
+    {{- errorf "learn: data/learn.yaml track %q has no `title:` — pages render the track name from it" .id -}}
+  {{- end -}}
+{{- end -}}
 {{- range $pages -}}
   {{- $page := . -}}
   {{- with .Params.lesson -}}

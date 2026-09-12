@@ -209,5 +209,10 @@ be undone, so check you typed `version-lab`.
 
 ## Where to go next
 
-- **Intermediate — choosing a scheme:** why Rasputin chose calendar versions over semantic ones,
-  and what its version number stopped telling you as a result.
+- **Versions in a running system:** [Know whether an update worked](https://rasputin.geekdojo.com/docs/know-whether-an-update-worked/),
+  in Rasputin's manual, shows how an update checks the version a machine reports after it
+  installs one.
+- **The code:** the ordering rule in
+  [`version.go`](https://github.com/geekdojo/rasputin-control-plane/blob/v2026.08.5/api/internal/releases/version.go)
+  in the public `rasputin-control-plane` repository.
+- **Real version labels:** Rasputin's [releases page](https://github.com/geekdojo/rasputin-os/releases).

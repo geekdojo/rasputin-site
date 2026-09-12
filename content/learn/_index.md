@@ -1,6 +1,6 @@
 ---
 title: "Learn"
-description: "Lessons on how systems like Rasputin work: one idea per lesson, practised in a folder of your own, with Rasputin as the worked example."
+description: "Lessons on how systems like Rasputin work: one idea per lesson, practised on your own computer, with Rasputin as the worked example."
 outputs:
   - html
 cascade:
@@ -10,7 +10,8 @@ cascade:
 ---
 
 Each lesson teaches one idea you can use anywhere, and uses Rasputin as the real example. The labs
-run on your own computer, in a folder you make for the lesson. None of them needs Rasputin hardware,
+run on your own computer. In some you build something in a folder you make for the lesson; in
+others you ask public systems a question and read the reply. None of them needs Rasputin hardware,
 Rasputin code or an account.
 
 A lesson is written for one reader: **beginner** (new to the field), **intermediate** (knows the
