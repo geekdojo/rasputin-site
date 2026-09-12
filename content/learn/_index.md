@@ -1,6 +1,6 @@
 ---
 title: "Learn"
-description: "Lessons on how systems like Rasputin work: one idea per lesson, practised on your own computer, with Rasputin as the worked example."
+description: "Lessons on how systems like Rasputin work: one idea per lesson, practiced on your own computer, with Rasputin as the worked example."
 outputs:
   - html
 cascade:
