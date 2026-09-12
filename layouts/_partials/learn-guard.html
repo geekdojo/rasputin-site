@@ -18,8 +18,8 @@
   {{- if not (where hugo.Data.learn.topics "id" (index $parts 0)) -}}
     {{- errorf "learn: data/learn.yaml lesson %q names topic %q, which is not under `topics:`" .id (index $parts 0) -}}
   {{- end -}}
-  {{- if not (in (slice "build" "observe") .lab) -}}
-    {{- errorf "learn: data/learn.yaml lesson %q has lab %q; it must be build or observe" .id .lab -}}
+  {{- if not (in (slice "build" "observe" "none") .lab) -}}
+    {{- errorf "learn: data/learn.yaml lesson %q has lab %q; it must be build, observe or none" .id .lab -}}
   {{- end -}}
   {{- $matches := where $pages "Params.lesson" .id -}}
   {{- if eq (len $matches) 0 -}}
