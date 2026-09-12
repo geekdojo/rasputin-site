@@ -2,6 +2,7 @@
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 111
+applies-to: "evergreen"
 reviewed: 2026-09-10
 ---
 

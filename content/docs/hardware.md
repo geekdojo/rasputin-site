@@ -2,6 +2,7 @@
 title: "Supported hardware"
 description: "What Rasputin runs on, what has actually been booted, and what is only expected to work."
 weight: 20
+applies-to: "evergreen"
 layout: hardware
 ---
 

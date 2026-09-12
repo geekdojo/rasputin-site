@@ -1,0 +1,20 @@
+{{- /* The reader-facing line naming the Rasputin release a docs page or lesson
+     was written for. Pass the page's `applies-to` value: front matter on a
+     docs page, the lesson's entry in data/learn.yaml for a lesson. Returns
+     plain text so the HTML pages and the raw-markdown mirrors say the same
+     thing.
+
+     It states the stamp and nothing else. It deliberately does not compare
+     the stamp against the current stable release and never tells a reader a
+     page is out of date: staleness goes to the issue queue
+     (.github/workflows/docs-freshness.yml), not onto the live page.
+
+     The build guards (layouts/docs/list.html for docs, learn-guard.html for
+     lessons) fail on a missing or malformed stamp, so the value is always a
+     CalVer release or "evergreen" by the time it gets here. */ -}}
+{{- $v := . -}}
+{{- $text := printf "Written for Rasputin %s" $v -}}
+{{- if eq $v "evergreen" -}}
+  {{- $text = "Not tied to one Rasputin release" -}}
+{{- end -}}
+{{- return $text -}}

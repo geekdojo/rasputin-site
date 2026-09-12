@@ -1,0 +1,109 @@
+name: docs-freshness
+
+# Staleness canary for the docs (content/docs/) and the lessons (content/learn/).
+#
+# Every docs page and every lesson carries `applies-to:` — the Rasputin release
+# it was written for (front matter on a docs page; the lesson's entry in
+# data/learn.yaml for a lesson). Readers see it as "Written for Rasputin <x>".
+# Once a week this compares every stamp against the latest STABLE rasputin-os
+# release and files ONE issue listing each page written for a release that is
+# too old, updates that issue in place on later runs, and closes it when nothing
+# is stale — the same shape as roadmap-freshness and downloads-freshness.
+#
+# Compared at the CalVer MINOR (YYYY.MM), never the micro, and only once a page
+# is 2 or more minors behind. Micro releases land about weekly: a micro-level
+# comparison would re-open the issue on every cut, and a canary that fires
+# every week is one nobody reads. One minor of lag is free on purpose — the day
+# a new minor is cut every page in the tree is one behind, and alarming on that
+# says nothing. Two behind means a page has gone a whole cycle without anyone
+# re-stamping it. `applies-to: "evergreen"` pages are never reported.
+#
+# THE HONEST LIMIT: this notices a page's version stamp ageing. It cannot notice
+# that the prose inside a page has become wrong — a renamed control, a changed
+# default, a removed feature still described, a step that now needs a
+# confirmation. A page stamped for the current release can be wrong, and a page
+# two minors behind can be perfectly right. Catching wrong prose is a different
+# mechanism. This canary is a reminder that lands in the triage queue, not a
+# verifier: bumping stamps without re-reading the pages turns it into a no-op.
+#
+# Current stable comes from the same place downloads-freshness gets it: the
+# GitHub releases API for rasputin-os (/releases/latest excludes prereleases),
+# not the site's own data/releases.json, so a break in fetch-releases.sh cannot
+# silently blind this canary too. If it will not resolve, the run skips rather
+# than false-alarms.
+#
+# Deliberately NOT triggered by a release publish and never blocks a release:
+# site deploys are separate from release publishes, and a docs stamp is not a
+# reason to hold a firmware cut. It polls on a schedule instead.
+#
+# Run the comparison by hand: scripts/docs-freshness.sh 2026.08.5
+
+on:
+  schedule:
+    - cron: "29 9 * * 4" # Thursdays — Mon is roadmap-freshness, Tue is downloads-freshness
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OWNER: geekdojo
+      MINORS_BEHIND: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Ensure the label exists
+        run: gh label create docs-freshness --repo "$GITHUB_REPOSITORY" --color BFDADC --description "Docs or lessons written for a release 2+ minors behind the latest stable" --force || true
+
+      - name: Compare every page's applies-to against the latest stable release
+        run: |
+          set -uo pipefail
+
+          # Latest STABLE rasputin-os tag — /releases/latest excludes prereleases.
+          stable=$(gh api "repos/${OWNER}/rasputin-os/releases/latest" -q .tag_name 2>/dev/null || true)
+          if [ -z "$stable" ]; then
+            echo "could not resolve the latest stable release — skipping this run"
+            exit 0
+          fi
+
+          # Exit 2 means the tag was not CalVer: this run can't judge, don't false-alarm.
+          if ! stale=$(bash scripts/docs-freshness.sh "$stable"); then
+            echo "::warning::scripts/docs-freshness.sh could not judge against '${stable}' — skipping this run"
+            exit 0
+          fi
+
+          count=$(printf '%s' "$stale" | grep -c . || true)
+          echo "latest stable ${stable}: ${count} page(s) ${MINORS_BEHIND}+ minors behind"
+
+          EXISTING=$(gh issue list --repo "$GITHUB_REPOSITORY" --label docs-freshness --state open --json number --jq '.[0].number // empty')
+
+          if [ "$count" -eq 0 ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue close "$EXISTING" --repo "$GITHUB_REPOSITORY" --comment "No docs page or lesson is ${MINORS_BEHIND} or more minors behind stable \`${stable}\` any more."
+            fi
+            exit 0
+          fi
+
+          TITLE="Docs freshness: ${count} page(s) written for a release ${MINORS_BEHIND}+ minors behind ${stable}"
+          BODY=$(printf '%s\n' \
+            "These pages are stamped \`applies-to:\` a release ${MINORS_BEHIND} or more CalVer minors older than the latest stable, \`${stable}\`. Worst first:" \
+            "" \
+            "$stale" \
+            "" \
+            "For each page: re-read it against \`${stable}\`, fix what changed, and bump its stamp in the same PR — a docs page's \`applies-to:\` is in its own front matter; a lesson's is in its entry in \`data/learn.yaml\`. If nothing changed, a stamp-only bump is a valid review." \
+            "" \
+            "This issue only knows a stamp is old. It cannot tell whether a page's prose is wrong, so a page it does not list is not proven correct. Reproduce locally: \`scripts/docs-freshness.sh ${stable}\`.")
+
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"
+            echo "updated issue #${EXISTING}"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY" --label docs-freshness
+          fi

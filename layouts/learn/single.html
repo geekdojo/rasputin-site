@@ -4,6 +4,7 @@
 <article class="band">
   <div class="wrap narrow">
     <p class="post-date muted"><a href="{{ "learn/" | relURL }}">Learn</a> › {{ $e.topicTitle }} ›</p>
+    <p class="post-date muted">{{ partial "applies-to.html" (index $e "applies-to") }}</p>
     <h1>{{ $e.title }}</h1>
     <p class="post-date muted">{{ humanize $e.level }} · about {{ $e.minutes }} minutes · {{ partial "learn-lab-label.html" $e.lab }}</p>
     {{ with $e.prereqs }}
@@ -22,7 +23,7 @@
       {{ .Content }}
     </div>
     <hr class="rule">
-    <p class="muted">Written against Rasputin {{ index $e "applies-to" }}, reviewed {{ $e.reviewed }}.
+    <p class="muted">Reviewed {{ $e.reviewed }}.
     Something wrong or unclear in this lesson? <a href="{{ site.Params.docIssueUrl }}">Tell us</a>.</p>
   </div>
 </article>

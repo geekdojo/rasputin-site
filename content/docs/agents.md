@@ -2,6 +2,7 @@
 title: "Install with an AI agent"
 description: "The machine-readable install contract: non-interactive bootstrap.sh env vars, release manifests, the seed file, and how an agent verifies the cluster actually came up."
 weight: 110
+applies-to: "2026.08.4"
 ---
 
 Rasputin's install path is scriptable end to end, and this page is the contract for it —
