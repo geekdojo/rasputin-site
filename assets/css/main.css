@@ -351,7 +351,7 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 
 .foot-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 32px;
   padding-bottom: 28px;
 }
@@ -440,10 +440,11 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
   .band { padding: 44px 0; }
   .nav-links { gap: 14px; }
   .dl-grid { grid-template-columns: 1fr; }
-  /* A phone header keeps only the links marked .nav-mobile (Docs). The rest
-     overflowed at phone width — the wordmark ran into the first link and the
-     last link clipped off the edge. The Download chip goes too: the hero's
-     "Download the latest release" is the same action, above the fold. */
+  /* A phone header keeps only the links marked .nav-mobile (Docs, Learn). The
+     rest overflowed at phone width — the wordmark ran into the first link and
+     the last link clipped off the edge. Roadmap, Devlog and Partners stay
+     reachable from the footer's site column. The Download chip goes too: the
+     hero's "Download the latest release" is the same action, above the fold. */
   .nav-links a:not(.nav-mobile) { display: none; }
   .brand { letter-spacing: 0.1em; }
 }
