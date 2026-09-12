@@ -2,8 +2,8 @@
 <article class="band">
   <div class="wrap narrow">
     <p class="post-date muted"><a href="{{ "docs/" | relURL }}">Docs</a> ›</p>
-    <h1>{{ .Title }}</h1>
     <p class="post-date muted">{{ partial "applies-to.html" (index .Params "applies-to") }}</p>
+    <h1>{{ .Title }}</h1>
     <div class="prose">
       {{ .Content }}
       {{ partial "hardware-tables.html" . }}

@@ -4,8 +4,8 @@
 <article class="band">
   <div class="wrap narrow">
     <p class="post-date muted"><a href="{{ "learn/" | relURL }}">Learn</a> › {{ $e.topicTitle }} ›</p>
-    <h1>{{ $e.title }}</h1>
     <p class="post-date muted">{{ partial "applies-to.html" (index $e "applies-to") }}</p>
+    <h1>{{ $e.title }}</h1>
     <p class="post-date muted">{{ humanize $e.level }} · about {{ $e.minutes }} minutes · {{ partial "learn-lab-label.html" $e.lab }}</p>
     {{ with $e.prereqs }}
     <p class="muted">Before this: {{ range $i, $id := . }}{{ if $i }}, {{ end }}{{ with index (where site.RegularPages "Params.lesson" $id) 0 }}{{ $pe := partial "learn-lesson.html" . }}<a href="{{ .RelPermalink }}">{{ $pe.title }}</a>{{ end }}{{ end }}.</p>
