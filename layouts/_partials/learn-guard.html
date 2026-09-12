@@ -18,6 +18,12 @@
   {{- if not (where hugo.Data.learn.topics "id" (index $parts 0)) -}}
     {{- errorf "learn: data/learn.yaml lesson %q names topic %q, which is not under `topics:`" .id (index $parts 0) -}}
   {{- end -}}
+  {{- $v := index . "applies-to" -}}
+  {{- if not $v -}}
+    {{- errorf "learn: data/learn.yaml lesson %q has no `applies-to:` — add the Rasputin release it was written for (e.g. applies-to: \"2026.08.5\"); every lesson page renders it and docs-freshness.yml checks it" .id -}}
+  {{- else if not (or (eq (string $v) "evergreen") (findRE `^[0-9]{4}\.[0-9]{2}(\.[0-9]+)?$` (string $v))) -}}
+    {{- errorf "learn: data/learn.yaml lesson %q has `applies-to: %v`; it must be a CalVer release like \"2026.08.5\" or \"evergreen\"" .id $v -}}
+  {{- end -}}
   {{- if not (in (slice "build" "observe" "none") .lab) -}}
     {{- errorf "learn: data/learn.yaml lesson %q has lab %q; it must be build, observe or none" .id .lab -}}
   {{- end -}}

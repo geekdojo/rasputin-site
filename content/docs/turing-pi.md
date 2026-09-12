@@ -2,6 +2,7 @@
 title: "Rasputin on a Turing Pi 2"
 description: "Provisioning a Turing Pi 2 cluster board with Rasputin — including a flashing path that needs no USB cable, and the module choice that avoids the whole problem."
 weight: 22
+applies-to: "2026.07.7"
 ---
 
 The [Turing Pi 2](https://turingpi.com/) puts four compute modules on one mini-ITX board with a BMC that can power,

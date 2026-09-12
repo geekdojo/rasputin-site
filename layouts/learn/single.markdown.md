@@ -4,7 +4,9 @@
 
 > {{ $e.description }}
 
-{{ humanize $e.level }} · about {{ $e.minutes }} minutes · {{ partial "learn-lab-label.html" $e.lab }} · written against Rasputin {{ index $e "applies-to" }}, reviewed {{ $e.reviewed }}
+{{ humanize $e.level }} · about {{ $e.minutes }} minutes · {{ partial "learn-lab-label.html" $e.lab }} · reviewed {{ $e.reviewed }}
+
+{{ partial "applies-to.html" (index $e "applies-to") }}.
 
 <!-- Canonical: {{ .Permalink }} — raw-markdown mirror for agents and LLMs. -->
 {{ .RawContent }}

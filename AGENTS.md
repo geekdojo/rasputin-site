@@ -24,6 +24,12 @@ Working in this repo:
   in front matter; every other field lives in `data/learn.yaml`, which lists published lessons
   only. The build fails if the two disagree (`layouts/_partials/learn-guard.html`). Never list
   or link a planned lesson.
+- Every docs page (front matter) and every lesson (its `data/learn.yaml` entry) carries
+  `applies-to:` — the Rasputin release it was written for, or `"evergreen"`. Pages render it as
+  "Written for Rasputin <x>"; the build fails on a missing or malformed stamp. Bump it when you
+  re-read a page against a new release. A weekly `docs-freshness` workflow files an issue listing
+  pages stamped 2+ CalVer minors behind the latest stable (`scripts/docs-freshness.sh <stable>`
+  runs the same check locally).
 - Never claim remote/away-from-home access works in public copy (untested).
 - `content/docs/roadmap.md` is the public mirror of the internal epics view
   (geekdojo-brain `projects/rasputin/backlog/epics.md`). When work you're publishing

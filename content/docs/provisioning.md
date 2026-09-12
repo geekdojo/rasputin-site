@@ -2,6 +2,7 @@
 title: "Provisioning & the seed file"
 description: "How a node picks its role and joins the fleet — the rasputin-seed.env reference, starter to full options."
 weight: 21
+applies-to: "2026.08.4"
 ---
 
 ## Starter — your first node
