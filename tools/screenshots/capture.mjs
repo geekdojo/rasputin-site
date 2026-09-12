@@ -48,10 +48,27 @@ const VIEWPORT = { width: 1600, height: 900 };
 // failing on it since.
 const AUTHED_MARKER = /NODE CONTROLS/;
 
+// --- the degradation ledger -------------------------------------------------
+// A shot can go wrong two ways. It can throw, and write nothing — loud, and
+// easy to act on. Or it can write an image that is quietly not the image it
+// claims to be: the drawer never opened, no node got selected, the page never
+// finished loading. The second kind is the dangerous one, because a plausible
+// wrong screenshot is exactly what gets committed and shipped.
+//
+// So every such miss is recorded here, and a non-empty ledger fails the run.
+// A check that cannot fail is not a check: a docs tool that exits 0 while
+// emitting wrong images re-creates the very rot this tool was fixed for.
+const degraded = [];
+let currentShot = null;
+
+function degrade(reason) {
+  console.warn(`  (DEGRADED: ${reason})`);
+  degraded.push({ shot: currentShot ?? '(no shot)', reason });
+}
+
 // Best-effort click: walk the candidate locators in order, take the first one
-// that exists, warn and carry on if none do. This is the warn-and-continue
-// shape the per-shot hooks already used, hoisted so every hook shares it — a
-// missing locator must degrade one shot, never abort the run.
+// that exists, record a degradation and carry on if none do. Capturing anyway
+// keeps the damage visible; the ledger keeps it from being ignored.
 async function tryClick(page, locators, what, settleMs = 1500) {
   for (const locator of locators) {
     try {
@@ -60,7 +77,7 @@ async function tryClick(page, locators, what, settleMs = 1500) {
       return true;
     } catch { /* try the next locator */ }
   }
-  console.warn(`  (could not ${what} — capturing without it)`);
+  degrade(`could not ${what} — captured without it`);
   return false;
 }
 
@@ -92,7 +109,7 @@ async function firstNodeId(page, { role } = {}) {
 async function openNodeDrawer(page, tab) {
   const id = await firstNodeId(page);
   if (!id) {
-    console.warn('  (no node id from /api/nodes — capturing the fleet view instead)');
+    degrade('no node id from /api/nodes — captured the fleet view, not the node drawer');
     return;
   }
   await page.goto(`${BASE}/metrics?node=${encodeURIComponent(id)}&tab=${tab}`, { waitUntil: 'domcontentloaded' });
@@ -368,17 +385,20 @@ async function capture(names) {
     const shot = SHOTS[name];
     const context = shot.unauthenticated ? await newContext(browser, { withState: false }) : authed;
     const page = await context.newPage();
+    currentShot = name;
     console.log(`${name} <- ${BASE}${shot.path}`);
     try {
       await page.goto(BASE + shot.path, { waitUntil: 'domcontentloaded' });
-      // A rotted `ready` marker used to abort the whole run — that is how the
-      // committed screenshots went stale unnoticed. Warn and capture anyway:
-      // a shot that looks wrong is visible, a run that never happened is not.
+      // A rotted `ready` marker no longer aborts the run: the remaining shots
+      // still get captured, so one renamed label cannot hide the state of
+      // everything else. It is recorded as a degradation instead, which fails
+      // the run at the end. Both halves matter — capture, so the bad image is
+      // there to look at; fail, so nobody commits it thinking the run was fine.
       if (shot.ready) {
         try {
           await shot.ready(page);
         } catch {
-          console.warn('  (ready marker never appeared — capturing what rendered)');
+          degrade('ready marker never appeared — captured whatever had rendered');
         }
       }
       if (shot.prepare) await shot.prepare(page);
@@ -394,9 +414,19 @@ async function capture(names) {
     if (shot.unauthenticated) await context.close();
   }
   await browser.close();
+  currentShot = null;
   console.log(`Done -> ${OUT}`);
+
   if (failed.length) {
-    console.error(`Failed shot(s): ${failed.join(', ')}`);
+    console.error(`\nFAILED — nothing was written for ${failed.length} shot(s):`);
+    for (const name of failed) console.error(`  ${name}`);
+  }
+  if (degraded.length) {
+    console.error(`\nDEGRADED — ${degraded.length} image(s) were written but are not what they claim:`);
+    for (const d of degraded) console.error(`  ${d.shot}: ${d.reason}`);
+  }
+  if (failed.length || degraded.length) {
+    console.error('\nDo not commit the images from this run until every shot above is fixed.');
     process.exit(1);
   }
 }
