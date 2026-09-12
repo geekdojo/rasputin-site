@@ -30,6 +30,10 @@ Working in this repo:
   re-read a page against a new release. A weekly `docs-freshness` workflow files an issue listing
   pages stamped 2+ CalVer minors behind the latest stable (`scripts/docs-freshness.sh <stable>`
   runs the same check locally).
+- Quote a UI label in a docs page verbatim, in inline code (`DEPLOY APP`). A weekly
+  `ui-strings-freshness` workflow reads those spans and files an issue when a quoted label no
+  longer exists in the control plane's latest stable UI (`node scripts/ui-strings-freshness.mjs`
+  runs it locally). A label mentioned only in prose or bold is invisible to it.
 - Never claim remote/away-from-home access works in public copy (untested).
 - `content/docs/roadmap.md` is the public mirror of the internal epics view
   (geekdojo-brain `projects/rasputin/backlog/epics.md`). When work you're publishing
