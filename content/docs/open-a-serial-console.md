@@ -68,15 +68,10 @@ outage.
 | Board | Power / restart | Console | Notes |
 |---|---|---|---|
 | **Turing Pi 2 / 2.5** | Yes | Use the board's own — [why](#whether-your-hardware-has-a-console-at-all) | Over the board's REST API. Needs BMC firmware 2.0.0+. Setting one up: the [Turing Pi guide](/docs/turing-pi/). |
-| **BitScope CB04B blades** | Yes | Yes, full character mode | Over the rack's serial control bus, reached through the serial port of one node in the rack — the **rack manager**, which must have been provisioned with `RASPUTIN_BMC_HOST=1` (see [Provisioning](/docs/provisioning/)). |
+| **BitScope CB04B blades** | Yes | Yes, full character mode | Over the rack's serial control bus, reached through the serial port of one node in the rack — the **rack manager**. `FORCE RESTART` here is a hard power cycle; the blades have no reset line. Setting one up: the [BitScope rack guide](/docs/bitscope-rack/). |
 
 Other hardware is not supported yet. Rasputin is alpha and the list is short on purpose —
 each entry is a driver we run on our own bench, not a spec we read.
-
-**`FORCE RESTART` on a BitScope is a hard power cycle** — off, a pause, back on. The blades
-have no reset line, so there is nothing gentler available in the hardware, and Rasputin
-records the result as a hard power-cycle rather than letting "restart" imply something softer
-than it is.
 
 Rasputin models BMC ability **per node, not per cluster**: each management host tells the
 control plane which nodes it reaches *and what it can do for each one*. Power, restart and

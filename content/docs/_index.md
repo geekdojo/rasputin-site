@@ -107,6 +107,8 @@ Reference and background that sit outside the task documents above.
   reference: roles, join tokens, NTP, release channels.
 - **[Rasputin on a Turing Pi 2](/docs/turing-pi/)** — provisioning a Turing Pi 2 cluster board,
   including a flashing path that needs no USB cable.
+- **[Rasputin on a BitScope blade rack](/docs/bitscope-rack/)** — the rack manager that owns the
+  serial control bus, and the address map that decides which node a power button cuts.
 - **[Install with an AI agent](/docs/agents/)** — the scriptable install contract:
   non-interactive flashing, machine-readable release manifests, the health probe.
 - **[Roadmap](/docs/roadmap/)** — what we're building now, next, and later.
