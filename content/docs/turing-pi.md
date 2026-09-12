@@ -1,7 +1,7 @@
 ---
 title: "Rasputin on a Turing Pi 2"
 description: "Provisioning a Turing Pi 2 cluster board with Rasputin — including a flashing path that needs no USB cable, and the module choice that avoids the whole problem."
-weight: 11
+weight: 22
 ---
 
 The [Turing Pi 2](https://turingpi.com/) puts four compute modules on one mini-ITX board with a BMC that can power,
@@ -260,7 +260,8 @@ This applies however you installed — Lite or eMMC, it is the board's BMC eithe
 
 Once configured, every node gets **BMC ON/OFF** and **FORCE RESTART** in its panel. Console is
 deliberately not offered on this board — use the Turing Pi's own `tpi uart` or its web console
-instead, and see [BMC — power and console](/docs/bmc/#why-the-turing-pi-has-no-console) for why.
+instead, and see [whether your hardware has a console at
+all](/docs/open-a-serial-console/#whether-your-hardware-has-a-console-at-all) for why.
 
 Go to **Settings → BMC** and choose **Turing Pi 2 / 2.5**, then pick the node that will talk to
 the board — the control plane is the usual choice, and it has to be on the board's network.

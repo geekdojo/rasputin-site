@@ -1,7 +1,7 @@
 ---
 title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
-weight: 13
+weight: 111
 reviewed: 2026-09-10
 ---
 
@@ -66,7 +66,7 @@ that takes a blank drive to a seeded, enrolled node — firewall included.
 **A second BMC transport: Turing Pi** — `2026.07.8`, 29 Jul 2026. Power and restart for all
 four slots of a [Turing Pi 2](https://turingpi.com/) over its REST BMC, configured from
 Settings with the board's certificate pinned the first time you see it. Console is
-deliberately not offered on that board ([why](/docs/bmc/#why-the-turing-pi-has-no-console)),
+deliberately not offered on that board ([why](/docs/open-a-serial-console/#whether-your-hardware-has-a-console-at-all)),
 and every node now advertises what its own hardware can actually do —
 [guide](/docs/turing-pi/).
 
