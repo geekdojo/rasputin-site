@@ -63,7 +63,7 @@ in the "last successful backup" line at all — if you want to know what a run d
 row.
 
 One more property worth knowing: the badge list is not a closed set on screen. A state this
-build does not recognise is rendered as its own upper-cased name **in red** rather than hidden
+build does not recognize is rendered as its own upper-cased name **in red** rather than hidden
 or treated as fine. A new failure mode reported by a newer control plane must never read as
 green.
 
@@ -162,7 +162,7 @@ never as merely "skipped" — and those are the ones to act on.
 
 **An undismissable warning banner sits above the success line.**
 The control plane reported a scope that is not a positive, explicit "full" — an older scope
-value, a response that never arrived, or a value this build does not recognise. The banner is
+value, a response that never arrived, or a value this build does not recognize. The banner is
 shown for all of those deliberately: a *missing* banner is a claim that your archives reach
 everything, and only the control plane saying so in those words earns it.
 

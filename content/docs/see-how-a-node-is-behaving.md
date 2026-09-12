@@ -161,7 +161,7 @@ What that means in practice: a container that has been crash-looping shows a rec
 while its neighbours show days, which is a real signal — but a container that crashed and
 restarted twice an hour ago looks identical to one that started cleanly an hour ago. The column
 can also be wrong in the other direction: a value plainly older than the cluster itself —
-hundreds of days on a machine you flashed last month — is a collector artefact, not a fact about
+hundreds of days on a machine you flashed last month — is a collector artifact, not a fact about
 that container. Read the column as a hint. Much younger than its neighbours means "worth
 checking the logs"; absurdly old means nothing at all.
 
@@ -248,4 +248,4 @@ than the view.
 FILTER` means the window has lines and your filter excluded them — loosen the expression.
 
 **A container's `STARTED` reads hundreds of days on a machine you flashed last month.**
-A collector artefact. Ignore that value; it says nothing about the container.
+A collector artifact. Ignore that value; it says nothing about the container.

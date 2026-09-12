@@ -44,7 +44,7 @@ Throughout, `<node-id>` is a node's own id as the **Nodes** page shows it.
 
 **The badge is the state of your browser's connection, not of the node.** `CONNECTING` in
 amber while the page checks that a BMC host reaches this node and opens the session; `OPEN` in
-green with the input enabled; `CLOSED` in grey when the session ended — by you leaving, by
+green with the input enabled; `CLOSED` in gray when the session ended — by you leaving, by
 someone taking the bus, by the far end, or because it was never accepted in the first place;
 `ERROR` in red when the connection failed. A refused connection does not settle on `ERROR`:
 it reports the failure and then reports itself closed, so the badge moves on to `CLOSED`.
@@ -53,7 +53,7 @@ pane is what distinguishes them, and troubleshooting says how.
 
 ## What BMC controls you get
 
-Each node's panel shows only the controls its management hardware can honour:
+Each node's panel shows only the controls its management hardware can honor:
 
 | Control | What it does |
 |---|---|
@@ -61,7 +61,7 @@ Each node's panel shows only the controls its management hardware can honour:
 | **FORCE RESTART** | Restarts the node without the OS's cooperation. Use `REBOOT (OS)` instead while the node still responds. |
 | **CONSOLE** | A serial console in the browser, reaching the node's login prompt with no network or agent involved. |
 
-A control that your hardware cannot honour **is not rendered**. That is deliberate: a button
+A control that your hardware cannot honor **is not rendered**. That is deliberate: a button
 that fails on click is worse than an absent one, because it costs you a diagnosis during an
 outage.
 
@@ -76,7 +76,7 @@ each entry is a driver we run on our own bench, not a spec we read.
 Rasputin models BMC ability **per node, not per cluster**: each management host tells the
 control plane which nodes it reaches *and what it can do for each one*. Power, restart and
 console are advertised separately, and a console additionally declares its fidelity, so a
-line-oriented or lossy console can be labelled instead of quietly disappointing you. Choosing
+line-oriented or lossy console can be labeled instead of quietly disappointing you. Choosing
 a backend and naming the host node is done in **Settings → BMC** — see
 [Settings](/docs/settings/).
 
@@ -104,7 +104,7 @@ power, no restart, no console, and no explanation anywhere — the cause is almo
 no management hardware has been selected for the cluster. BMC is off until you choose a
 backend in **Settings → BMC**, and while it is off the whole section is simply absent. Nothing
 on the Nodes page says so. The other cause is that your BMC host does not list that particular
-node: each node gets only the controls its own management hardware can honour, so one unmapped
+node: each node gets only the controls its own management hardware can honor, so one unmapped
 slot shows a node with no BMC section beside its neighbours that have one. See
 [Settings](/docs/settings/) for choosing a backend; which nodes get controls is the map your BMC
 host advertises, which is what this section describes.

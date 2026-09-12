@@ -55,7 +55,7 @@ their `.local` names over mDNS, which does not cross routers — a node you are 
 to sit on the same network segment as the control plane to be found at all.
 
 **Two of the three need a firewall node**: a small dedicated box with two network ports,
-enrolled in the cluster. Without one, those two cards are greyed out and hovering them says
+enrolled in the cluster. Without one, those two cards are grayed out and hovering them says
 *"Needs a firewall node — see below"*, with a note recommending a **CWWK x86-P5 (Intel N100,
 dual 2.5GbE)** or equivalent.
 
@@ -198,7 +198,7 @@ control disappears, and the API refuses BMC operations again.
 
 ## Troubleshooting
 
-**Two of the three deployment-mode cards are greyed out.**
+**Two of the three deployment-mode cards are grayed out.**
 Those two need a firewall-role node registered in the cluster — a dedicated box with two
 network ports. Registration is the gate, not liveness: a node that has registered once counts
 even while it is powered off. If yours is still booting, reload the page once it has

@@ -132,9 +132,9 @@ the first time anyone finds out is the day they try to restore."*
 **What you cannot take back.** Destroying is the one control in Storage capable of losing the
 data Storage exists to keep, and it is deliberately harder to reach than adopting — a closed
 disclosure, the disk's own **serial number** typed out exactly, and a tick box naming how many
-generations will be destroyed. It only exists at all when the control plane authorised it for
+generations will be destroyed. It only exists at all when the control plane authorized it for
 that specific disk while scanning; on a disk it did not, there is no destroy path in the
-drawer to find, not even a greyed-out one. There is no undo and no other copy unless you made
+drawer to find, not even a grayed-out one. There is no undo and no other copy unless you made
 one.
 
 ## Superseding the current target
@@ -177,7 +177,7 @@ disks can be the same model and the same size, and device names such as `nvme0n1
 The boot medium has a distinctive shape: several partitions including two small `RASPUTIN-A` /
 `RASPUTIN-B` slots, two squashfs roots, and a large `persistent` partition mounted at
 `/var/lib/rasputin`. The exact count depends on the image, so read the shape rather than
-counting. A backup disk looks nothing like it — one partition, ext4, usually labelled
+counting. A backup disk looks nothing like it — one partition, ext4, usually labeled
 `RASPUTIN-BACKUP` once claimed.
 
 A disk badged `WEAK IDENTITY` reported neither a WWN nor a serial, so it is identified by
@@ -236,7 +236,7 @@ key on restore, which means the key it was handed belongs to another set — see
 Read the job in **Tasks**. If the format had already run, keep your recovery code — the disk
 now carries that key, and adopting it later will ask for it.
 
-**`BACK UP NOW` is greyed out.**
+**`BACK UP NOW` is grayed out.**
 Its tooltip says *Claim a backup target first*. Until a disk is claimed there is nowhere to
 write, and the page says so in as many words.
 

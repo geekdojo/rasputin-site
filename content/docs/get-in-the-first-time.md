@@ -81,7 +81,7 @@ On every later visit, return to `https://<cluster-id>.local` and press
 
 **Do steps 1 to 4 again on each device you want to use** — a phone, a second laptop. The
 trust page carries a QR code captioned *SCAN TO OPEN*, so a phone can reach it without
-typing; check the address row is labelled `NAME`, not `HOST`, before you scan it.
+typing; check the address row is labeled `NAME`, not `HOST`, before you scan it.
 
 ## What installing the certificate actually establishes
 

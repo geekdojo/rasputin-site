@@ -139,7 +139,7 @@ is no copy of it to restore. If you want to keep something you did in the native
 it into the matching intent *before* your next apply.
 
 Two details about the tab itself: **`firewall host` starts empty.** What you see in it is a
-greyed-out placeholder built from the firewall's node name, not a value — you type the
+grayed-out placeholder built from the firewall's node name, not a value — you type the
 address yourself, and **`OPEN NATIVE UI`** stays disabled until you do. And the link is
 built as plain `http://`, with no TLS; whether that interface redirects you to HTTPS is up
 to the firewall, not to Rasputin.
@@ -171,7 +171,7 @@ reality.
 
 **WIREGUARD has no controls.** The tab is prose: peer management for VPN clients that are
 not on the mesh is not part of this release. The encrypted path this release does support is
-the mesh, for devices you enrol and across your own networks — not away-from-home access,
+the mesh, for devices you enroll and across your own networks — not away-from-home access,
 which Rasputin does not claim. See [Add a device to the mesh](/docs/add-a-device-to-the-mesh/).
 
 ## Troubleshooting

@@ -296,7 +296,7 @@ shown it. If you want that assurance, the board displays the same fingerprint in
 interface — compare the two before accepting. Most homelabs won't bother, and on a network you
 control that is a reasonable choice; the option is there if your situation is different.
 
-One thing worth being clear about: Rasputin recognises a Turing Pi by how its BMC answers an
+One thing worth being clear about: Rasputin recognizes a Turing Pi by how its BMC answers an
 unauthenticated request, which is what lets the page say it found one before you have typed a
 password. That is identification, not a security check — anything can imitate that response.
 The certificate is the thing you accept, which is why your password only ever goes to a board

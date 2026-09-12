@@ -17,10 +17,10 @@ first. Reach it from the **ALERTS** tile in the top bar, or from the bottom of t
 
 1. **Read the top-bar tile** to know the shape of the problem before you open anything. It is
    severity-honest and never reports a warning while something critical is outstanding: `NONE`,
-   `N CRIT`, `M WARN`, or `N CRIT · M WARN` coloured for the critical count.
+   `N CRIT`, `M WARN`, or `N CRIT · M WARN` colored for the critical count.
 2. **Open Alerts.** The heading spells out both counts. The list re-reads itself every 15
    seconds and also on node and job events, so it keeps up without a reload.
-3. **Read the worst row.** Each carries a severity badge (`CRIT` or `WARN`, with a coloured left
+3. **Read the worst row.** Each carries a severity badge (`CRIT` or `WARN`, with a colored left
    edge), an icon for where it came from, a title, a detail line, and how long the condition has
    been true.
 4. **Click the row.** Most rows point somewhere and take you straight there — a node alert to
@@ -112,7 +112,7 @@ and the per-node ALERTS tab are the whole delivery mechanism. You have to look.
 
 ## Troubleshooting
 
-**The badge is red but the page shows nothing you recognise.**
+**The badge is red but the page shows nothing you recognize.**
 Sort order is severity first, then oldest first, and there is no filtering, search or sorting of
 your own — you get the whole list in a fixed order. Read down from the top.
 

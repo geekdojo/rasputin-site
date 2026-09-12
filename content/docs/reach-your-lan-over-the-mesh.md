@@ -25,8 +25,8 @@ an afternoon on this tab.
 1. **Open `Mesh → DEVICES` and read the `ROUTES` column for the node that will carry the
    traffic.** That is what the node is actually advertising. A node's primary LAN is
    advertised automatically when it enrolls.
-2. **If the subnet you want is not in that column, it has to go in at enrolment.** What a node
-   advertises is set when it enrols, by the **advertise routes** field — a comma-separated
+2. **If the subnet you want is not in that column, it has to go in at enrollment.** What a node
+   advertises is set when it enrolls, by the **advertise routes** field — a comma-separated
    list of CIDRs — in the **ENROLL RASPUTIN NODE** form on the same tab. That form offers only
    online nodes that are **not yet in the tailnet**, so for a node already enrolled there is
    no control here that changes what it advertises. Confirm the CIDR shows in the node's
@@ -44,7 +44,7 @@ an afternoon on this tab.
 form. -->
 
 **Rasputin is IPv4 only, and this is the one form that does not check.** The firewall rejects
-an IPv6 address when it compiles your intents, and the **advertise routes** field on the enrol
+an IPv6 address when it compiles your intents, and the **advertise routes** field on the enroll
 form rejects one outright. The `ADD ROUTE` CIDR field does neither: an IPv6 CIDR is stored,
 pushed to the coordinator, and will not work — you get no error, just a route that does
 nothing. Enter IPv4 CIDRs here.
@@ -86,7 +86,7 @@ Approval is only one of the layers that has to line up. In order:
    LAN is advertised automatically. A subnet you approve that the node never advertised
    **cannot** work: approval cannot conjure a route the node is not offering. This is the step
    to fix, not just to notice. Adding a route on the ROUTES tab does **not** make a node
-   advertise it: the advertised set is written at enrolment, from the **advertise routes**
+   advertise it: the advertised set is written at enrollment, from the **advertise routes**
    field, and no control on any tab changes it afterwards. Check the `ROUTES` column on
    DEVICES for what the node is actually advertising.
 2. **Rasputin must approve it** — the ROUTES tab, plus `APPLY`.
@@ -102,7 +102,7 @@ always the first one.**
 **The route is approved and traffic still fails.**
 Check the node's `ROUTES` column on DEVICES. If the CIDR is not there, the node is not
 advertising it and approval cannot help. The CIDR has to be in the **advertise routes** field
-of `ENROLL RASPUTIN NODE` at the moment the node enrols; confirm it appears in the `ROUTES`
+of `ENROLL RASPUTIN NODE` at the moment the node enrolls; confirm it appears in the `ROUTES`
 column, then approve it here.
 
 **The node you want is not offered in `ENROLL RASPUTIN NODE`.**
@@ -111,9 +111,9 @@ node is enrolled it says so and shows no picker at all. An offline node does not
 either; bring it back up.
 
 **The node is already enrolled and does not advertise the subnet you need.**
-This release has no control for that. The advertised set is fixed at enrolment and the enrol
+This release has no control for that. The advertised set is fixed at enrollment and the enroll
 form will not offer a node that is already in the tailnet, so a second segment or VLAN that
-was not named at enrolment cannot be added from the UI. A node's *primary* LAN is advertised
+was not named at enrollment cannot be added from the UI. A node's *primary* LAN is advertised
 automatically, so this only bites on additional subnets. Approving the route anyway is
 harmless and does nothing.
 

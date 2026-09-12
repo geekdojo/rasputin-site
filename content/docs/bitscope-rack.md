@@ -99,7 +99,7 @@ is not part of this cluster, is simply left out; Rasputin then advertises nothin
 than offering a button that would act on someone else's machine.
 
 **Get the positions right before the rack is carrying anything.** Nothing verifies this map for
-you. If a row is off by one, the OFF button on the node you meant cuts power to its neighbour,
+you. If a row is off by one, the OFF button on the node you meant cuts power to its neighbor,
 and that will look like a Rasputin bug rather than a typo. Two ways to be sure:
 
 - **Write it down as you build** — as above, the only method that costs nothing.

@@ -71,7 +71,7 @@ A rule naming a zone your firewall does not have is not an error you will see on
 ## `reject` or `drop`
 
 Both stop the traffic. Both are passed straight through to the firewall, so the difference
-is standard netfilter/OpenWrt behaviour rather than anything Rasputin adds — but it is the
+is standard netfilter/OpenWrt behavior rather than anything Rasputin adds — but it is the
 difference that matters when you pick one.
 
 - **`reject` answers.** The connection is refused rather than left hanging. Conventionally

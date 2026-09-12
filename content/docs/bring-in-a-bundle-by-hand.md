@@ -85,7 +85,7 @@ a bundle you delete has to be carried in again.
 ## Troubleshooting
 
 **There is no upload control on the Updates page.**
-It is a collapsed disclosure below the bundles table, labelled
+It is a collapsed disclosure below the bundles table, labeled
 `ADVANCED — MANUAL / AIR-GAPPED UPLOAD`. It is not the primary action by design, because the
 normal path is staging from the channel.
 
@@ -93,7 +93,7 @@ normal path is staging from the channel.
 The control plane is running in permissive development mode and did not check the signature. Do
 not deploy that bundle, and do not run that configuration on an appliance.
 
-**`UPDATE ALL` is still greyed out after uploading.**
+**`UPDATE ALL` is still grayed out after uploading.**
 A hardware SKU your fleet needs is not in the catalog; the tooltip names it. A release is one
 artifact per architecture, and Rasputin counts only the architectures your fleet actually runs —
 a mixed cluster is not staged until both are there.

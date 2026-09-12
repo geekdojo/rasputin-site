@@ -83,7 +83,7 @@ correctly.** What is worth your attention is anything else —
 - a `FAILED` row of any kind;
 - the same reconcile kind failing repeatedly — drift it cannot fix;
 - a job stuck in `RUNNING` far longer than its neighbours of the same kind;
-- a kind you recognise as something *you* triggered, sitting in `QUEUED`.
+- a kind you recognize as something *you* triggered, sitting in `QUEUED`.
 
 ## The window is about forty minutes wide
 

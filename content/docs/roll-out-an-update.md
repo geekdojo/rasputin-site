@@ -26,7 +26,7 @@ button, STAGED RELEASES, and the BUNDLES table. Default MISSION CONTROL theme. -
 3. **Press `DOWNLOAD & STAGE`** on a row badged `UPDATE AVAILABLE`, and wait for a green
    `STAGED`. An amber `PARTIAL — <arch> MISSING` means press it again. Staging touches no
    node: nothing is installed, nothing reboots.
-4. **Scroll to `STAGED RELEASES` and press `UPDATE ALL`** on the release row. Greyed out means
+4. **Scroll to `STAGED RELEASES` and press `UPDATE ALL`** on the release row. Grayed out means
    an architecture your fleet needs is not staged yet, and the tooltip names it.
 5. **Read the plan** in the `REVIEW ROLLOUT · <version>` drawer: the node order, the `CANARY`
    markers, and `NOT TARGETED`. Anything rendered in red there — close the drawer and stage
@@ -151,7 +151,7 @@ the fleet; losing the firewall costs you your connection to all of it.
 *A canary gates every tier.* Before a tier fans out, **one node in it updates alone** and has
 to fully succeed before anything else in that tier is touched. The canary is picked per
 **(tier, architecture)** pair, not per tier: a mixed-architecture compute tier runs one canary
-per architecture and neither authorises the other, because an arm64 canary proves nothing
+per architecture and neither authorizes the other, because an arm64 canary proves nothing
 about the amd64 artifact — that is a different binary built by a different job. A canary
 failure of *any* architecture aborts the whole run, since a bad build is far more often a bad
 release than a bad single artifact. **This is the one place in the rollout where a single
@@ -300,7 +300,7 @@ reports both halves — which staged, and which failed with why — rather than 
 as success. Rasputin counts only the architectures your fleet actually runs, so an all-amd64
 cluster is fully staged without the arm64 artifact ever being downloaded.
 
-**`UPDATE ALL` is greyed out.**
+**`UPDATE ALL` is grayed out.**
 A hardware SKU your fleet needs is not staged, or no node is covered. The tooltip names the
 missing SKU. Stage it first.
 
