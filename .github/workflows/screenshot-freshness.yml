@@ -1,0 +1,101 @@
+name: screenshot-freshness
+
+# Staleness canary for the product screenshots in static/img/ui/.
+#
+# In September 2026 the site was found carrying screenshots eight weeks stale —
+# every UI route they showed had changed — and nothing noticed, because nothing
+# looks. This looks. Once a month it asks, for every screenshot: has the UI
+# source for the route this image depicts changed, in the control plane's
+# latest STABLE release, since this image's current bytes were first committed
+# here? It files ONE `screenshot-freshness` issue listing each stale image, its
+# route, its date, and the newest UI commit — enough to know which captures to
+# redo — updates that issue in place on later runs, and closes it once nothing
+# is stale. Same skeleton as roadmap-freshness and downloads-freshness.
+#
+# The logic lives in scripts/screenshot-freshness.mjs so it runs identically on
+# a laptop. The image -> route mapping is NOT kept here: it is read out of the
+# SHOTS map in tools/screenshots/capture.mjs, the capture tool's own table, so
+# there is no second copy to drift from it.
+#
+# HONEST LIMITS — what a result from this workflow does and does not mean:
+#   * It notices that a route's CODE changed after its screenshot. It cannot
+#     tell whether that change is visible in the image: a refactor may change
+#     nothing on screen. A human reads the linked commit and decides.
+#   * It sees the route's own ui/app/ directory plus the layouts around it, not
+#     shared components under ui/components/ or ui/lib/. A clean run does not
+#     prove a picture is current.
+#   * It cannot recapture anything and must never try. The UI is passkey-gated
+#     by design, so capture needs a human touching a security key
+#     (tools/screenshots/capture.mjs --login). No CI screenshot capture, in any
+#     form: automating it would mean weakening the auth path.
+#   * It does not judge captions. It lists which stale images carry a caption or
+#     alt text on the landing page, so whoever recaptures checks the claim.
+#
+# FAILING LOUDLY. Unlike downloads-freshness, which skips a run on incomplete
+# data, this check treats "cannot see" as its own finding: if the mapping is
+# unreadable or implausibly small, or the control-plane repo or its stable tag
+# cannot be read, the issue says the CHECK is broken and the run fails. It never
+# reports "nothing stale" from a run that could not look — that silent pass is
+# the failure this workflow exists to prevent.
+
+on:
+  schedule:
+    - cron: "13 10 1 * *" # 10:13 UTC on the 1st of each month
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # image dates come from git history; a shallow clone would make them all one date
+
+      - name: Ensure the label exists
+        run: gh label create screenshot-freshness --color FEF2C0 --description "A product screenshot may be behind the UI it depicts" --force || true
+
+      - name: Compare screenshots against the control plane's latest stable UI
+        run: |
+          set -uo pipefail
+          OUT="$RUNNER_TEMP/screenshot-freshness"
+          mkdir -p "$OUT"
+          OUT_DIR="$OUT" node scripts/screenshot-freshness.mjs
+
+          # A crash that wrote nothing is still a broken check, never a clean one.
+          STATUS=$(cat "$OUT/status" 2>/dev/null || echo broken)
+          if [ ! -s "$OUT/body.md" ]; then
+            STATUS=broken
+            printf '%s\n' "Screenshot-freshness check is BROKEN — it cannot see" > "$OUT/title"
+            printf '%s\n' "<!-- screenshot-freshness -->" "" \
+              "## The screenshot-freshness check is broken — it cannot see" "" \
+              "\`scripts/screenshot-freshness.mjs\` exited without writing a result. See the run log: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" > "$OUT/body.md"
+          fi
+          TITLE=$(cat "$OUT/title")
+          echo "status=$STATUS: $TITLE"
+
+          EXISTING=$(gh issue list --label screenshot-freshness --state open --json number --jq '.[0].number // empty')
+
+          if [ "$STATUS" = "clean" ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue close "$EXISTING" --comment "Every screenshot is current against the control plane's latest stable UI — closing."
+            fi
+            exit 0
+          fi
+
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --title "$TITLE" --body-file "$OUT/body.md"
+            echo "updated issue #${EXISTING}"
+          else
+            gh issue create --title "$TITLE" --body-file "$OUT/body.md" --label screenshot-freshness
+          fi
+
+          if [ "$STATUS" != "stale" ]; then
+            echo "::error::screenshot-freshness check is broken — see the issue; this run judged nothing"
+            exit 1
+          fi
