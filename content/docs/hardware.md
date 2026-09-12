@@ -1,7 +1,7 @@
 ---
 title: "Supported hardware"
 description: "What Rasputin runs on, what has actually been booted, and what is only expected to work."
-weight: 6
+weight: 20
 layout: hardware
 ---
 
@@ -22,4 +22,5 @@ So this page keeps two things apart:
 **The firewall is the exception.** It is a separate x86-only image on its own
 release cadence, and it stays narrower than the node claim — an Intel N100 box
 is the reference and the only target. See
-[Getting started](../getting-started/) for where it fits.
+[which deployment mode to pick](/docs/finish-first-run-setup/#which-mode-to-pick-now)
+for where it fits.
