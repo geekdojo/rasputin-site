@@ -1,3 +1,8 @@
-{{- /* Reader-facing wording for a lesson's `lab` kind in data/learn.yaml.
-     learn-guard.html fails the build for any value other than these two. */ -}}
-{{- return (cond (eq . "build") "hands-on lab in a folder you create" "hands-on lab that queries public servers") -}}
+{{- /* Reader-facing wording for a lesson's `lab` kind in data/learn.yaml. The
+     raw value is never shown. learn-guard.html fails the build for any value
+     other than these three, so the lookup below always finds an entry. */ -}}
+{{- $labels := dict
+      "build" "hands-on lab in a folder you create"
+      "observe" "hands-on lab that queries public servers"
+      "none" "reading lesson, no hands-on lab" -}}
+{{- return (index $labels .) -}}

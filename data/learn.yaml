@@ -12,12 +12,69 @@
 # only the published lessons in a track; a track with none does not appear.
 
 topics:
+  - id: system-shape
+    title: System shape
+  - id: engineering-records
+    title: Engineering records
+  - id: changing-state
+    title: Changing state
   - id: names
     title: Names
+  - id: firewalls
+    title: Firewalls
+  - id: overlay-networks
+    title: Overlay networks
+  - id: intrusion-detection
+    title: Intrusion detection
+  - id: certificates
+    title: Certificates
+  - id: messaging
+    title: Messaging
+  - id: passkeys
+    title: Passkeys
   - id: version-numbers
     title: Version numbers
+  - id: signing
+    title: Signing
+  - id: ci-gates
+    title: CI gates
+  - id: updates
+    title: Updates
+  - id: provisioning
+    title: Provisioning
+  - id: monitoring
+    title: Monitoring
+  - id: backup
+    title: Backup
 
 lessons:
+  - id: system-shape.beginner
+    title: "The parts of a small distributed system"
+    description: "What a control plane and the machines it manages each decide, what the channel between them carries, and why the control plane's picture is a report rather than a live view."
+    minutes: 25
+    prereqs: []
+    anchors: ["rasputin-os README"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: engineering-records.beginner
+    title: "How to read a decision record"
+    description: "What a decision record is for, how to find its problem, choice, alternatives and consequences, and why an old record is replaced rather than rewritten."
+    minutes: 25
+    prereqs: []
+    anchors: ["ADR-0002"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: changing-state.beginner
+    title: "Why every change goes through one path"
+    description: "Why a system that sends every change through one recorded path can show you everything that changed, and what a single side door does to that record."
+    minutes: 20
+    prereqs: []
+    anchors: ["rasputin-control-plane api/internal/jobs"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
   - id: names.beginner
     title: "How a name becomes an address"
     description: "What DNS is, why a resolver and an authoritative nameserver can give different replies to the same question, and how to ask each one with dig."
@@ -27,12 +84,120 @@ lessons:
     applies-to: "2026.08.5"
     reviewed: 2026-09-12
     lab: observe
+  - id: firewalls.beginner
+    title: "How a firewall decides"
+    description: "What zones, rules and a default policy are, and why the first matching rule decides a packet, shown with a rule list and a few lines of awk."
+    minutes: 25
+    prereqs: []
+    anchors: ["rasputin-openwrt-firewall"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: overlay-networks.beginner
+    title: "What an overlay network is"
+    description: "What an overlay network is, and where WireGuard sits inside Tailscale and Headscale, shown by generating WireGuard peer lists for a handful of devices."
+    minutes: 25
+    prereqs: []
+    anchors: ["mesh design"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: intrusion-detection.beginner
+    title: "Detecting traffic is not stopping it"
+    description: "The difference between intrusion detection and intrusion prevention, and how to read a one-line Snort alert, shown by running the same traffic past a detector and a preventer."
+    minutes: 25
+    prereqs: []
+    anchors: ["rasputin-control-plane agent/internal/ids/parser.go", "rasputin-openwrt-firewall files/etc/uci-defaults/99-rasputin"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: certificates.beginner
+    title: "Why a browser warns about a private certificate authority"
+    description: "What a certificate and a certificate authority are, why a browser warns when a certificate traces back to a CA it does not trust, and how to make and check one with openssl."
+    minutes: 30
+    prereqs: []
+    anchors: ["rasputin-control-plane api/internal/mesh/tls.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: messaging.beginner
+    title: "How machines send each other messages"
+    description: "What publish/subscribe and request/reply are, what silence means in each, and why a machine that connects outward needs no open port."
+    minutes: 30
+    prereqs: []
+    anchors: ["rasputin-control-plane proto/subjects.go", "rasputin-control-plane ARCHITECTURE.md"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: passkeys.beginner
+    title: "Why a passkey belongs to one name"
+    description: "What a passkey is, what it replaces, and why a browser refuses to use it anywhere but the name it belongs to."
+    minutes: 10
+    prereqs: []
+    anchors: ["ADR-0003"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: none
   - id: version-numbers.beginner
     title: "Why software has version numbers"
     description: "What a version number is for, and why putting versions in order is harder than it looks."
     minutes: 25
     prereqs: []
     anchors: ["rasputin-control-plane api/internal/releases/version.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: signing.beginner
+    title: "What a signature proves that a checksum does not"
+    description: "How a checksum and a digital signature differ, and how to sign and verify a file of your own with openssl."
+    minutes: 25
+    prereqs: []
+    anchors: ["rasputin-os board/rasputin/common/rootfs-overlay/etc/rasputin/trust/README.md"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: ci-gates.beginner
+    title: "What a passing check proves"
+    description: "What continuous integration runs on each change, what a passing check does and does not prove, and why whether a check can block a change has to be written down."
+    minutes: 25
+    prereqs: []
+    anchors: ["rasputin-control-plane .github/workflows/ci.yml"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: updates.beginner
+    title: "How an update can fall back"
+    description: "What an A/B update is: two copies of the system, and a bootloader that starts the old one when the new one is never marked good."
+    minutes: 25
+    prereqs: []
+    anchors: ["rasputin-os board/rasputin/n100/grub.cfg"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: provisioning.beginner
+    title: "What provisioning gives a new machine"
+    description: "Why identical new machines need an identity, a role and a way to reach the control plane, and what goes wrong when two machines share one seed file."
+    minutes: 25
+    prereqs: []
+    anchors: ["provisioning design"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: monitoring.beginner
+    title: "What a heartbeat, a metric and a log line tell you"
+    description: "The three common kinds of report a machine sends, what question each one answers, and why only a heartbeat notices a program that has stopped."
+    minutes: 25
+    prereqs: []
+    anchors: ["rasputin-control-plane api/internal/inventory/presence.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: backup.beginner
+    title: "How you know a backup works"
+    description: "What a backup protects that redundancy does not, and why the only proof a backup is complete is restoring it and comparing the result."
+    minutes: 25
+    prereqs: []
+    anchors: ["storage design"]
     applies-to: "2026.08.5"
     reviewed: 2026-09-12
     lab: build

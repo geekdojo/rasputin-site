@@ -11,8 +11,8 @@ cascade:
 
 Each lesson teaches one idea you can use anywhere, and uses Rasputin as the real example. The labs
 run on your own computer. In some you build something in a folder you make for the lesson; in
-others you ask public systems a question and read the reply. None of them needs Rasputin hardware,
-Rasputin code or an account.
+others you ask public systems a question and read the reply. A few lessons are for reading only and
+have no lab. None of them needs Rasputin hardware, Rasputin code or an account.
 
 A lesson is written for one reader: **beginner** (new to the field), **intermediate** (knows the
 basics and wants the tradeoff) or **advanced** (a practitioner who wants how it is built).
