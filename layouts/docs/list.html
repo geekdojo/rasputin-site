@@ -10,14 +10,18 @@
 <section class="band">
   <div class="wrap">
     {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
-    <div class="grid">
-      {{ range .Pages.ByWeight }}
-      <a class="card card-link" href="{{ .RelPermalink }}">
-        <h3>{{ .Title }}</h3>
-        <p>{{ with .Description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 120 }}{{ end }}</p>
-      </a>
+    {{/* The landing page body is the section's navigation: it groups every
+         page by job. No auto-generated card grid — it duplicated the body and
+         listed every page flat. Because nothing lists pages automatically any
+         more, a page missing from the body would be unreachable from /docs/
+         while still appearing in llms.txt and the sitemap, so nothing would
+         notice. Fail the build instead. */}}
+    {{ $body := string .Content }}
+    {{ range .Pages }}
+      {{ if not (strings.Contains $body .RelPermalink) }}
+        {{ errorf "docs: %q is not linked from content/docs/_index.md — add it to the landing page, which is the only navigation into /docs/" .RelPermalink }}
       {{ end }}
-    </div>
+    {{ end }}
   </div>
 </section>
 {{ end }}
