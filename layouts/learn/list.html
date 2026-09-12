@@ -1,0 +1,58 @@
+{{ define "main" }}
+{{- $_ := partialCached "learn-guard.html" "learn-guard" "learn-guard" -}}
+<section class="hero hero-sub">
+  <div class="wrap">
+    <p class="eyebrow">Lessons · new</p>
+    <h1>Learn <span class="accent">how it works</span></h1>
+    <p class="lede">{{ .Description }}</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+    {{/* Everything below renders from data/learn.yaml, and lists only
+         lessons published there (learn-guard.html proves each has a page).
+         A track with no published lesson is left out entirely rather than
+         shown empty; planned lessons are never listed. */}}
+    {{ $section := . }}
+    <div class="prose"><h2 id="lessons">All lessons</h2></div>
+    <div class="post-list">
+      {{ range hugo.Data.learn.topics }}
+        {{ $topic := . }}
+        {{ range slice "beginner" "intermediate" "advanced" }}
+          {{ with where hugo.Data.learn.lessons "id" (printf "%s.%s" $topic.id .) }}
+            {{ $e := index . 0 }}
+            {{ $p := index (where $section.RegularPagesRecursive "Params.lesson" $e.id) 0 }}
+            <a class="post-row" href="{{ $p.RelPermalink }}">
+              <span class="post-date muted">{{ $topic.title }} · {{ humanize (index (split $e.id ".") 1) }}</span>
+              <span class="post-title">{{ $e.title }}</span>
+            </a>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    </div>
+
+    {{ range hugo.Data.learn.tracks }}
+      {{ $track := . }}
+      {{ $lessons := partial "learn-track-lessons.html" $track }}
+      {{ if $lessons }}
+      <div class="prose">
+        <h2 id="{{ $track.id }}">Track: {{ humanize $track.id }}</h2>
+        <p class="muted">{{ if eq (len $lessons) 1 }}1 lesson is published in this track so far.{{ else }}{{ len $lessons }} lessons are published in this track so far, in reading order.{{ end }}</p>
+      </div>
+      <div class="post-list">
+        {{ range $lessons }}
+          {{ $e := . }}
+          {{ $p := index (where $section.RegularPagesRecursive "Params.lesson" $e.id) 0 }}
+          <a class="post-row" href="{{ $p.RelPermalink }}">
+            <span class="post-date muted">{{ humanize (index (split $e.id ".") 1) }}</span>
+            <span class="post-title">{{ $e.title }}</span>
+          </a>
+        {{ end }}
+      </div>
+      {{ end }}
+    {{ end }}
+  </div>
+</section>
+{{ end }}

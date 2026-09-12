@@ -1,0 +1,51 @@
+{{- /* data/learn.yaml is the single source of truth for /learn/. Fail the
+     build, in both directions, when it and content/learn/ disagree — a
+     published entry with no page would be a link to nothing, and a page with
+     no entry would render with no title and vanish from every list. Called
+     via partialCached from the /learn/ section page and from llms.txt, so it
+     runs on every build that renders either. */ -}}
+{{- $section := site.GetPage "/learn" -}}
+{{- if not $section -}}
+  {{- errorf "learn: content/learn/_index.md is missing, but data/learn.yaml lists lessons" -}}
+{{- end -}}
+{{- $pages := $section.RegularPagesRecursive -}}
+{{- $levels := slice "beginner" "intermediate" "advanced" -}}
+{{- range hugo.Data.learn.lessons -}}
+  {{- $parts := split .id "." -}}
+  {{- if or (ne (len $parts) 2) (not (in $levels (index $parts 1))) -}}
+    {{- errorf "learn: data/learn.yaml lesson id %q is not <topic>.<beginner|intermediate|advanced>" .id -}}
+  {{- end -}}
+  {{- if not (where hugo.Data.learn.topics "id" (index $parts 0)) -}}
+    {{- errorf "learn: data/learn.yaml lesson %q names topic %q, which is not under `topics:`" .id (index $parts 0) -}}
+  {{- end -}}
+  {{- if not (in (slice "build" "observe") .lab) -}}
+    {{- errorf "learn: data/learn.yaml lesson %q has lab %q; it must be build or observe" .id .lab -}}
+  {{- end -}}
+  {{- $matches := where $pages "Params.lesson" .id -}}
+  {{- if eq (len $matches) 0 -}}
+    {{- errorf "learn: data/learn.yaml lists lesson %q as published, but no page under content/learn/ has `lesson: %s` — write the page or remove the entry" .id .id -}}
+  {{- else if gt (len $matches) 1 -}}
+    {{- errorf "learn: %d pages under content/learn/ claim `lesson: %s` — each lesson has exactly one page" (len $matches) .id -}}
+  {{- else -}}
+    {{- $want := printf "/learn/%s/%s/" (index $parts 0) (index $parts 1) -}}
+    {{- if ne (index $matches 0).RelPermalink $want -}}
+      {{- errorf "learn: lesson %q is at %s; its page must be content/learn/%s/%s.md so it serves at %s" .id (index $matches 0).RelPermalink (index $parts 0) (index $parts 1) $want -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range .prereqs -}}
+    {{- if not (where hugo.Data.learn.lessons "id" .) -}}
+      {{- errorf "learn: a prerequisite %q is not a published lesson in data/learn.yaml — a prerequisite must link to a page that exists" . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range $pages -}}
+  {{- $page := . -}}
+  {{- with .Params.lesson -}}
+    {{- if not (where hugo.Data.learn.lessons "id" .) -}}
+      {{- errorf "learn: page %q has `lesson: %s`, which is missing from data/learn.yaml — add its entry there (title, description, level and the rest live only in the data file)" $page.Path . -}}
+    {{- end -}}
+  {{- else -}}
+    {{- errorf "learn: page %q under content/learn/ has no `lesson:` front-matter key" $page.Path -}}
+  {{- end -}}
+{{- end -}}
+{{- return true -}}

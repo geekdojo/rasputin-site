@@ -3,10 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ if .IsHome }}{{ site.Title }} — the homelab cluster that works in the first hour{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
-<meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
-<meta property="og:title" content="{{ if .IsHome }}Rasputin — open-source homelab cluster system{{ else }}{{ .Title }}{{ end }}">
-<meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+{{- /* A /learn/ lesson's front matter holds only `lesson:`; its title and
+     description live in data/learn.yaml. */ -}}
+{{- $title := .Title -}}
+{{- $description := .Description -}}
+{{- with partial "learn-lesson.html" . }}{{ $title = .title }}{{ $description = .description }}{{ end }}
+<title>{{ if .IsHome }}{{ site.Title }} — the homelab cluster that works in the first hour{{ else }}{{ $title }} · {{ site.Title }}{{ end }}</title>
+<meta name="description" content="{{ with $description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+<meta property="og:title" content="{{ if .IsHome }}Rasputin — open-source homelab cluster system{{ else }}{{ $title }}{{ end }}">
+<meta property="og:description" content="{{ with $description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:image" content="{{ if .IsHome }}{{ "img/ui/dashboard.png" | absURL }}{{ else }}{{ "brand/rasputin-mark-512.png" | absURL }}{{ end }}">
@@ -22,7 +27,7 @@
 <link rel="alternate" type="application/rss+xml" title="Rasputin devlog" href="{{ "devlog/index.xml" | relURL }}">
 {{ end -}}
 {{ with .OutputFormats.Get "markdown" -}}
-<link rel="alternate" type="text/markdown" title="{{ $.Title }} (markdown)" href="{{ .Permalink }}">
+<link rel="alternate" type="text/markdown" title="{{ $title }} (markdown)" href="{{ .Permalink }}">
 {{ end -}}
 {{ with resources.Get "css/main.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
@@ -41,6 +46,7 @@
     </a>
     <div class="nav-links">
       <a href="{{ "docs/" | relURL }}">Docs</a>
+      <a href="{{ "learn/" | relURL }}">Learn</a>
       <a href="{{ "docs/roadmap/" | relURL }}">Roadmap</a>
       <a href="{{ "devlog/" | relURL }}">Devlog</a>
       <a href="{{ "/" | relURL }}#partners">Partners</a>

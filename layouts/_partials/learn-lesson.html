@@ -1,0 +1,15 @@
+{{- /* Returns the data/learn.yaml entry for a lesson page (by its `lesson:`
+     front-matter key), with `level` and `topic` split out of the id, or nil
+     when the page is not a lesson. learn-guard.html fails the build for a
+     lesson page whose key has no entry, so callers can rely on the result. */ -}}
+{{- $entry := dict -}}
+{{- with .Params.lesson -}}
+  {{- $key := . -}}
+  {{- with where hugo.Data.learn.lessons "id" $key -}}
+    {{- $e := index . 0 -}}
+    {{- $parts := split $e.id "." -}}
+    {{- $topic := index (where hugo.Data.learn.topics "id" (index $parts 0)) 0 -}}
+    {{- $entry = merge $e (dict "topic" (index $parts 0) "level" (index $parts 1) "topicTitle" $topic.title) -}}
+  {{- end -}}
+{{- end -}}
+{{- return (cond (gt (len $entry) 0) $entry nil) -}}

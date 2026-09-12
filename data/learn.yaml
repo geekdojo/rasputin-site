@@ -1,0 +1,54 @@
+# The /learn/ curriculum — the single source of truth for every lesson's
+# metadata (design: curriculum-levelled.md §6). A lesson page's front matter
+# holds ONLY `lesson: <topic>.<level>`; its title, description, level, time,
+# prerequisites, anchors, lab kind and track membership all come from here.
+#
+# `lessons` lists PUBLISHED lessons only: an entry here means "this page
+# exists". The build fails if an entry has no page under content/learn/, or a
+# page's `lesson:` key has no entry (layouts/_partials/learn-guard.html).
+# Planned lessons are not listed until their page is written.
+#
+# `tracks` carries each track's full topic order from the design. Pages render
+# only the published lessons in a track; a track with none does not appear.
+
+topics:
+  - id: names
+    title: Names
+  - id: version-numbers
+    title: Version numbers
+
+lessons:
+  - id: names.beginner
+    title: "How a name becomes an address"
+    description: "What DNS is, why a resolver and an authoritative nameserver can give different replies to the same question, and how to ask each one with dig."
+    minutes: 25
+    prereqs: []
+    anchors: ["ADR-0003", "ADR-0004", "rasputin-control-plane api/internal/nameserver/doc.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: observe
+  - id: version-numbers.beginner
+    title: "Why software has version numbers"
+    description: "What a version number is for, and why putting versions in order is harder than it looks."
+    minutes: 25
+    prereqs: []
+    anchors: ["rasputin-control-plane api/internal/releases/version.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+
+# Each track takes every beginner lesson in topic order, then the
+# intermediates, then the advanced lessons of the topics in `advanced`.
+tracks:
+  - id: network-engineer
+    topics: [system-shape, engineering-records, names, firewalls, overlay-networks, certificates, intrusion-detection, monitoring]
+    advanced: [names, overlay-networks]
+  - id: software-developer
+    topics: [system-shape, engineering-records, changing-state, messaging, compatibility, passkeys, version-numbers, ci-gates]
+    advanced: [changing-state, messaging, compatibility]
+  - id: devops
+    topics: [system-shape, engineering-records, version-numbers, ci-gates, signing, updates, provisioning]
+    advanced: [signing, updates, provisioning]
+  - id: operations
+    topics: [system-shape, engineering-records, provisioning, monitoring, updates, backup, certificates]
+    advanced: [provisioning, updates, backup]
