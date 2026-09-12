@@ -144,7 +144,7 @@ third option and no reduced-privilege install: consent, or do not install the ap
 **What you cannot consent to.** A tile that would reach the platform's own trust chain — the
 certificate trust store, the control plane's state directory, the agent's credentials — is
 refused outright, always. That is not protecting you from yourself: an app that can rewrite
-the trust store can authorise every future update, so consenting to it would destroy the
+the trust store can authorize every future update, so consenting to it would destroy the
 basis of every later consent. One practical consequence: no catalog tile can be a whole-disk
 backup tool that mounts the root filesystem. A custom app can.
 
@@ -185,7 +185,7 @@ unreachable.
 
 ## Running your own catalog
 
-If you want different behaviour from the published catalog, the supported answer is to
+If you want different behavior from the published catalog, the supported answer is to
 **point your cluster at a different catalog** rather than fork Rasputin. It's a config
 change, but be clear-eyed about the second half of it.
 
@@ -244,7 +244,7 @@ it ended.
 The fetch or the signature check did not succeed. The catalog already in effect is untouched;
 a failed check never degrades what you have.
 
-**`INSTALL` is greyed out.**
+**`INSTALL` is grayed out.**
 Consent is not satisfied, or a required field is empty. Hover the button and it says which.
 
 **You pressed `INSTALL` and nothing is running.**

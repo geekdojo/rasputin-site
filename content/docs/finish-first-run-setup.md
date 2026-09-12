@@ -32,7 +32,7 @@ account, and its last step hands you here.
    control plane's own node id in upper case. Nothing else will ever tick this card.
 6. **Check the trust card is green** and reads *Update signing is verified*. If it is amber,
    stop and read [Update trust is not optional](#update-trust-is-not-optional).
-7. **Press `FINISH SETUP & CONTINUE`.** It is greyed out until the three required cards —
+7. **Press `FINISH SETUP & CONTINUE`.** It is grayed out until the three required cards —
    passkey, name, mode — are done; hovering it then says `Finish the required steps first`.
    You land back on Nodes.
 
@@ -67,7 +67,7 @@ basis.
 
 **The page keeps working afterwards.** Every control still functions and the timestamp
 replaces the Finish button. Use it later to rename the installation, to check trust and mesh
-are still as you expect, and to enrol the control plane in the mesh if you skipped it. Do
+are still as you expect, and to enroll the control plane in the mesh if you skipped it. Do
 **not** use it to change the deployment mode of a running cluster — use
 [Settings](/docs/settings/), which confirms first.
 
@@ -189,7 +189,7 @@ empty box, than after you have built a cluster on it.
 
 ## Troubleshooting
 
-**`FINISH SETUP & CONTINUE` stays greyed out.**
+**`FINISH SETUP & CONTINUE` stays grayed out.**
 A required card is still un-done — look for the amber `REQUIRED` badge; only the passkey,
 name and mode cards carry one. The button is also briefly disabled while another card's write
 is in flight, and reads `FINISHING…` while your press is being handled.
@@ -212,9 +212,9 @@ for the reason, then re-select the mode with the firewall node online, or press 
 the **Firewall** page.
 
 **The remote-access card never ticks.**
-It never will on its own. The background mesh reconciler enrols firewall, compute and storage
-nodes automatically and deliberately never enrols the control plane, so waiting for the mesh
-to converge waits forever. Press `ENROLL <NODE-ID> IN MESH` here, or use the enrol control on
+It never will on its own. The background mesh reconciler enrolls firewall, compute and storage
+nodes automatically and deliberately never enrolls the control plane, so waiting for the mesh
+to converge waits forever. Press `ENROLL <NODE-ID> IN MESH` here, or use the enroll control on
 [the Mesh page](/docs/the-mesh/).
 
 **`Enrollment failed: <reason>`, or `Enrollment is still running`.**
@@ -233,7 +233,7 @@ fix: set it as the card describes and restart the control plane.
 The OS image's trust root is absent. Re-flash the OS image, and do not reach for the
 dev-permissive option — see [Update trust is not optional](#update-trust-is-not-optional).
 
-**`SAVE` on the name card stays greyed out.**
+**`SAVE` on the name card stays grayed out.**
 The field is empty or holds only spaces. Leading and trailing spaces are trimmed, and you
 cannot submit an empty name from this card at all.
 

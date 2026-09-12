@@ -21,7 +21,7 @@ which the drawer prints in full — use its `COPY` button rather than typing it.
    last deploy.
 2. **Read the status.** `RUNNING` is green. `DEPLOYING`, `STARTING` and `STOPPING` are amber
    and mean an operation is in flight. `FAILED` is red and carries a detail saying why.
-   `STOPPED` and `UNKNOWN` are grey. The list updates itself over a websocket and polls as a
+   `STOPPED` and `UNKNOWN` are gray. The list updates itself over a websocket and polls as a
    backstop, so you should not need to reload.
 3. **Press `OPEN` to use the app.** It appears only when the app is `RUNNING` *and* declares
    a web page, and it opens the app itself in a new tab. An app with no web page — a
@@ -158,7 +158,7 @@ session is not on its own enough to replace an app's data. And the replacement i
 delete: the previous contents of each replaced volume are **kept beside the volume on the node**
 rather than removed, so the swap is reversible by hand.
 
-**What it does NOT protect.** Its scope is one app and nothing wider, and it makes no judgement
+**What it does NOT protect.** Its scope is one app and nothing wider, and it makes no judgment
 about which copy is better:
 
 - It replaces **that one app's data volumes, on the node hosting that app, from the generation

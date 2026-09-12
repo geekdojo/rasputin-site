@@ -59,7 +59,7 @@ of those four are the difference between "the machine answered" and "the machine
 **What it does not protect.** Each of (a)–(c) is three-valued, never a simple yes/no: "unknown"
 is a real answer. An older agent that cannot report its boot identity, or a node that cannot say
 what version it is running, **degrades** the verdict rather than failing it. A degraded pass is
-still a pass — and it is labelled.
+still a pass — and it is labeled.
 
 **Any** row can carry an amber `DEGRADED` badge beside its status, a `ROLLED BACK` or `FAILED`
 row as readily as a committed one, because the badge is about the *evidence* rather than the
@@ -165,7 +165,7 @@ the new image did not come up far enough; a health-check failure names the check
 
 **A node went down a second time on its own, seconds after the update.**
 That is a health-check rollback. Rasputin marked the new slot bad and the node rebooted itself
-back to its previous system about two seconds later. Expected behaviour, not a second fault.
+back to its previous system about two seconds later. Expected behavior, not a second fault.
 
 **A node reads `FAILED`.**
 The update never reached a verdict on a slot. `NOTES` says whether it failed validating,

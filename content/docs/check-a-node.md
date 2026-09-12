@@ -17,11 +17,11 @@ Throughout, `<node-id>` is a node's name in the cluster.
 ## Do this
 
 1. **Read cluster health off the top bar, not off the map.** `NODES ON LAN` and `ON MESH` count
-   the whole cluster. A hexagon's status dot is coloured **only on the hexagon you have
-   selected** — every other hex draws it neutral grey whatever that node's state.
-2. **Click a hexagon to select it.** It outlines in the accent colour and pulses, and its
+   the whole cluster. A hexagon's status dot is colored **only on the hexagon you have
+   selected** — every other hex draws it neutral gray whatever that node's state.
+2. **Click a hexagon to select it.** It outlines in the accent color and pulses, and its
    detail fills the controls panel, headed by the node's full id. Click it again to deselect;
-   on arrival the page selects the centre hex for you.
+   on arrival the page selects the center hex for you.
 3. **Read the `LAN` row in `STATUS`** — the node's heartbeat presence: `ONLINE`, `STALE`,
    `OFFLINE`, or `OFF BUS · on mesh`. Hover it for the underlying timings.
 4. **Read the `MESH` row.** Mesh membership is reported separately and independently:
@@ -97,7 +97,7 @@ them, are unaffected — see
 The fix is to restart the agent on that node,
 over SSH, over the mesh, or at its local console, and to read its log for why it dropped.
 
-**`OFFLINE`** (grey) — the heartbeat has stopped for over 2 minutes **and** the mesh has lost
+**`OFFLINE`** (gray) — the heartbeat has stopped for over 2 minutes **and** the mesh has lost
 the machine too, or mesh membership could not be determined at all; an undetermined mesh never
 upgrades a node to `OFF BUS`. As far as the control plane can tell, the machine is down: the
 hexagon reads `OFFL` instead of a CPU figure, the panel blanks utilisation, and `REBOOT (OS)`
@@ -108,12 +108,12 @@ network, or a BMC power cycle.
 ever puts a node into this state. You will not see it. Watch an update on the **Updates** and
 **Tasks** pages instead.
 
-**`PENDING`** (dashed accent, slowly pulsing) and **`OPEN BAY`** (dashed grey) are not node
+**`PENDING`** (dashed accent, slowly pulsing) and **`OPEN BAY`** (dashed gray) are not node
 states but slots: a slot reserved by an enrollment whose machine has not joined yet, and an
 empty slot. See [Add a node](/docs/add-a-node/).
 
 <!-- SCREENSHOT: a hexagon in WARNING and a hexagon in OFFLINE, each selected so its status dot
-is coloured, with the LAN row visible in the controls panel. -->
+is colored, with the LAN row visible in the controls panel. -->
 
 The two top-bar counters divide on the same question, and the asymmetry is useful: an off-bus
 node is **excluded** from `NODES ON LAN` and **still counted** in `ON MESH`. So
@@ -122,13 +122,13 @@ node.
 
 ## Troubleshooting
 
-**Every hexagon's status dot is grey except the one you clicked.**
-That is the shipped behaviour, not a fault: the dot is coloured only on the selected hexagon.
+**Every hexagon's status dot is gray except the one you clicked.**
+That is the shipped behavior, not a fault: the dot is colored only on the selected hexagon.
 Read cluster-wide health from `NODES ON LAN` and `ON MESH` in the top bar, and per-node health
 from the `LAN` row in the panel.
 
 **The hexagons moved.**
-Positions are fixed by role and then by node id — the firewall takes the centre, then the
+Positions are fixed by role and then by node id — the firewall takes the center, then the
 control plane, then compute, then storage, then anything else alphabetically — and selecting a
 node never moves anything. The one thing that shifts positions is the **number** of slots in
 use: add or remove a node, or generate or cancel a pending enrollment, and the map snaps to

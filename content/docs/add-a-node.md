@@ -36,10 +36,10 @@ Throughout, `<prefix>` is the shared prefix your existing node ids already have,
    picked, verifies it, flashes the drive, writes the enrollment file onto it, reads it back to
    confirm it landed, and ejects. macOS and Linux. To flash by hand instead, expand **Prefer to
    flash manually?** and follow its three steps — copy `rasputin-seed.env` to the root of the
-   boot partition, the small FAT volume labelled `RASPUTIN-OS` (`RASPUTIN-FW` on a firewall),
+   boot partition, the small FAT volume labeled `RASPUTIN-OS` (`RASPUTIN-FW` on a firewall),
    going by the label and not by size.
 8. **Connect the node to the network and power it on.** First boot is the whole enrollment. Its
-   slot shows a dashed, pulsing `PENDING` hex labelled `waiting…` and flips to a live node
+   slot shows a dashed, pulsing `PENDING` hex labeled `waiting…` and flips to a live node
    within a poll or two of the machine joining. Expect one extra reboot early on while the node
    grows its data partition.
 
@@ -78,7 +78,7 @@ that id rather than becoming two nodes.
 **What you cannot take back.** The control plane shows the file to you **once** and does not
 show it again, so a copy you lose before the node boots cannot be retrieved — cancel the
 pending enrollment and generate a new one. Going the other way, revoking the token is
-final for that file: cancelling a pending enrollment, or
+final for that file: canceling a pending enrollment, or
 [removing the node](/docs/remove-a-node/) later, stops that file working, and bringing the
 hardware back means a new enrollment and a reflash.
 
@@ -99,7 +99,7 @@ with a note saying so; a newly-seen key is remembered for next time and is manag
 authentication at all — and ships with **no key baked in**. The key you seed here is therefore
 the only thing that makes SSH to this node possible.
 
-**What it does not protect.** SSH is a way in for you, not a defence of the machine: physical
+**What it does not protect.** SSH is a way in for you, not a defense of the machine: physical
 access to a node is still root on that node. And the remembered key under **Settings** applies
 to **future enrollments only** — adding a key there grants nothing on nodes already running,
 and removing one revokes nothing.
@@ -128,19 +128,19 @@ The AMD64 image requires UEFI boot. A legacy-BIOS machine simply never boots it,
 on screen to tell you why.
 
 **You want to undo an enrollment you generated.**
-Hover the `PENDING` hex and it offers `CLICK TO CANCEL`. Cancelling revokes the join token —
+Hover the `PENDING` hex and it offers `CLICK TO CANCEL`. Canceling revokes the join token —
 the enrollment file stops working and the name is freed. If you have already flashed a drive
 with that file, that drive can no longer join: generate a new enrollment and reflash. The
 confirmation dialog says exactly this before you commit.
 
 **The honeycomb re-seated itself when you generated the enrollment.**
 Expected. The map always draws the smallest complete hexagon that holds every slot in use, so
-adding or removing a node — or generating or cancelling a pending enrollment — changes the
+adding or removing a node — or generating or canceling a pending enrollment — changes the
 number of slots and every hex moves. Selecting a node never moves anything.
 
 **The node booted but the agent never started.**
 A node whose seed carries no role stops at first boot rather than guessing. That is the
-expected behaviour for an image that was flashed without an enrollment file, not a fault.
+expected behavior for an image that was flashed without an enrollment file, not a fault.
 
 **The `STORAGE` role card will not select.**
 It is not available in this release. Choose `COMPUTE`.

@@ -8,7 +8,7 @@ applies-to: "2026.08.5"
 Every signed-in screen is wrapped in the same frame: a top bar across the width, a narrow
 icon rail down the left, and the page itself in the space that is left.
 
-<!-- SCREENSHOT: the signed-in chrome on Nodes, with callouts labelling (1) the cluster name,
+<!-- SCREENSHOT: the signed-in chrome on Nodes, with callouts labeling (1) the cluster name,
 (2) NODES ON LAN, (3) ON MESH, (4) ALERTS, (5) TASKS RUNNING, (6) the UTC clock,
 (7) SIGN OUT, and (8) the nav rail. Capture in the default MISSION CONTROL theme. -->
 
@@ -37,7 +37,7 @@ as a backstop. You should never need to reload a page to see a number move.
 ## The nav rail
 
 A 48-pixel column of icons; hover any of them for its name. The section you are in carries
-an accent-coloured left edge and a tinted background. In order down the rail:
+an accent-colored left edge and a tinted background. In order down the rail:
 
 1. **Nodes** — the cluster's machines, and where sign-in lands you.
 2. **Apps** — what you have deployed.
@@ -73,5 +73,5 @@ It appears on every page except first-run setup itself, with a **FINISH SETUP �
 disappears as soon as first-run setup is finished. See
 [Finish first-run setup](/docs/finish-first-run-setup/).
 
-**One rail slot is greyed out and does nothing.**
+**One rail slot is grayed out and does nothing.**
 There is nothing behind it. Skip it.
