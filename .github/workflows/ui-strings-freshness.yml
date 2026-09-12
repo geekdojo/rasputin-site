@@ -1,0 +1,113 @@
+name: ui-strings-freshness
+
+# Drift canary for the UI labels the manual quotes.
+#
+# The manual (content/docs/) quotes the UI's own words in inline code:
+# `DEPLOY APP`, `NODE CONTROLS`, `CHECK FOR UPDATES`. The commonest way a page
+# goes wrong is that one of those controls is renamed or removed in the code —
+# the top bar's `NODES ONLINE` became `NODES ON LAN`, and the screenshot tool
+# that waited for the old string silently broke for weeks. docs-freshness sees
+# only a page's version stamp and screenshot-freshness only a route's code
+# changing; neither notices a quoted label vanishing. This does. Once a week it
+# reads every inline code span in the manual, drops what is plainly not UI copy
+# (commands, paths, URLs, environment variables, placeholders, identifiers),
+# and checks each remaining label against the strings in the control plane's
+# ui/ and api/ code at its latest STABLE release tag, because the manual
+# documents stable. It files ONE `ui-strings-freshness` issue listing each
+# missing label, the page(s) quoting it and the tag, updates that issue in place
+# on later runs, and closes it when every label is found. Same skeleton as
+# screenshot-freshness.
+#
+# ONE DIRECTION ONLY: a label the manual quotes that the UI no longer contains.
+# A UI string the manual does not mention is never a finding — the manual is
+# not a label inventory. And there is no hand-kept list of labels: they are
+# derived from the prose, so there is no second copy to go stale.
+#
+# The logic lives in scripts/ui-strings-freshness.mjs so it runs identically on
+# a laptop: `node scripts/ui-strings-freshness.mjs` (needs `gh` signed in).
+#
+# HONEST LIMITS — what a result from this workflow does and does not mean:
+#   * It catches a quoted label DISAPPEARING. It cannot catch a label that is
+#     still there but whose behaviour changed, that moved to another screen, or
+#     whose step now needs a confirmation.
+#   * Matching is a case-insensitive substring match (case-insensitive because
+#     the UI upper-cases text at render time with toUpperCase() and CSS
+#     text-transform). So a SHORT or COMMON word — `STOP`, `SAVE`, `NAME` — is
+#     nearly always found somewhere even after its button is gone, and gives
+#     weak protection. At v2026.08.5 about three in five checked labels are
+#     weak in this sense; each issue body gives the current figure. Distinctive
+#     multi-word labels are what it protects well.
+#   * It cannot see a label the manual describes in prose without quoting it in
+#     a code span, and it does not read fenced code blocks.
+#   * A label assembled at runtime (`AVAILABLE UPDATES · STABLE CHANNEL`) is
+#     checked as its literal parts; the runtime value is not verified.
+#   * It never runs on a pull request. The PR build (ci.yml) is hermetic by
+#     design and needs no token; this needs the GitHub API, so it is scheduled.
+#
+# FAILING LOUDLY. If the control plane's stable tag or source cannot be read,
+# or the extracted UI corpus or the manual's label set is implausibly small (a
+# broken extractor looks exactly like a UI that deleted everything), the issue
+# says the CHECK is broken and the run fails. It never reports "all labels
+# found" from a run that could not look.
+
+on:
+  schedule:
+    - cron: "41 9 * * 3" # Wednesdays — Mon roadmap, Tue downloads, Thu docs freshness
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Ensure the label exists
+        run: gh label create ui-strings-freshness --repo "$GITHUB_REPOSITORY" --color D93F0B --description "The manual quotes a UI label the latest stable UI no longer contains" --force || true
+
+      - name: Compare the manual's quoted UI labels against the latest stable UI
+        run: |
+          set -uo pipefail
+          OUT="$RUNNER_TEMP/ui-strings-freshness"
+          mkdir -p "$OUT"
+          OUT_DIR="$OUT" node scripts/ui-strings-freshness.mjs
+
+          # A crash that wrote nothing is still a broken check, never a clean one.
+          STATUS=$(cat "$OUT/status" 2>/dev/null || echo broken)
+          if [ ! -s "$OUT/body.md" ]; then
+            STATUS=broken
+            printf '%s\n' "UI-strings-freshness check is BROKEN — it cannot see" > "$OUT/title"
+            printf '%s\n' "<!-- ui-strings-freshness -->" "" \
+              "## The ui-strings-freshness check is broken — it cannot see" "" \
+              "\`scripts/ui-strings-freshness.mjs\` exited without writing a result. See the run log: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" > "$OUT/body.md"
+          fi
+          TITLE=$(cat "$OUT/title")
+          echo "status=$STATUS: $TITLE"
+
+          EXISTING=$(gh issue list --repo "$GITHUB_REPOSITORY" --label ui-strings-freshness --state open --json number --jq '.[0].number // empty')
+
+          if [ "$STATUS" = "clean" ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue close "$EXISTING" --repo "$GITHUB_REPOSITORY" --comment "Every UI label the manual quotes is found in the control plane's latest stable UI again — closing."
+            fi
+            exit 0
+          fi
+
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file "$OUT/body.md"
+            echo "updated issue #${EXISTING}"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file "$OUT/body.md" --label ui-strings-freshness
+          fi
+
+          if [ "$STATUS" != "drift" ]; then
+            echo "::error::ui-strings-freshness check is broken — see the issue; this run judged nothing"
+            exit 1
+          fi
