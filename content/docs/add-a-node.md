@@ -140,7 +140,8 @@ number of slots and every hex moves. Selecting a node never moves anything.
 
 **The node booted but the agent never started.**
 A node whose seed carries no role stops at first boot rather than guessing. That is the
-expected behavior for an image that was flashed without an enrollment file, not a fault.
+expected behavior for an image that was flashed without an enrollment file, not a fault. Put
+the enrollment file on the `RASPUTIN-OS` volume and reboot; first boot runs again.
 
 **The `STORAGE` role card will not select.**
 It is not available in this release. Choose `COMPUTE`.

@@ -158,8 +158,9 @@ release than a bad single artifact. **This is the one place in the rollout where
 failure stops everything, and it is the main thing keeping a bad image off your cluster.**
 
 *Fan-out is bounded.* After a tier's canary passes, at most `MAX IN FLIGHT` nodes of that tier
-update at the same time — **4** by default — and the value is always clamped so that at least
-one node in every tier is held back.
+update at the same time — **4** by default. The value is capped at one less than the tier's
+size, and the canary counts toward that size — so once the canary has passed, a tier of five
+or fewer nodes starts every remaining node at once, and none is held back.
 
 *There is a failure budget.* `MAX FAILURES`, **15%** by default and relative to the tier.
 
@@ -184,9 +185,12 @@ lower than what you typed.
 At the default, a twenty-two-node compute tier gets a budget of three; an eight-node tier gets
 one; a three-node tier gets one. A percentage that would round down to zero floors to one,
 because a percentage is a request for a proportionate brake and never a request to remove it.
-And the breaker can only act while nodes are still waiting, so on a small cluster it barely
-bites: on small fleets your safety comes from the canary gate and from per-node rollback, not
-from this number.
+And the breaker can only act while nodes are still waiting to start. At the default
+`MAX IN FLIGHT`, no node in a tier of five or fewer is left waiting after the canary, so the
+budget never acts on that tier at all — and a tier with more than one architecture runs one
+canary per architecture, which leaves fewer still. On small fleets your safety comes from the
+canary gate and from per-node rollback, not from this number. A lower `MAX IN FLIGHT` leaves
+nodes waiting, which is what gives the budget something to stop.
 
 *An abort is not a rollback.* Nothing behind the failing canary is touched and no later tier is
 reached — but nodes in tiers that had **already completed** keep the new image. They are not

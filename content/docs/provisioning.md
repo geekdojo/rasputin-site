@@ -28,11 +28,11 @@ That's the whole happy path. The first control plane self-initializes against it
 
 ## The seed file
 
-`rasputin-seed.env` lives on the `RASPUTIN-OS` volume and is read **once**, on first boot, to pick the node's role and join the fleet. Leave it blank for an un-provisioned image — first boot waits until the role is set. Every entry is `KEY=value`, one per line.
+`rasputin-seed.env` lives on the `RASPUTIN-OS` volume and is read **once**, on first boot, to pick the node's role and join the fleet. Leave it blank for an un-provisioned image. A node that boots without a role stops at first boot with an error and its agent does not start; add the role and reboot, and first boot runs again. Every entry is `KEY=value`, one per line.
 
 | Variable | Applies to | What it does |
 | --- | --- | --- |
-| `RASPUTIN_NODE_ROLE` | **all** | `controlplane` or `compute`. Required — first boot waits for it. (The firewall node runs the separate OpenWrt image, not this one.) |
+| `RASPUTIN_NODE_ROLE` | **all** | `controlplane` or `compute`. Required — without it, first boot stops with an error. (The firewall node runs the separate OpenWrt image, not this one.) |
 | `RASPUTIN_SSH_AUTHORIZED_KEY` | all | Your SSH **public** key for `root`, **double-quoted**. The image bakes no key, so this is the only way in over the network — leave it blank and SSH is unusable (the local console still works). One key line. |
 | `RASPUTIN_CLUSTER_ID` | **all** | Names the cluster, and with it the name you browse (`https://<cluster>.local`), the WebAuthn RP ID your passkeys bind to, the NATS URL nodes dial, and the `<cluster>.internal` DNS zone the control plane serves. Optional; blank → `rasputin`. **Fixed at provision time** — renaming a live cluster is not supported, so a new name means re-provisioning every node. Set it if a second Rasputin cluster might ever share the network: two clusters that both take the default collide on `rasputin.local`. |
 | `RASPUTIN_NODE_ID` | **all** | Names the node on the fleet. **Required on the control plane** — a control-plane seed without it stops first boot with an error, since the control plane's identity must be stable. On a compute node it's optional and defaults to the hardware serial; the Add-Node flow and `rasputin-provision` assign it and bind the join token to it. |

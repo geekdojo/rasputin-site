@@ -97,10 +97,9 @@ because it runs in what browsers call a secure context.
 
 **What it does not buy you.** It is not authentication *of you* — that is the passkey. It
 does not encrypt anything that was not already encrypted; the connection was encrypted
-before you installed it. It says nothing about any other device on your network: it vouches
-for your cluster's name and nothing else. And it is strictly per device — installing it on
-your laptop does nothing for your phone, and nothing for a second browser on the same
-machine that keeps its own certificate store.
+before you installed it. It says nothing about any other device on your network. And it is
+strictly per device — installing it on your laptop does nothing for your phone, and nothing
+for a second browser on the same machine that keeps its own certificate store.
 
 **If you skip it** and take the escape hatch below `CONTINUE SECURELY`, the page is honest
 about what you get: the connection is still encrypted, your browser just cannot vouch for

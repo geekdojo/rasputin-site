@@ -23,8 +23,9 @@ The order matters. Approving a route Rasputin cannot deliver is the most common 
 an afternoon on this tab.
 
 1. **Open `Mesh → DEVICES` and read the `ROUTES` column for the node that will carry the
-   traffic.** That is what the node is actually advertising. A node's primary LAN is
-   advertised automatically when it enrolls.
+   traffic.** That is what the node is actually advertising. Nothing is advertised by
+   default, not even the node's own LAN: a node advertises only what was typed into the
+   **advertise routes** field when it enrolled.
 2. **If the subnet you want is not in that column, it has to go in at enrollment.** What a node
    advertises is set when it enrolls, by the **advertise routes** field — a comma-separated
    list of CIDRs — in the **ENROLL RASPUTIN NODE** form on the same tab. That form offers only
@@ -34,11 +35,14 @@ an afternoon on this tab.
 3. **Open `Mesh → ROUTES` and press `ADD ROUTE`:** **name** (your label, e.g. `lan-vlan-10`),
    **node** — the one actually attached to that subnet — and **CIDR**, e.g. `<lan-cidr>`.
 4. **Press `APPLY`.** `ADD ROUTE` only records the intent; **`APPLY` is what approves the
-   route** on the coordinator. Approving a subnet the node never advertised does nothing —
-   the apply skips that route and reports the node as not yet enrolled rather than failing,
-   which is why step 1 comes first.
-5. **Test from a device on the mesh.** Rows have an on/off toggle, `EDIT`, and `DELETE`, and
-   unlike pre-auth keys **every field of a route stays editable**.
+   route** on the coordinator. Approving a subnet the node never advertised does nothing,
+   and nothing tells you so: the apply records the approval and succeeds, but no traffic
+   flows. That is why step 1 comes first. The apply skips a route only when its node is not
+   enrolled in the tailnet yet; it notes that in the task's log, and the next `APPLY` after
+   the node enrolls picks the route up.
+5. **Test from a device on the mesh.** A Linux device needs `--accept-routes` first — see
+   [Add a device to the mesh](/docs/add-a-device-to-the-mesh/). Rows have an on/off toggle,
+   `EDIT`, and `DELETE`, and unlike pre-auth keys **every field of a route stays editable**.
 
 <!-- SCREENSHOT: mesh-routes.png — the ROUTES tab with one approved route and the ADD ROUTE
 form. -->
@@ -82,9 +86,9 @@ went where.
 
 Approval is only one of the layers that has to line up. In order:
 
-1. **The node must advertise the subnet.** A node picks this up when it enrolls — its primary
-   LAN is advertised automatically. A subnet you approve that the node never advertised
-   **cannot** work: approval cannot conjure a route the node is not offering. This is the step
+1. **The node must advertise the subnet.** A node picks this up when it enrolls, and nothing
+   is advertised by default — not even its own LAN. A subnet you approve that the node never
+   advertised **cannot** work: approval cannot conjure a route the node is not offering. This is the step
    to fix, not just to notice. Adding a route on the ROUTES tab does **not** make a node
    advertise it: the advertised set is written at enrollment, from the **advertise routes**
    field, and no control on any tab changes it afterwards. Check the `ROUTES` column on
@@ -113,9 +117,9 @@ either; bring it back up.
 **The node is already enrolled and does not advertise the subnet you need.**
 This release has no control for that. The advertised set is fixed at enrollment and the enroll
 form will not offer a node that is already in the tailnet, so a second segment or VLAN that
-was not named at enrollment cannot be added from the UI. A node's *primary* LAN is advertised
-automatically, so this only bites on additional subnets. Approving the route anyway is
-harmless and does nothing.
+was not named at enrollment cannot be added from the UI. That includes the node's own LAN:
+nothing is advertised by default, so a LAN left out of the field at enrollment is in the same
+position as any other subnet. Approving the route anyway is harmless and does nothing.
 
 **You added the route but nothing was pushed.**
 `ADD ROUTE` records an intent. `APPLY` is what approves it on the coordinator — the header
