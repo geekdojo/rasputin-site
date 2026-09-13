@@ -168,7 +168,7 @@ Two steps are deliberately human-only:
 | --- | --- |
 | Browser says the certificate is **expired** on a fresh node | The node's clock is wrong — common on boards with no battery-backed clock (Pi 5) when NTP is broken. See [Time sync](/docs/provisioning/#time-sync). |
 | `rasputin.local` never resolves | No mDNS on the client (Windows) or the router blocks it. Use the DHCP-lease IP for host `rasputin`. |
-| Seed didn't take; first boot waits forever | The seed must be named `rasputin-seed.env`, at the **root** of the FAT volume labeled `RASPUTIN-OS` — go by label, not size; the Pi image has several FAT partitions. The SSH key line must be double-quoted. |
+| Seed didn't take; first boot stops and the agent never starts | The seed must be named `rasputin-seed.env`, at the **root** of the FAT volume labeled `RASPUTIN-OS` — go by label, not size; the Pi image has several FAT partitions. The SSH key line must be double-quoted. |
 | First hour took more than an hour | That's a bug by definition. [File it](https://github.com/geekdojo/rasputin-control-plane/issues) — blunt reports are the valuable kind. |
 
 It's alpha: image layouts and update formats still change without notice, and this

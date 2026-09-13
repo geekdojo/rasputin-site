@@ -45,7 +45,7 @@ by default**, so drift usually finds you rather than the other way round.
 |---|---|
 | **`IN SYNC`** (green) | What you configured, what was pushed, and what is running all match. |
 | **`PENDING`** (orange) | You have edits the firewall has not seen. Press `APPLY`. |
-| **`DRIFT`** (yellow) | The firewall no longer matches what Rasputin pushed — something changed it outside Rasputin, or it was reset. |
+| **`DRIFT`** (yellow) | The parts of the firewall Rasputin manages — port forwards, rules, the WAN settings it applied, and its DNS forward — no longer match what it pushed. Something changed them outside Rasputin, or the firewall was reset. |
 | **`applied <time>`** | When the last successful `APPLY` finished. Reads **`never applied`** on a firewall Rasputin has not yet taken over. |
 
 Only one state shows at a time, and **`DRIFT` wins over `PENDING`** — a firewall that was
@@ -111,10 +111,13 @@ a sentence; everything else stays available in the firewall's own admin interfac
 using it for them: packet captures, custom DHCP options, exotic routing, traffic shaping,
 ban lists, multi-WAN failover.
 
-**What it costs you.** **Changes you make there show up as `DRIFT` on the next reconcile** —
-within five minutes, or immediately if you press `RECONCILE`. Rasputin will not silently
-keep them, and it will not silently revert them either. It flags them and waits. There is no
-"adopt this change" button, so resolving drift is one of two deliberate actions:
+**What it costs you.** **Changes you make there to port forwards, rules, the WAN settings
+Rasputin applied, or the DNS forward it manages show up as `DRIFT` on the next reconcile** —
+within five minutes, or immediately if you press `RECONCILE`. Rasputin will not silently keep
+them, and it will not silently revert them either. It flags them and waits. Changes to
+anything else there never show as `DRIFT`: Rasputin does not compare them, so it will not tell
+you when they change. There is no "adopt this change" button, so resolving drift is one of
+two deliberate actions:
 
 - **Keep the change** — recreate it as an intent on the matching Rasputin tab so the two
   agree, then `APPLY`.

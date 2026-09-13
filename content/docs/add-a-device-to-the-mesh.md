@@ -46,6 +46,14 @@ banner copies contains the real key. **`<your-rasputin-mesh-url>` is a literal p
 and is the one part you replace: use the **`login server`** URL from the mesh header, which
 looks like `https://<cluster-id>.local:18080`.
 
+**On a Linux device, add `--accept-routes` if it needs a subnet route.** A Linux Tailscale
+client ignores the subnet routes the mesh offers unless it is told to accept them, and the
+command the banner copies does not include that flag. Without it the device still reaches your
+nodes and their apps, but not a network you approved under
+[Reach your LAN over the mesh](/docs/reach-your-lan-over-the-mesh/). The same applies to the
+open-source `tailscaled` build on a Mac. The Windows client and Tailscale's Mac, iPhone and
+iPad apps accept routes by default.
+
 **On an iPhone or iPad** there is no command line. Install the Tailscale app and, *before
 signing in*, use its options menu → **Use custom coordination server** for that URL. No
 managed-device setup is needed — but do step 5 first, or this fails.
