@@ -1,0 +1,28 @@
+{{- /* schema.org SoftwareApplication for the homepage, so search engines read
+     "Rasputin" as software rather than the historical figure. Version and device
+     list render from data/releases.json — never hand-edit them here.
+     No aggregateRating/review: Google requires one for the software rich result,
+     and we have no genuine ratings to publish. */ -}}
+{{- $app := dict
+  "@context" "https://schema.org"
+  "@type" "SoftwareApplication"
+  "name" site.Title
+  "description" site.Params.description
+  "url" site.Home.Permalink
+  "applicationCategory" "UtilitiesApplication"
+  "operatingSystem" "Linux"
+  "downloadUrl" ("download/" | absURL)
+  "screenshot" ("img/ui/dashboard.png" | absURL)
+  "license" "https://www.gnu.org/licenses/agpl-3.0.html"
+  "isAccessibleForFree" true
+  "offers" (dict "@type" "Offer" "price" "0" "priceCurrency" "USD")
+  "author" (dict "@type" "Organization" "name" "Geekdojo" "url" "https://geekdojo.com/" "sameAs" (slice site.Params.githubUrl))
+-}}
+{{- with hugo.Data.releases }}{{ with .os }}
+  {{- with .version }}{{ $app = merge $app (dict "softwareVersion" .) }}{{ end }}
+  {{- with .images }}
+    {{- $devices := slice }}{{ range . }}{{ $devices = $devices | append .label }}{{ end }}
+    {{- $app = merge $app (dict "availableOnDevice" (delimit $devices ", ")) }}
+  {{- end }}
+{{- end }}{{ end }}
+<script type="application/ld+json">{{ $app | jsonify | safeJS }}</script>
