@@ -1,14 +1,16 @@
 {{- /* Given a track from data/learn.yaml, returns its PUBLISHED lessons in
      track order: every beginner lesson in topic order, then the
      intermediates, then the advanced lessons of the topics the track lists
-     under `advanced` (curriculum-levelled.md §5). Lessons not yet in
+     under `advanced` (curriculum-levelled.md §5). A topic listed under
+     `skip-beginner` joins the track from intermediate up. Lessons not yet in
      data/learn.yaml are skipped — nothing unwritten is ever returned. */ -}}
 {{- $track := . -}}
+{{- $skip := index $track "skip-beginner" | default slice -}}
 {{- $out := slice -}}
 {{- range slice "beginner" "intermediate" "advanced" -}}
   {{- $level := . -}}
   {{- range $track.topics -}}
-    {{- if or (ne $level "advanced") (in $track.advanced .) -}}
+    {{- if and (or (ne $level "advanced") (in $track.advanced .)) (not (and (eq $level "beginner") (in $skip .))) -}}
       {{- with where hugo.Data.learn.lessons "id" (printf "%s.%s" . $level) -}}
         {{- $out = $out | append (index . 0) -}}
       {{- end -}}

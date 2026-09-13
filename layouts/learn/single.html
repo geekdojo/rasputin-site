@@ -12,8 +12,9 @@
     {{ end }}
     {{ $tracks := slice }}
     {{ range hugo.Data.learn.tracks }}
-      {{ if and (in .topics $e.topic) (or (ne $e.level "advanced") (in .advanced $e.topic)) }}
-        {{ $tracks = $tracks | append . }}
+      {{ $track := . }}
+      {{ range partial "learn-track-lessons.html" $track }}
+        {{ if eq .id $e.id }}{{ $tracks = $tracks | append $track }}{{ end }}
       {{ end }}
     {{ end }}
     {{ with $tracks }}

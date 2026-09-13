@@ -17,7 +17,7 @@
          shown empty; planned lessons are never listed. */}}
     {{ $section := . }}
     <div class="prose"><h2 id="lessons">All lessons</h2></div>
-    <div class="post-list">
+    <div class="post-list learn-rows">
       {{ range hugo.Data.learn.topics }}
         {{ $topic := . }}
         {{ range slice "beginner" "intermediate" "advanced" }}
@@ -41,7 +41,7 @@
         <h2 id="{{ $track.id }}">Track: {{ $track.title }}</h2>
         <p class="muted">{{ if eq (len $lessons) 1 }}1 lesson is published in this track so far.{{ else }}{{ len $lessons }} lessons are published in this track so far, in reading order.{{ end }}</p>
       </div>
-      <div class="post-list">
+      <div class="post-list learn-rows">
         {{ range $lessons }}
           {{ $e := . }}
           {{ $p := index (where $section.RegularPagesRecursive "Params.lesson" $e.id) 0 }}
