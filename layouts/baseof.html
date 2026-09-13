@@ -10,11 +10,14 @@
 {{- with partial "learn-lesson.html" . }}{{ $title = .title }}{{ $description = .description }}{{ end }}
 <title>{{ if .IsHome }}{{ site.Title }} — the homelab cluster that works in the first hour{{ else }}{{ $title }} · {{ site.Title }}{{ end }}</title>
 <meta name="description" content="{{ with $description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+<link rel="canonical" href="{{ .Permalink }}">
 <meta property="og:title" content="{{ if .IsHome }}Rasputin — open-source homelab cluster system{{ else }}{{ $title }}{{ end }}">
 <meta property="og:description" content="{{ with $description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:image" content="{{ if .IsHome }}{{ "img/ui/dashboard.png" | absURL }}{{ else }}{{ "brand/rasputin-mark-512.png" | absURL }}{{ end }}">
+{{ if .IsHome }}{{ partial "structured-data.html" . }}
+{{ end -}}
 {{ if .Params.noindex }}<meta name="robots" content="noindex">
 {{ end -}}
 <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
