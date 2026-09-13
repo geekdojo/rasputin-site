@@ -30,6 +30,8 @@ topics:
     title: Certificates
   - id: messaging
     title: Messaging
+  - id: compatibility
+    title: Compatibility
   - id: passkeys
     title: Passkeys
   - id: version-numbers
@@ -202,22 +204,236 @@ lessons:
     reviewed: 2026-09-12
     lab: build
 
+  - id: system-shape.intermediate
+    title: "One image, role chosen at boot"
+    description: "Weighing one operating-system image whose role is chosen when a machine first starts against one image per role, and what the single image costs, with Rasputin's node image as the case."
+    minutes: 35
+    prereqs: [system-shape.beginner]
+    anchors: ["OS images design", "rasputin-os board/rasputin/common/post-build.sh"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: engineering-records.intermediate
+    title: "Runs on, tested on: reading a support claim"
+    description: "Keeping what a product supports by construction apart from what has actually been tested, what that separation costs, and how to write a revisit trigger someone can check, with Rasputin's hardware claim as the case."
+    minutes: 35
+    prereqs: [engineering-records.beginner]
+    anchors: ["hardware support matrix", "ADR-0001"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: changing-state.intermediate
+    title: "Converge or act once, derive or store"
+    description: "Choosing to converge toward a desired state over acting once on an event, and to derive a fact when it is read over storing it, and what each costs, with Rasputin's mesh enrollment and node status as the cases."
+    minutes: 40
+    prereqs: [system-shape.beginner]
+    anchors: ["mesh design (2026-07-12 enrollment)", "setup wizard design", "nodes design", "rasputin-control-plane api/internal/inventory/presence.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: names.intermediate
+    title: "Two names instead of one name with two answers"
+    description: "Choosing two names, one per network, over split-horizon DNS, what that bought and what it cost, with Rasputin's mesh and .lan. names as the case."
+    minutes: 30
+    prereqs: [names.beginner]
+    anchors: ["ADR-0004", "rasputin-control-plane api/internal/nameserver/cluster_source.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: firewalls.intermediate
+    title: "Declaring firewall rules instead of editing them"
+    description: "Editing a firewall by hand against declaring intents and reconciling, and why a disagreement between the two should be flagged for a person rather than silently overwritten."
+    minutes: 35
+    prereqs: [firewalls.beginner]
+    anchors: ["firewall-integration design", "rasputin-control-plane api/internal/firewall/store.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: overlay-networks.intermediate
+    title: "Embedding a server or running it beside you"
+    description: "Weighing a coordination server run as a separate process against one embedded as a library, with Rasputin's Headscale sidecar and embedded DNS responder as the two opposite choices."
+    minutes: 35
+    prereqs: [overlay-networks.beginner]
+    anchors: ["mesh design", "ADR-0004", "rasputin-control-plane api/internal/mesh", "rasputin-control-plane api/internal/nameserver"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: intrusion-detection.intermediate
+    title: "What a detection-only decision gives up"
+    description: "Choosing a tap over inline prevention, what that gives up and what it costs, with Rasputin's detection-only Snort 3 firewall as the case and a model of both placements under a traffic burst."
+    minutes: 35
+    prereqs: [intrusion-detection.beginner]
+    anchors: ["firewall image design", "Devlog 9", "rasputin-openwrt-firewall files/etc/uci-defaults/99-rasputin"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: certificates.intermediate
+    title: "Why a vendor's signing CA and each installation's CA stay separate"
+    description: "Why Rasputin keeps each cluster's own HTTPS certificate authority apart from the root that signs its releases, what one CA for both jobs would amplify, and what a CA per cluster costs every device."
+    minutes: 35
+    prereqs: [certificates.beginner]
+    anchors: ["certificates design", "rasputin-control-plane api/internal/mesh/tls.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: messaging.intermediate
+    title: "Choosing a transport for machines that come and go"
+    description: "Choosing a message transport by direction and durability, what a queue fixes and what it only moves, and how to read a design for what actually shipped, with Rasputin's choice of NATS as the case."
+    minutes: 35
+    prereqs: [messaging.beginner]
+    anchors: ["architecture design", "rasputin-control-plane ARCHITECTURE.md"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: compatibility.intermediate
+    title: "What an old reader does with a new field"
+    description: "Why a reader should ignore a new field that only informs and refuse one that restricts, what a must-understand list costs the writer, with Rasputin's app catalog as the case."
+    minutes: 35
+    prereqs: [version-numbers.beginner]
+    anchors: ["ADR-0006", "rasputin-control-plane tileschema/tile.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: passkeys.intermediate
+    title: "What passkey-only sign-in costs"
+    description: "Choosing passkey-only sign-in with no password, reset or recovery, what that removes, and what it costs when the only way in is lost or broken."
+    minutes: 15
+    prereqs: [passkeys.beginner]
+    anchors: ["identity design", "rasputin-control-plane api/internal/auth/handlers.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: none
+  - id: version-numbers.intermediate
+    title: "What a calendar version stops telling you"
+    description: "Choosing calendar or semantic versioning, what the number stops promising about compatibility, and where that answer has to live instead, with Rasputin's shared calendar line as the case."
+    minutes: 35
+    prereqs: [version-numbers.beginner]
+    anchors: ["release-pipeline design", "ADR-0002", "rasputin-control-plane proto/agentverbs.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: signing.intermediate
+    title: "Why a second signing key needs its own purpose"
+    description: "Giving each signing leaf a purpose that verifiers check, why a separate leaf alone separates nothing, and what marked purposes cost next to a separate root, with Rasputin's catalog signing as the case."
+    minutes: 35
+    prereqs: [signing.beginner]
+    anchors: ["ADR-0006", "rasputin-control-plane artifactsig/eku.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: ci-gates.intermediate
+    title: "Which checks can stop a merge"
+    description: "Deciding which checks block a merge and which only report, and why a reviewed findings register beats a baseline, with Rasputin's scanner register and required checks as the case."
+    minutes: 35
+    prereqs: [ci-gates.beginner]
+    anchors: ["testing strategy", "rasputin-control-plane scripts/sast-register.sh", "rasputin-control-plane .github/workflows/ci.yml"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: updates.intermediate
+    title: "Rolling an update across a fleet"
+    description: "Planning a rollout to many machines with a canary, a bounded number at once and a failure budget, and how far past the budget a rollout coasts, with Rasputin's fleet update decision as the case."
+    minutes: 35
+    prereqs: [updates.beginner]
+    anchors: ["ADR-0005", "rasputin-control-plane api/internal/updater/system_jobs.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: provisioning.intermediate
+    title: "Why first boot stops instead of guessing"
+    description: "Choosing a loud first-boot failure over a silent default, what stopping costs, and testing an assumed chicken-and-egg dependency before designing around it, with Rasputin's first-boot script as the case."
+    minutes: 35
+    prereqs: [provisioning.beginner]
+    anchors: ["provisioning design", "first-run bootstrap design", "rasputin-os board/rasputin/common/rootfs-overlay/usr/lib/rasputin/firstboot/rasputin-firstboot.sh"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: backup.intermediate
+    title: "Why restore is never automatic"
+    description: "Why an encrypted backup's key is held by a person in two ways, why restoring a cluster brings back identity only, and why no automatic rule can decide whether to restore an app's data."
+    minutes: 35
+    prereqs: [backup.beginner]
+    anchors: ["storage design", "rasputin-control-plane api/internal/storage/restore_app.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: changing-state.advanced
+    title: "A multi-step change with no undo"
+    description: "How a job runner with no compensation stays safe, by putting refusals first, declaring the irreversible step and guarding repeats, and where that design has broken, with Rasputin's disk-claim and update workflows as the cases."
+    minutes: 50
+    prereqs: [changing-state.intermediate]
+    anchors: ["rasputin-control-plane api/internal/jobs/saga.go", "rasputin-control-plane api/internal/storage/jobs.go", "rasputin-control-plane ARCHITECTURE.md"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: names.advanced
+    title: "How an authoritative nameserver answers, and where it breaks"
+    description: "How a nameserver for one zone chooses between an answer, NODATA, NXDOMAIN and REFUSED, why a backup nameserver does not reliably rescue a missing name, built and broken with a small responder of your own."
+    minutes: 45
+    prereqs: [names.intermediate]
+    anchors: ["ADR-0004", "rasputin-control-plane api/internal/nameserver"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: overlay-networks.advanced
+    title: "Why a listed route still carries nothing"
+    description: "The four independent layers a subnet route needs on a Headscale mesh (advertise, approve, policy, return path), where each breaks, and how to check them in order."
+    minutes: 45
+    prereqs: [overlay-networks.intermediate]
+    anchors: ["rasputin-control-plane api/internal/mesh", "rasputin-control-plane agent/internal/tailscale/real.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: compatibility.advanced
+    title: "Building a reader that refuses one tile, not the catalog"
+    description: "How Rasputin's catalog reader checks a bundle, judges each tile and gates its version, and five ways that pipeline broke or nearly broke."
+    minutes: 50
+    prereqs: [compatibility.intermediate]
+    anchors: ["ADR-0006", "rasputin-control-plane tileschema/bundle.go", "rasputin-control-plane tileschema/validate.go", "rasputin-control-plane api/internal/catalogsync/store.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: updates.advanced
+    title: "How a machine proves an update worked"
+    description: "Defining \"this update worked\" as conditions a machine can check, using a boot identity rather than a timestamp, and the ways Rasputin's verify step once went wrong."
+    minutes: 45
+    prereqs: [updates.intermediate]
+    anchors: ["ADR-0005", "rasputin-control-plane api/internal/updater/verify.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+  - id: backup.advanced
+    title: "A backup the service writes and cannot read"
+    description: "How Rasputin seals each backup to a public key so the control plane can write archives it cannot open, where that design breaks, and a small sealed backup you build and break yourself."
+    minutes: 45
+    prereqs: [backup.intermediate]
+    anchors: ["storage design", "rasputin-control-plane backupxfer/seal.go", "rasputin-control-plane api/internal/storage/unseal.go"]
+    applies-to: "2026.08.5"
+    reviewed: 2026-09-12
+    lab: build
+
 # Each track takes every beginner lesson in topic order, then the
 # intermediates, then the advanced lessons of the topics in `advanced`.
+# A topic under `skip-beginner` contributes its intermediate (and any listed
+# advanced) lesson but not its beginner lesson. changing-state.intermediate,
+# which carries the node-status material, joins the Network engineer and
+# Operations tracks that way.
 tracks:
   - id: network-engineer
     title: Network engineer
-    topics: [system-shape, engineering-records, names, firewalls, overlay-networks, certificates, intrusion-detection, monitoring]
+    topics: [system-shape, engineering-records, changing-state, names, firewalls, overlay-networks, certificates, intrusion-detection, monitoring]
+    skip-beginner: [changing-state]
     advanced: [names, overlay-networks]
   - id: software-developer
     title: Software developer
     topics: [system-shape, engineering-records, changing-state, messaging, compatibility, passkeys, version-numbers, ci-gates]
-    advanced: [changing-state, messaging, compatibility]
+    advanced: [changing-state, compatibility]
   - id: devops
     title: DevOps
     topics: [system-shape, engineering-records, version-numbers, ci-gates, signing, updates, provisioning]
-    advanced: [signing, updates, provisioning]
+    advanced: [updates]
   - id: operations
     title: Operations
-    topics: [system-shape, engineering-records, provisioning, monitoring, updates, backup, certificates]
-    advanced: [provisioning, updates, backup]
+    topics: [system-shape, engineering-records, changing-state, provisioning, monitoring, updates, backup, certificates]
+    skip-beginner: [changing-state]
+    advanced: [updates, backup]

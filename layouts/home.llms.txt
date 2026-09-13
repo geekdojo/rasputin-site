@@ -16,11 +16,6 @@ Current stable: Rasputin OS {{ .os.version }} · firewall {{ .firewall.version }
 ## Docs (raw markdown)
 {{ range (site.GetPage "/docs").RegularPages.ByWeight }}{{ $p := . }}{{ $md := .OutputFormats.Get "markdown" }}{{ if $md }}- [{{ $p.Title }}]({{ $md.Permalink }}): {{ $p.Description }}
 {{ else }}{{ errorf "llms.txt: docs page %q has no markdown output format, so it would be dropped from llms.txt silently. The raw-markdown mirrors come from the `cascade: outputs: [html, markdown]` block in content/docs/_index.md — restore it there (or add `outputs` to this page) instead of publishing an incomplete index." $p.Path }}{{ end }}{{ end }}
-## Learn (raw markdown)
-
-Lessons on the ideas behind Rasputin, each for one reader level; only published lessons are listed.
-{{ $_ := partialCached "learn-guard.html" "learn-guard" "learn-guard" }}{{ $learn := (site.GetPage "/learn").RegularPagesRecursive }}{{ range hugo.Data.learn.lessons }}{{ $e := . }}{{ range where $learn "Params.lesson" $e.id }}{{ $md := .OutputFormats.Get "markdown" }}{{ if $md }}- [{{ $e.title }}]({{ $md.Permalink }}): {{ $e.description }}
-{{ else }}{{ errorf "llms.txt: learn page %q has no markdown output format, so it would be dropped from llms.txt silently. The raw-markdown mirrors come from the `cascade: outputs: [html, markdown]` block in content/learn/_index.md — restore it there (or add `outputs` to this page) instead of publishing an incomplete index." .Path }}{{ end }}{{ end }}{{ end }}
 ## Machine-readable releases
 
 - [Latest stable pointer]({{ "releases.json" | absURL }}): versions + image download URLs, regenerated daily and on every release.
@@ -39,3 +34,10 @@ Lessons on the ideas behind Rasputin, each for one reader level; only published 
 - [GitHub](https://github.com/geekdojo): rasputin-os, rasputin-control-plane, rasputin-openwrt-firewall, rasputin-site.
 - [Architecture](https://github.com/geekdojo/rasputin-control-plane/blob/main/ARCHITECTURE.md): node roles, the bus, the job model, updates.
 - [Devlog]({{ "devlog/" | absURL }}): what shipped, weekly-ish.
+
+## Optional
+
+Teaching lessons (raw markdown) on the ideas behind Rasputin, one reader level each; only published lessons are listed. Their lab commands run on small practice setups or public servers, never on a Rasputin cluster, and are not Rasputin procedures. To operate a cluster, use the Docs section above.
+
+{{ $_ := partialCached "learn-guard.html" "learn-guard" "learn-guard" }}{{ $learn := (site.GetPage "/learn").RegularPagesRecursive }}{{ range hugo.Data.learn.lessons }}{{ $e := . }}{{ range where $learn "Params.lesson" $e.id }}{{ $md := .OutputFormats.Get "markdown" }}{{ if $md }}- [{{ $e.title }}]({{ $md.Permalink }}): {{ $e.description }}
+{{ else }}{{ errorf "llms.txt: learn page %q has no markdown output format, so it would be dropped from llms.txt silently. The raw-markdown mirrors come from the `cascade: outputs: [html, markdown]` block in content/learn/_index.md — restore it there (or add `outputs` to this page) instead of publishing an incomplete index." .Path }}{{ end }}{{ end }}{{ end }}

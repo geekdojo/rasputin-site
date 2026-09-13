@@ -45,8 +45,14 @@
   {{- end -}}
 {{- end -}}
 {{- range hugo.Data.learn.tracks -}}
+  {{- $track := . -}}
   {{- if not .title -}}
     {{- errorf "learn: data/learn.yaml track %q has no `title:` — pages render the track name from it" .id -}}
+  {{- end -}}
+  {{- range (slice | append (.advanced | default slice) | append (index . "skip-beginner" | default slice)) -}}
+    {{- if not (in $track.topics .) -}}
+      {{- errorf "learn: data/learn.yaml track %q lists topic %q under `advanced` or `skip-beginner`, but not under its `topics:` — the track would silently skip it" $track.id . -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- range $pages -}}
