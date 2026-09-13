@@ -453,6 +453,47 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
   .learn-rows .post-row { flex-direction: column; gap: 4px; }
 }
 
+/* ---- /learn/ section accordions ---- */
+
+/* Each /learn/ section is a native <details>: the summary is the heading, the
+   lesson list is the body, and every section starts collapsed. The browser
+   keeps keyboard toggling (Tab to the summary, Enter or Space) and exposes the
+   expanded state to assistive tech; the chevron at the right edge is decoration only. */
+.learn-section { border-bottom: 1px solid var(--line); scroll-margin-top: 80px; }
+.learn-section:first-of-type { margin-top: 40px; border-top: 1px solid var(--line); }
+.learn-section > summary {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 2px;
+  cursor: pointer;
+  list-style: none;
+}
+.learn-section > summary::-webkit-details-marker { display: none; }
+.learn-section > summary::after {
+  content: "";
+  flex: none;
+  margin: 0 8px 0 auto;
+  width: 9px; height: 9px;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(-45deg); /* points right: closed */
+  transition: transform 0.15s ease;
+}
+.learn-section[open] > summary::after { transform: rotate(45deg); /* points down: open */ }
+.learn-section > summary h2 { margin: 0; }
+.learn-section > summary:hover h2 { color: var(--accent); }
+.learn-section > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.learn-count {
+  margin-left: 10px;
+  font-family: var(--mono); font-size: 0.85rem; font-weight: 400;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.learn-section > .prose > p { margin: 0 0 4px; }
+.learn-section > .post-list { margin: 0 0 20px; }
+@media (prefers-reduced-motion: reduce) {
+  .learn-section > summary::after { transition: none; }
+}
+
 /* ---- bootstrap one-liner + manual-flash disclosure (download page) ---- */
 
 /* The one-command copy fills the .wrap, so its right edge lines up with the page
