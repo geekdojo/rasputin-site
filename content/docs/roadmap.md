@@ -3,7 +3,7 @@ title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 111
 applies-to: "evergreen"
-reviewed: 2026-09-10
+reviewed: 2026-09-13
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -21,6 +21,12 @@ Two ground rules:
   checked automatically — if it goes stale, our own CI files an issue against us.
 
 ## Recently shipped
+
+**App upgrades that keep your data** — `2026.09.0`, 13 Sep 2026. Installed apps now upgrade
+in place when the catalog has a newer version, keeping their data, and can be reverted to the
+previous version. Custom apps get a compose editor with the same guarantees, and no change
+quietly throws away a volume that holds data. The control plane also now comes up on a network
+with no DHCP server, and moves to a DHCP address when one appears.
 
 **Backups that survive losing the box** — `2026.08.5`, 10 Sep 2026. Point the cluster at a USB
 disk or a second NVMe and it backs itself up on a schedule: the control plane's identity and
@@ -132,5 +138,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-09-10. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-09-13. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
