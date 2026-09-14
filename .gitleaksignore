@@ -1,0 +1,33 @@
+# gitleaks false positives (geekdojo/geekdojo-brain#105).
+#
+# Each fingerprint is commit:file:rule:line and silences exactly one finding in
+# one commit; the same text added again in a new commit is a new finding. Every
+# entry is preceded by the reason it was judged a false positive. Add entries
+# only after verifying the value is not a credential. Never disable a rule.
+
+# curl-auth-user in content/devlog/007-turing-pi-no-usb-flash.md:38 — Turing Pi 2 BMC factory-default login (root/turing), which the doc itself names as the default
+f4f7b1f9cf323e247007c23920306e21067494ea:content/devlog/007-turing-pi-no-usb-flash.md:curl-auth-user:38
+
+# curl-auth-user in content/docs/turing-pi.md:43 — Turing Pi 2 BMC factory-default login (root/turing), which the doc itself names as the default
+24c168d0f35c9af7a488c0bf5d4a519f1ed55acd:content/docs/turing-pi.md:curl-auth-user:43
+
+# curl-auth-user in content/docs/turing-pi.md:86 — Turing Pi 2 BMC factory-default login (root/turing), which the doc itself names as the default
+24c168d0f35c9af7a488c0bf5d4a519f1ed55acd:content/docs/turing-pi.md:curl-auth-user:86
+
+# curl-auth-user in content/docs/turing-pi.md:91 — Turing Pi 2 BMC factory-default login (root/turing), which the doc itself names as the default
+24c168d0f35c9af7a488c0bf5d4a519f1ed55acd:content/docs/turing-pi.md:curl-auth-user:91
+
+# curl-auth-user in content/docs/turing-pi.md:118 — Turing Pi 2 BMC factory-default login (root/turing), which the doc itself names as the default
+24c168d0f35c9af7a488c0bf5d4a519f1ed55acd:content/docs/turing-pi.md:curl-auth-user:118
+
+# curl-auth-user in content/docs/turing-pi.md:137 — Turing Pi 2 BMC factory-default login (root/turing), which the doc itself names as the default
+24c168d0f35c9af7a488c0bf5d4a519f1ed55acd:content/docs/turing-pi.md:curl-auth-user:137
+
+# curl-auth-user in content/docs/turing-pi.md:73 — Turing Pi 2 BMC factory-default login (root/turing), which the doc itself names as the default
+e2678e12e63aff96db1e0e74436c7861bd86540c:content/docs/turing-pi.md:curl-auth-user:73
+
+# curl-auth-user in content/docs/turing-pi.md:138 — Turing Pi 2 BMC factory-default login (root/turing), which the doc itself names as the default
+e2678e12e63aff96db1e0e74436c7861bd86540c:content/docs/turing-pi.md:curl-auth-user:138
+
+# curl-auth-user in content/docs/turing-pi.md:165 — Turing Pi 2 BMC factory-default login (root/turing), which the doc itself names as the default
+e2678e12e63aff96db1e0e74436c7861bd86540c:content/docs/turing-pi.md:curl-auth-user:165
