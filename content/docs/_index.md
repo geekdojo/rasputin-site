@@ -31,6 +31,8 @@ Read these three in order on a new cluster.
   you need to know what that sends you to go and look at.
 - **[Remove a node](/docs/remove-a-node/)** — you are retiring a machine: what leaves the cluster
   with it, and what stays behind.
+- **[Replace or revoke an SSH key on a node](/docs/replace-or-revoke-an-ssh-key/)** — a node that
+  is already enrolled still accepts an old key, and changing the key in Settings did not reach it.
 
 ## Apps
 

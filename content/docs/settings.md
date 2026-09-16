@@ -155,6 +155,8 @@ change the key on a node that is already running, either edit
 `/var/lib/rasputin/dropbear/authorized_keys` on that node — the file is the node's own and
 its SSH server re-reads it on every attempt, so nothing needs restarting — or re-enroll the
 node. Editing it needs a way in already: the key the node already has, or its local console.
+[Replace or revoke an SSH key on a node](/docs/replace-or-revoke-an-ssh-key/) walks through the
+edit.
 
 **What you cannot take back.** Removing a key from this list is not a revocation and cannot
 be treated as one; if you need a key to stop working on a node, you have to do it on the
