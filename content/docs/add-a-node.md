@@ -111,6 +111,8 @@ drift into.
 **What you cannot take back.** There is no way to add the key from this page afterwards. To
 change or add a key on a node that is already running you have to get onto it by the means it
 already has — its existing key, or its local console — or re-enroll it.
+[Replace or revoke an SSH key on a node](/docs/replace-or-revoke-an-ssh-key/) walks through the
+change over SSH.
 
 ## Troubleshooting
 
