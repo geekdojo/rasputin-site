@@ -123,8 +123,8 @@ Substitute your own values:
 
 That directory will then contain one `seed-<name>.env` per node — `seed-cp-1.env` and
 `seed-node-1.env` for the example above — plus `controlplane-bus-tokens.json` and a
-`manifest.json` audit record. **Keep the whole directory; the seeds contain join
-credentials.**
+`manifest.json` audit record. **Keep the whole directory private; the seeds contain join
+credentials, and the control plane's seed also contains the cluster's bus private key.**
 
 The SSH key is load-bearing. Rasputin images bake **no** SSH key of any kind, so without one
 your only way in is the serial console.
