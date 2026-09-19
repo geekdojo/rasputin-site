@@ -293,9 +293,9 @@ in the board's place. Clear the fingerprint and detect again if it was the forme
 
 **It works the way `ssh` does when it asks about an unknown host key**, and it carries the same
 honest limitation: nothing independently verifies the certificate the *first* time you are
-shown it. If you want that assurance, the board displays the same fingerprint in its own web
-interface — compare the two before accepting. Most homelabs won't bother, and on a network you
-control that is a reasonable choice; the option is there if your situation is different.
+shown it, and the board's own web interface does not display a certificate fingerprint to compare
+against. On a network you control that is a reasonable trade, and it is the same one `ssh` asks you
+to make.
 
 One thing worth being clear about: Rasputin recognizes a Turing Pi by how its BMC answers an
 unauthenticated request, which is what lets the page say it found one before you have typed a
