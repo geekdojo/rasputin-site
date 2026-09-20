@@ -2,7 +2,7 @@
 title: "Add a node"
 description: "Flash a machine and enroll it into your cluster — the eight steps, the two credentials you decide about on the way, and what to do when a node never joins."
 weight: 30
-applies-to: "2026.08.5"
+applies-to: "2026.09.4"
 ---
 
 Adding a node is a one-time job per machine: fill in a short form, generate the machine's
@@ -44,20 +44,27 @@ Throughout, `<prefix>` is the shared prefix your existing node ids already have,
    grows its data partition.
 
 <!-- SCREENSHOT: the ADD NODE dialog with the ROLE and ARCHITECTURE cards, NODE NAME prefilled,
-and the SSH KEY field showing the remembered-key note. Default MISSION CONTROL theme. -->
+and the SSH KEY field showing the saved-operator-key note. Default MISSION CONTROL theme. -->
 
 ## The enrollment file is a credential
 
 `GENERATE ENROLLMENT FILE` mints the node's credentials. What you get back is a short
 `KEY=value` text file — `rasputin-seed.env`, or `seed.env` for a firewall — carrying the
-node's role, its id, the cluster id, the address of the cluster's bus, the **join token**, and
-your SSH key. It is the same seed file described in
-[Provisioning & the seed file](/docs/provisioning/), which documents every line.
+node's role, its id, the cluster id, the address of the cluster's bus, the **join token**, the
+**bus pin**, and your SSH key. It is the same seed file described in
+[Provisioning & the seed file](/docs/provisioning/), which documents every line; a firewall's
+file carries the same lines, with the role set to `firewall`.
 
 **What it protects.** The join token in it is what lets a machine become a member of your
 cluster, and it is **bound to this one node id**. Nothing else gates joining: a machine that
 presents a valid token for an id gets onto the bus and the mesh. Treat the file the way you
 would treat a password.
+
+The **bus pin** in the file works in the other direction: it lets the new node check that it is
+talking to *your* control plane. The node connects to the bus over TLS and accepts only a
+server holding the key the pin names; a server with any other key is refused before the join
+token is sent. The pin is not a secret. See
+[The bus key and pin](/docs/provisioning/#the-bus-key-and-pin).
 
 **What it does not protect.** It does not expire — the token stays valid until something
 revokes it. It is not an identity for anything but joining, and it is not a lock on the
@@ -91,18 +98,19 @@ by every Rasputin OS node. This one line is the cheapest thing you can do now to
 you can only fix by carrying a keyboard to it.
 
 Paste one SSH **public** key, one line — the contents of something like
-`~/.ssh/id_ed25519.pub`. If your cluster has seen a key before, the field arrives prefilled
-with a note saying so; a newly-seen key is remembered for next time and is managed under
-[Settings](/docs/settings/).
+`~/.ssh/id_ed25519.pub`. If a key is saved under
+[Settings → Operator SSH key](/docs/settings/#operator-ssh-key), the field arrives prefilled
+with it and a note saying so; editing the field changes the key for this node only. If no key
+is saved yet, the key you enroll this node with is saved there for the nodes you add next.
 
 **What it protects.** Rasputin's image runs a **key-only** SSH server — no password
 authentication at all — and ships with **no key baked in**. The key you seed here is therefore
 the only thing that makes SSH to this node possible.
 
 **What it does not protect.** SSH is a way in for you, not a defense of the machine: physical
-access to a node is still root on that node. And the remembered key under **Settings** applies
-to **future enrollments only** — adding a key there grants nothing on nodes already running,
-and removing one revokes nothing.
+access to a node is still root on that node. And the saved key under **Settings** applies
+only to **nodes you add after saving it** — replacing it there grants nothing on nodes already
+running, and clearing it removes it from no node.
 
 **The consequence of leaving it blank** is a node reachable through this dashboard and its
 local console only, for as long as you run it. That is a deliberate choice, not a default to
@@ -141,9 +149,14 @@ adding or removing a node — or generating or canceling a pending enrollment �
 number of slots and every hex moves. Selecting a node never moves anything.
 
 **The node booted but the agent never started.**
-A node whose seed carries no role stops at first boot rather than guessing. That is the
-expected behavior for an image that was flashed without an enrollment file, not a fault. Put
-the enrollment file on the `RASPUTIN-OS` volume and reboot; first boot runs again.
+A node whose seed carries no role, or no node id, stops at first boot rather than guessing:
+first boot never makes up a node id. That is the expected behavior for an image that was
+flashed without an enrollment file, not a fault. Put the enrollment file on the `RASPUTIN-OS`
+volume and reboot; first boot runs again. The file this dialog generates always carries both
+lines, so a seed without them was written or edited by hand. Add the line back as
+`RASPUTIN_NODE_ID=<node-id>`, using the name you gave it under `NODE NAME`, or cancel the pending
+enrollment and generate a new one. A firewall whose seed has no node id does not start its
+agent either.
 
 **The `STORAGE` role card will not select.**
 It is not available in this release. Choose `COMPUTE`.

@@ -19,8 +19,8 @@ You do not need Rasputin hardware, Rasputin code, or an account anywhere.
 
 [Rasputin](https://github.com/geekdojo/rasputin-os)'s control plane and the machines that run
 apps boot the same image. On first boot, a short script reads the seed file and sets the machine
-up. Most seed settings have a fallback: a missing node id can come from the board's serial
-number, as the manual says.
+up. Some seed settings have a fallback: a missing cluster name becomes `rasputin`, as the
+manual says.
 
 The role has no such fallback. `controlplane` and `compute` are different jobs, and nothing on
 a blank drive says which one a machine was meant for. So the script has to decide what to do
@@ -43,9 +43,10 @@ whose seed carries no role "stops at first boot rather than guessing."
 address that did not resolve on that network. The script's comment says such a node *looks "up" but never appears in inventory*.
 
 **The fix kept the defaults that have a right answer.** The address fallback became the control
-plane's default local name, and the node id still falls back to the board serial. A separate,
-later change rejects placeholder serials such as "Default string", which two boards would share,
-and boots on a random id instead of stopping.
+plane's default local name. The node id kept its board-serial fallback for a while, and a
+separate change rejected placeholder serials such as "Default string", which two boards would
+share. Later still, the node id lost its fallback altogether: first boot no longer makes one up,
+and a seed that names no node stops it, like a seed that names no role.
 
 **A second decision in the same family: test a dependency before designing around it.** The
 first-run bootstrap design, also internal, started from what looked like a loop: passkey sign-in
