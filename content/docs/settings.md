@@ -185,7 +185,7 @@ plus the hardware Rasputin can currently drive, which is the **BitScope CB04B bl
 **Turing Pi 2 / 2.5 (network BMC)**, and a **Mock** backend for development.
 **BMC HOST NODE (owns the bus)** is required once a backend is chosen. Per-backend fields
 appear below it, and the Turing Pi flow has its own steps — **DETECT BOARD**, then an
-explicit **ACCEPT CERTIFICATE** — walked through in the [Turing Pi
+explicit **ACCEPT THIS BOARD** — walked through in the [Turing Pi
 guide](/docs/turing-pi/).
 
 **What you cannot take back mid-flight.** **APPLY** confirms first, then pushes the selection
