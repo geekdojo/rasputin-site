@@ -323,29 +323,69 @@ keyUsage=critical,digitalSignature
         self._run("req -new -newkey rsa:2048 -nodes -keyout %s -out %s -subj /CN=Test-%s"
                   % (self.p(name + ".key"), self.p(name + ".csr"), name))
 
+    # A minimal `openssl ca` config. This path exists because `x509 -req
+    # -not_before/-not_after` is OpenSSL 3.5+, and the CI runner (Ubuntu 24.04,
+    # OpenSSL 3.0) and macOS (LibreSSL 3.3.6) both lack it — so the case that
+    # covers the leaf-expiry cliff would have skipped everywhere it matters.
+    # `openssl ca -startdate/-enddate` works on all of them.
+    CA_CNF = """
+[ca]
+default_ca = CA_default
+[CA_default]
+dir = %(dir)s
+database = $dir/index.txt
+new_certs_dir = $dir/newcerts
+serial = $dir/serial
+certificate = %(cert)s
+private_key = %(key)s
+default_md = sha256
+policy = pol
+email_in_dn = no
+rand_serial = no
+unique_subject = no
+[pol]
+commonName = supplied
+[leaf_release]
+basicConstraints=critical,CA:FALSE
+keyUsage=critical,digitalSignature
+extendedKeyUsage=critical,codeSigning,emailProtection,1.3.6.1.4.1.66587.1.1.1
+"""
+
     def expired_leaf(self):
-        """A release leaf whose validity is in the past. Minting one needs
-        `x509 -req -not_before/-not_after` (OpenSSL 3.5+), which LibreSSL does
-        not have — so try every openssl on the box, not just the one the
-        verifier will run under. The certificate is an ordinary PEM whichever
-        tool made it, so this does not weaken the case: what is under test is
-        how the SHIPPED verifier reports it. Returns None when nothing on the
-        box can mint one, so the case skips rather than failing for the wrong
-        reason."""
+        """A release leaf whose validity is in the past — the dec-24 cliff.
+
+        Returns the path, or None if this box cannot mint one at all (then the
+        case skips rather than failing for the wrong reason). Two mechanisms are
+        tried so that the case actually runs on CI and on a developer Mac, not
+        only on a very new OpenSSL."""
         self._leafcsr("expired")
-        args = ("x509 -req -in %s -CA %s -CAkey %s -CAcreateserial -out %s "
-                "-not_before 20240101000000Z -not_after 20250101000000Z "
-                "-extfile %s -extensions leaf_release"
-                % (self.p("expired.csr"), self.p("int.pem"), self.p("int.key"),
-                   self.p("expired.pem"), self.ext))
-        for cand in [self.ssl, shutil.which("openssl"), "/usr/local/bin/openssl",
-                     "/opt/homebrew/bin/openssl", "/usr/bin/openssl"]:
-            if not cand or not os.path.exists(cand):
-                continue
-            r = subprocess.run([cand] + args.split(), capture_output=True, text=True)
-            if r.returncode == 0:
-                return self.p("expired.pem")
-        return None
+        out = self.p("expired.pem")
+
+        # 1. `x509 -req -not_before/-not_after` — OpenSSL 3.5+.
+        r = self._run("x509 -req -in %s -CA %s -CAkey %s -CAcreateserial -out %s "
+                      "-not_before 20240101000000Z -not_after 20250101000000Z "
+                      "-extfile %s -extensions leaf_release"
+                      % (self.p("expired.csr"), self.p("int.pem"), self.p("int.key"),
+                         out, self.ext), check=False)
+        if r.returncode == 0:
+            return out
+
+        # 2. `openssl ca -startdate/-enddate` — everywhere else, including
+        #    OpenSSL 3.0 and LibreSSL 3.3.6.
+        cadir = self.p("cadir")
+        os.makedirs(os.path.join(cadir, "newcerts"), exist_ok=True)
+        open(os.path.join(cadir, "index.txt"), "w").close()
+        with open(os.path.join(cadir, "serial"), "w", encoding="utf-8") as f:
+            f.write("1000\n")
+        cacnf = self.p("ca.cnf")
+        with open(cacnf, "w", encoding="utf-8") as f:
+            f.write(self.CA_CNF % {"dir": cadir, "cert": self.p("int.pem"),
+                                   "key": self.p("int.key")})
+        r = self._run("ca -batch -config %s -in %s -out %s -notext "
+                      "-startdate 240101000000Z -enddate 250101000000Z "
+                      "-extfile %s -extensions leaf_release"
+                      % (cacnf, self.p("expired.csr"), out, cacnf), check=False)
+        return out if r.returncode == 0 and os.path.exists(out) else None
 
     def sign(self, leaf, content, out):
         self._run("cms -sign -binary -in %s -signer %s -certfile %s -inkey %s "
