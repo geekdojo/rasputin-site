@@ -24,9 +24,12 @@
 #   2. It resolves the image ITSELF from the latest public stable release —
 #      GitHub's releases/latest/download/manifest.json — instead of asking
 #      /api/cluster/node-image. No GitHub API, no rate limits, no staleness.
-#   3. Trust rides on HTTPS (this script and the manifest both arrive over
-#      TLS) plus the manifest's per-image SHA-256, verified before flashing —
-#      not on the cluster mesh CA, which doesn't exist at first-node time.
+#   3. Trust starts at a FINGERPRINT BAKED INTO THIS FILE, not at the cluster
+#      mesh CA, which doesn't exist at first-node time: the root CA is checked
+#      against RASPUTIN_ROOT_CA_SHA256, the release manifest must carry a
+#      signature that verifies against that root and that was made by a leaf
+#      authorized for firmware, and only then is the image's SHA-256 read out
+#      of the manifest. See the shared release verifier below.
 #
 # Like flash.sh, it READS THE SEED BACK at the block level and fails loudly
 # if it didn't land — a silently-unseeded first node boots un-enrollable.
@@ -43,7 +46,15 @@
 #   RASPUTIN_NODE_ID         control-plane node id (default: cp-1)
 #   RASPUTIN_SSH_AUTHORIZED_KEY  your SSH public key line ("ssh-ed25519 AAAA… you@laptop")
 #   RASPUTIN_SSH_KEY_FILE    path to a .pub file to read the key from
-#   RASPUTIN_RELEASE         pin a release tag (default: latest stable)
+#   RASPUTIN_RELEASE         pin a release tag (default: latest stable). A
+#                            release with no manifest.json.sig (anything before
+#                            2026-09) is refused.
+#   RASPUTIN_MANIFEST_FILE   use this already-downloaded manifest.json instead
+#                            of fetching one. It is verified here regardless.
+#   RASPUTIN_MANIFEST_SIG_FILE  its detached signature (default:
+#                            <RASPUTIN_MANIFEST_FILE>.sig)
+#   RASPUTIN_ROOT_CA_FILE    use a local copy of the Rasputin root CA. It must
+#                            still match the fingerprint baked into this script.
 #   RASPUTIN_DISK            target device (e.g. /dev/disk4 or /dev/sdb); skips
 #                            the interactive picker (still asks to confirm
 #                            unless RASPUTIN_ASSUME_YES=1)
@@ -71,6 +82,193 @@ have() { command -v "$1" >/dev/null 2>&1; }
 # (`<cluster>.local`), and a node is addressable at `<node>.<cluster>.internal` —
 # so a trailing hyphen is not merely untidy, it is an uncertifiable host.
 valid_label() { printf '%s' "$1" | grep -Eq '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$'; }
+
+# ==============================================================================
+# BEGIN shared release verifier — canonical copy
+# ------------------------------------------------------------------------------
+# This block is the ONE laptop-side verifier. It is duplicated verbatim into the
+# control plane's add-node flasher (rasputin-control-plane
+# api/internal/api/flash.sh); the markers exist so the copy can be compared
+# mechanically. Change it HERE and copy the whole block, markers included.
+#
+# WHAT IT ESTABLISHES (geekdojo/geekdojo-brain#528)
+#   Before this, a first flash trusted the release manifest on HTTPS plus GitHub
+#   repository write: `manifest.json` arrived over TLS, the image's SHA-256 was
+#   read out of it, and the manifest's own signature — published beside it —
+#   was never fetched. Every checksum below is only as trustworthy as the
+#   document it was read from, so the chain started at "whatever GitHub served".
+#
+#   Now it starts at a fingerprint baked into this file:
+#
+#     1. the root CA is downloaded and its SHA-256 fingerprint must equal
+#        RASPUTIN_ROOT_CA_SHA256 below — so the anchor comes from the script's
+#        own bytes, not from the fetch;
+#     2. `manifest.json.sig` must verify against that root;
+#     3. the SIGNER must carry the release purpose OID — this is the check that
+#        binds the signature to firmware, rather than to any leaf the same root
+#        happens to have issued;
+#     4. only then is a SHA-256 read out of the manifest and the image checked
+#        against it (the existing check, further down).
+#
+#   THIS DOES NOT make a compromised control plane safe: it closes tampering
+#   with the published release assets, which is the threat a laptop faces.
+#
+# TOOLING
+#   `openssl` only — a laptop has no Rasputin binary. macOS ships LibreSSL
+#   3.3.6, Linux ships OpenSSL 3.x; the commands below were measured on both
+#   (geekdojo/geekdojo-brain#474). Two consequences worth not re-deriving:
+#     - `x509 -ext` does not exist on LibreSSL, so the EKU is read from
+#       `x509 -text`;
+#     - `-purpose any` on the CMS verify, because the default purpose is
+#       S/MIME: it passes today only because the release leaf happens to carry
+#       emailProtection, which is incidental. The purpose gate is the OID check,
+#       which is what the control plane and the node agent also enforce.
+# ==============================================================================
+
+# The Rasputin root CA, by fingerprint. This is the anchor: a root that does not
+# hash to this is refused no matter where it came from. Published alongside the
+# PEM at https://rasputin.geekdojo.com/docs/agents/.
+RASPUTIN_ROOT_CA_URL="https://rasputin.geekdojo.com/rasputin-root-ca.pem"
+RASPUTIN_ROOT_CA_SHA256="677e570613873e08a32cf5f4527610338d575ac4e9675ccd91c443febd27c1b9"
+
+# The release purpose. A leaf carrying it may sign OS and firmware artifacts; a
+# leaf without it may not, whatever else it chains to. Matched as a WHOLE TOKEN
+# below — the raw string is a prefix of any future …1.1.1x OID, so a substring
+# test would accept a purpose that has not been minted yet.
+RASPUTIN_RELEASE_OID="1.3.6.1.4.1.66587.1.1.1"
+
+# sha256_of <file> — print a file's SHA-256, on whichever tool the box has.
+sha256_of() {
+	if have shasum; then shasum -a 256 "$1" | awk '{print $1}'
+	elif have sha256sum; then sha256sum "$1" | awk '{print $1}'
+	else return 1
+	fi
+}
+
+# rasputin_openssl — the openssl to use, or empty if there is none.
+rasputin_openssl() { command -v openssl 2>/dev/null; }
+
+# cert_fingerprint <pem> — the SHA-256 fingerprint of the first certificate in a
+# PEM file, as bare lowercase hex.
+#
+# The fingerprint of the CERTIFICATE (its DER), not of the file. A PEM can gain
+# a comment, a trailing newline or CRLF endings and still be the same
+# certificate, so hashing the file would refuse a root that is in fact ours. It
+# is also the form published for a human to compare against
+# (`openssl x509 -noout -fingerprint -sha256`), so the value below is the value
+# on the docs page rather than a second, differently-computed one.
+cert_fingerprint() {
+	local ssl
+	ssl="$(rasputin_openssl || true)"
+	[ -n "$ssl" ] || return 1
+	"$ssl" x509 -in "$1" -noout -fingerprint -sha256 2>/dev/null \
+		| sed 's/^.*=//; s/://g' | tr 'A-Z' 'a-z'
+}
+
+# rasputin_trusted_root <workdir> — put a FINGERPRINT-CHECKED root CA at
+# <workdir>/root-ca.pem, or die. Set RASPUTIN_ROOT_CA_FILE to use a local copy
+# instead of downloading; it is checked against the same fingerprint.
+rasputin_trusted_root() {
+	local work="$1" dest="$1/root-ca.pem" got
+	if [ -n "${RASPUTIN_ROOT_CA_FILE:-}" ]; then
+		[ -r "$RASPUTIN_ROOT_CA_FILE" ] || die "can't read RASPUTIN_ROOT_CA_FILE: $RASPUTIN_ROOT_CA_FILE"
+		cp "$RASPUTIN_ROOT_CA_FILE" "$dest" || die "couldn't copy $RASPUTIN_ROOT_CA_FILE"
+	else
+		curl -fsSL --max-time 30 -o "$dest" "$RASPUTIN_ROOT_CA_URL" \
+			|| die "couldn't fetch the Rasputin root CA from $RASPUTIN_ROOT_CA_URL — check your network."
+	fi
+	got="$(cert_fingerprint "$dest" || true)"
+	[ -n "$got" ] \
+		|| die "couldn't read a certificate out of the root CA at $dest — openssl is required (macOS ships it; on Linux install the 'openssl' package). Refusing to continue."
+	[ "$got" = "$RASPUTIN_ROOT_CA_SHA256" ] || die \
+"the Rasputin root CA does not match the fingerprint built into this script.
+  expected  $RASPUTIN_ROOT_CA_SHA256
+  got       $got
+Nothing was written. Either this script is out of date, or what you downloaded
+is not the Rasputin root CA. Re-download the script from
+https://rasputin.geekdojo.com/bootstrap.sh and try again."
+	printf '%s' "$dest"
+}
+
+# rasputin_verify_manifest <manifest> <sig> <root-ca> <workdir> <stale-advice>
+#
+# Verify the detached CMS signature over the manifest, then require the release
+# purpose OID on the signer. Dies on any failure; prints nothing on success but
+# a one-line confirmation. <stale-advice> is the sentence to print when the
+# signature is fine but the signing certificate has EXPIRED — a caller that is
+# adding a node to a running cluster and one that is flashing a first node need
+# different advice for the same condition.
+rasputin_verify_manifest() {
+	local manifest="$1" sig="$2" root="$3" work="$4" stale_advice="$5"
+	local ssl signer eku
+
+	# `|| true`: under `set -e` a failing command substitution would exit before
+	# the message below, and "openssl is missing" deserves a sentence.
+	ssl="$(rasputin_openssl || true)"
+	[ -n "$ssl" ] || die "openssl is required to verify the release signature (macOS ships it; on Linux install the 'openssl' package). Refusing to flash an unverified image."
+
+	[ -s "$manifest" ] || die "the release manifest is empty or missing: $manifest"
+	[ -s "$sig" ] || die \
+"this release has no signature for its manifest (manifest.json.sig).
+Releases published before 2026-09 are not signed, and this script will not flash
+an unverified image. Use the current release — drop RASPUTIN_RELEASE to take the
+latest stable."
+
+	signer="$work/signer.pem"
+	if ! "$ssl" cms -verify -purpose any -binary -inform DER \
+		-in "$sig" -content "$manifest" -CAfile "$root" \
+		-signer "$signer" -out /dev/null 2>"$work/verify.err"; then
+
+		# Work out WHICH failure this is before reporting it. The signature can
+		# be perfectly good and still not verify, because the signing
+		# certificate has a lifetime — and "certificate has expired" on a
+		# release you did not choose is not a tampering report, it is a stale
+		# release. Extract the signer without chain validation purely to tell
+		# the two apart. (geekdojo/geekdojo-brain#576)
+		if "$ssl" cms -verify -noverify -binary -inform DER \
+			-in "$sig" -content "$manifest" -signer "$signer" -out /dev/null 2>/dev/null \
+			&& [ -s "$signer" ] \
+			&& ! "$ssl" x509 -in "$signer" -noout -checkend 0 >/dev/null 2>&1; then
+			die \
+"this release's signing certificate expired on $("$ssl" x509 -in "$signer" -noout -enddate 2>/dev/null | sed 's/^notAfter=//').
+The signature itself is intact — the release is simply too old to install.
+$stale_advice
+Nothing was written."
+		fi
+
+		die \
+"the release manifest's signature did NOT verify against the Rasputin root CA.
+Nothing was written. Do not flash this image. openssl said:
+$(sed 's/^/  /' "$work/verify.err" 2>/dev/null | tail -3)"
+	fi
+
+	[ -s "$signer" ] || die "the signature verified but openssl produced no signer certificate — refusing to continue."
+
+	# The purpose check. `x509 -text` (not -ext: LibreSSL has no -ext), the EKU
+	# value on the line after the heading, and a WHOLE-TOKEN match so
+	# 1.3.6.1.4.1.66587.1.1.1x cannot pass as 1.3.6.1.4.1.66587.1.1.1.
+	#
+	# `|| true` is load-bearing: a certificate with NO extendedKeyUsage at all
+	# makes grep exit 1, and under `set -e` a failing command substitution in an
+	# ASSIGNMENT kills the script — silently, with status 1 and not one word
+	# about why. The oldest published release leaf is exactly that shape, so the
+	# least authorized signer there is produced the least informative refusal.
+	# An empty $eku simply fails the match below, which is the right answer
+	# said out loud.
+	eku="$("$ssl" x509 -in "$signer" -noout -text 2>/dev/null \
+		| grep -A1 'X509v3 Extended Key Usage' | tr -d '\r' || true)"
+	printf '%s\n' "$eku" | grep -Eq "(^|[ ,])$(printf '%s' "$RASPUTIN_RELEASE_OID" | sed 's/\./\\./g')([ ,]|\$)" \
+		|| die \
+"the release manifest is signed by a certificate that is NOT authorized to sign
+Rasputin OS or firmware images (it does not carry $RASPUTIN_RELEASE_OID).
+Nothing was written. Do not flash this image.
+  signer: $("$ssl" x509 -in "$signer" -noout -subject 2>/dev/null)"
+
+	info "Release signature verified (signed by $("$ssl" x509 -in "$signer" -noout -subject 2>/dev/null | sed 's/^subject= *//'))."
+}
+# ==============================================================================
+# END shared release verifier
+# ==============================================================================
 
 OS="$(uname -s)"
 case "$OS" in
@@ -182,14 +380,50 @@ valid_pubkey "$SSH_KEY" || die "that doesn't look like an SSH public key (expect
 # --- 5. resolve the image from the latest public stable release -------------------
 # releases/latest/download/<asset> follows GitHub's redirect to the newest
 # STABLE release (prereleases excluded) — no API call, no token, no rate limit.
-if [ -n "${RASPUTIN_RELEASE:-}" ]; then
-	MANIFEST_URL="$GH_DL/download/${RASPUTIN_RELEASE}/manifest.json"
+#
+# The scratch directory is created HERE rather than at flash time: the signature
+# check below needs somewhere to put the root CA and the signer certificate, and
+# it runs BEFORE the disk picker so an unverifiable release stops the run while
+# nothing has been chosen, let alone written.
+TMP="$(mktemp -d "${TMPDIR:-/tmp}/rasputin-bootstrap.XXXXXX")"
+trap 'rm -rf "$TMP"' EXIT
+
+# A caller that has ALREADY fetched the manifest hands it over instead of having
+# this script fetch a second copy (geekdojo/geekdojo-brain#528). That is what
+# the rasputin-setup agent skill does: two copies fetched independently means
+# the one that was verified and the one that was used need not be the same
+# document. Whatever arrives here is verified below — being handed a file is not
+# a reason to trust it.
+if [ -n "${RASPUTIN_MANIFEST_FILE:-}" ]; then
+	[ -r "$RASPUTIN_MANIFEST_FILE" ] || die "can't read RASPUTIN_MANIFEST_FILE: $RASPUTIN_MANIFEST_FILE"
+	MANIFEST_SIG_FILE="${RASPUTIN_MANIFEST_SIG_FILE:-${RASPUTIN_MANIFEST_FILE}.sig}"
+	[ -r "$MANIFEST_SIG_FILE" ] \
+		|| die "RASPUTIN_MANIFEST_FILE was given but its signature is missing: $MANIFEST_SIG_FILE (set RASPUTIN_MANIFEST_SIG_FILE if it is elsewhere)."
+	cp "$RASPUTIN_MANIFEST_FILE" "$TMP/manifest.json" || die "couldn't read $RASPUTIN_MANIFEST_FILE"
+	cp "$MANIFEST_SIG_FILE" "$TMP/manifest.json.sig" || die "couldn't read $MANIFEST_SIG_FILE"
+	info "Using the release manifest supplied by the caller ($RASPUTIN_MANIFEST_FILE)."
 else
-	MANIFEST_URL="$GH_DL/latest/download/manifest.json"
+	if [ -n "${RASPUTIN_RELEASE:-}" ]; then
+		MANIFEST_URL="$GH_DL/download/${RASPUTIN_RELEASE}/manifest.json"
+	else
+		MANIFEST_URL="$GH_DL/latest/download/manifest.json"
+	fi
+	info "Resolving the ${RASPUTIN_RELEASE:-latest stable} Rasputin OS release…"
+	curl -fsSL --max-time 30 -o "$TMP/manifest.json" "$MANIFEST_URL" 2>/dev/null \
+		|| die "couldn't fetch $MANIFEST_URL — check your network (or the release tag, if you pinned one)."
+	# A missing .sig is not an error to route around: it is an unsigned release,
+	# and the check below refuses one.
+	curl -fsSL --max-time 30 -o "$TMP/manifest.json.sig" "${MANIFEST_URL}.sig" 2>/dev/null || true
 fi
-info "Resolving the ${RASPUTIN_RELEASE:-latest stable} Rasputin OS release…"
-MANIFEST="$(curl -fsSL --max-time 30 "$MANIFEST_URL" 2>/dev/null || true)"
-[ -n "$MANIFEST" ] || die "couldn't fetch $MANIFEST_URL — check your network (or the release tag, if you pinned one)."
+
+# Verify the manifest BEFORE reading a single checksum out of it.
+info "Verifying the release signature…"
+ROOT_CA="$(rasputin_trusted_root "$TMP")" || exit 1
+rasputin_verify_manifest "$TMP/manifest.json" "$TMP/manifest.json.sig" "$ROOT_CA" "$TMP" \
+	"Take the latest stable release instead: re-run without RASPUTIN_RELEASE set."
+
+MANIFEST="$(cat "$TMP/manifest.json")"
+[ -n "$MANIFEST" ] || die "the release manifest is empty."
 
 # Minimal-dependency JSON pluck: flatten, split objects onto lines, take the
 # artifact whose "architecture" matches. Keys are quote-anchored so e.g.
@@ -278,14 +512,15 @@ if [ "${RASPUTIN_ASSUME_YES:-}" != "1" ]; then
 fi
 
 # --- download + verify --------------------------------------------------------
-TMP="$(mktemp -d "${TMPDIR:-/tmp}/rasputin-bootstrap.XXXXXX")"
-trap 'rm -rf "$TMP"' EXIT
+# $IMG_SHA came out of a manifest whose signature was verified above, so this
+# check now chains the image to the root CA rather than to whatever the release
+# page served.
 IMG="$TMP/node.img.xz"
 info "Downloading $IMG_URL"
 curl -fL --progress-bar -o "$IMG" "$IMG_URL" || die "image download failed."
-info "Verifying checksum…"
-if have shasum; then got="$(shasum -a 256 "$IMG" | awk '{print $1}')"; else got="$(sha256sum "$IMG" | awk '{print $1}')"; fi
-[ "$got" = "$IMG_SHA" ] || die "checksum MISMATCH — refusing to flash a corrupt download.\n  expected $IMG_SHA\n  got      $got"
+info "Verifying checksum against the signed manifest…"
+got="$(sha256_of "$IMG")" || die "neither shasum nor sha256sum is available."
+[ "$got" = "$IMG_SHA" ] || die "checksum MISMATCH — refusing to flash.\n  expected $IMG_SHA\n  got      $got"
 info "Checksum OK."
 
 # --- flash --------------------------------------------------------------------

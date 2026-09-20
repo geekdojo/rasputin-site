@@ -55,15 +55,20 @@ an agent can drive it deterministically:
 | `RASPUTIN_CLUSTER_ID` | Cluster name (default `rasputin`). Becomes `https://<name>.local`, the WebAuthn RP ID, and the `<name>.internal` DNS zone — **fixed for the life of the installation**, so set it deliberately. Short lowercase name: letters, digits, hyphens. Two clusters that both take the default collide on `rasputin.local`. |
 | `RASPUTIN_NODE_ID` | Control-plane node id (default `cp-1`). Short lowercase name: letters, digits, hyphens. |
 | `RASPUTIN_SSH_AUTHORIZED_KEY` | Your SSH **public** key line. Or set `RASPUTIN_SSH_KEY_FILE` to a `.pub` path instead. |
-| `RASPUTIN_RELEASE` | Pin a release tag. Default: latest stable. |
+| `RASPUTIN_RELEASE` | Pin a release tag. Default: latest stable. A release with no `manifest.json.sig` (anything before 2026-09) is refused. |
+| `RASPUTIN_MANIFEST_FILE` | Use an already-downloaded `manifest.json` instead of fetching one — the script verifies whatever it is given. Its signature is read from `<path>.sig`, or from `RASPUTIN_MANIFEST_SIG_FILE`. |
+| `RASPUTIN_ROOT_CA_FILE` | Use a local copy of the root CA. It must still match the fingerprint the script carries. |
 | `RASPUTIN_DISK` | Target device (e.g. `/dev/disk4`, `/dev/sdb`). Skips the disk-picker prompt. |
 | `RASPUTIN_ASSUME_YES` | `=1` skips the typed flash confirmation. |
 | `RASPUTIN_DRY_RUN` | `=1` prints the resolved plan (disk, image URL) and stops **before any write**. |
 | `RASPUTIN_ALLOW_INTERNAL` | `=1` also offers internal disks. Dangerous; leave unset. |
 
-The script verifies the image's SHA-256 against the release manifest, refuses internal
-disks by default, writes the seed, and block-level reads it back. The recommended agent
-flow, in order:
+The script pins the root CA by the fingerprint in its own source, requires
+`manifest.json.sig` to verify against that root, requires the signer to be authorized for
+OS and firmware images, and only then checks the image's SHA-256 against that verified
+manifest. It refuses internal disks by default, writes the seed, and block-level reads it
+back. Every one of those checks runs during a dry run, before anything is written, so the
+preflight below is a full verification. The recommended agent flow, in order:
 
 ```sh
 # 1. Preflight — no writes, prove the plan to the user first.
@@ -150,6 +155,28 @@ What's signed, precisely:
 
   Releases cut before the manifest signature landed have no `manifest.json.sig`; for
   those, the HTTPS-fetched `imageSha256` is the whole integrity story.
+
+  **That command checks the chain, not the authorization.** A signature can verify
+  against the root and still have been made by a leaf that is not allowed to sign OS or
+  firmware images — the Rasputin PKI issues separate purposes, and the one that grants
+  firmware signing is the extended-key-usage OID `1.3.6.1.4.1.66587.1.1.1`. To check it,
+  pull the signer out of the signature and look for that OID as a whole token (it is a
+  prefix of future OIDs, so a plain substring match is not enough):
+
+  ```sh
+  openssl cms -verify -purpose any -binary -inform DER \
+    -in manifest.json.sig -content manifest.json \
+    -CAfile rasputin-root-ca.pem -signer signer.pem -out /dev/null
+  openssl x509 -in signer.pem -noout -text | grep -A1 'Extended Key Usage' \
+    | grep -E '(^|[ ,])1\.3\.6\.1\.4\.1\.66587\.1\.1\.1([ ,]|$)'
+  ```
+
+  `bootstrap.sh` does all of the above — including pinning the root CA by the
+  fingerprint above, which it carries in its own source — so a dry run
+  (`RASPUTIN_DRY_RUN=1`) is a complete verification with nothing written. Prefer it to
+  running these by hand: one verifier that decides what gets flashed beats two that can
+  disagree. `openssl x509 -ext` is not used here on purpose — macOS ships LibreSSL,
+  which has no `-ext`.
 
 ## Where the agent must hand off
 
