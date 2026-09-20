@@ -271,37 +271,44 @@ the board — the control plane is the usual choice, and it has to be on the boa
    the defaults, change them on the board first: its BMC is reachable on your LAN and that
    account also has SSH.
 2. **Press DETECT BOARD.** Leave **BMC ADDRESS** blank and it finds the board itself, then
-   shows you the certificate it presented. You do not need to know the board's IP, and you do
-   not need to read the certificate out yourself. The search runs from the BMC host node, which
-   is on the board's network — not from your browser, which may not be. Type an address
-   (`turingpi.local`, or an IP) only if you would rather not have it look.
-3. **Press ACCEPT CERTIFICATE.** It is its own button because it is the moment you decide to
+   shows you the pin for the key it presented. You do not need to know the board's IP, and you
+   do not need to read anything out of the board yourself. The search runs from the BMC host
+   node, which is on the board's network — not from your browser, which may not be. Type an
+   address (`turingpi.local`, or an IP) only if you would rather not have it look.
+3. **Press ACCEPT THIS BOARD.** It is its own button because it is the moment you decide to
    trust this board. Rasputin then reads the board again with your credentials and fills in
    which node is in which slot, by reading each slot's console for its login prompt. Your
-   password is only ever sent to a board presenting the certificate you accepted.
+   password is only ever sent to a board presenting the key you accepted.
 4. **Adjust the slot list if you need to and press APPLY.** Slots the board could not identify
    — powered off, or running something that is not Rasputin — are left for you to set.
 
 The controls appear as soon as the node running the BMC re-registers.
 
-**About that certificate.** The board's is self-signed and dated 1970, because the BMC has no
-clock at boot. It therefore always reads as expired, and no certificate-authority trust can
-accept it — pinning the exact certificate is both stricter and the only thing that works. If it
-ever changes, Rasputin refuses to connect rather than trusting the new one silently, and names
-the two things that cause it — the BMC firmware was reinstalled, or something else is answering
-in the board's place. Clear the fingerprint and detect again if it was the former.
+**About that pin.** The board's certificate is self-signed and dated 1970, because the BMC has
+no clock at boot. It therefore always reads as expired, and no certificate-authority trust can
+accept it — pinning is both stricter and the only thing that works. What is pinned is the
+board's key, in the same form as the pin your cluster's own bus uses, so a firmware update that
+re-issues the certificate for the same key changes nothing. If the key ever does change,
+Rasputin refuses to connect rather than trusting the new one silently, and names the two things
+that cause it — the BMC firmware was reinstalled, or something else is answering in the board's
+place. Detect the board again if it was the former.
 
 **It works the way `ssh` does when it asks about an unknown host key**, and it carries the same
-honest limitation: nothing independently verifies the certificate the *first* time you are
-shown it, and the board's own web interface does not display a certificate fingerprint to compare
-against. On a network you control that is a reasonable trade, and it is the same one `ssh` asks you
-to make.
+honest limitation: nothing independently verifies the key the *first* time you are shown it, and
+the board's own web interface displays nothing to compare it against. On a network you control
+that is a reasonable trade, and it is the same one `ssh` asks you to make.
+
+Rasputin only talks to this board over HTTPS, with a pin. There is no option to accept any
+certificate and no option to use a plain `http://` address: either would put the BMC password —
+an account that also has SSH and controls power for every node in the chassis — on your network
+in the clear. If a board was configured that way before, Settings says so and asks you to detect
+it again; until you do, nothing is sent to it.
 
 One thing worth being clear about: Rasputin recognizes a Turing Pi by how its BMC answers an
 unauthenticated request, which is what lets the page say it found one before you have typed a
 password. That is identification, not a security check — anything can imitate that response.
-The certificate is the thing you accept, which is why your password only ever goes to a board
-presenting the one you accepted.
+The key is the thing you accept, which is why your password only ever goes to a board presenting
+the one you accepted.
 
 ## Notes
 
