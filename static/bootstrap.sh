@@ -84,12 +84,23 @@ have() { command -v "$1" >/dev/null 2>&1; }
 valid_label() { printf '%s' "$1" | grep -Eq '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$'; }
 
 # ==============================================================================
-# BEGIN shared release verifier — canonical copy
+# BEGIN shared release verifier
 # ------------------------------------------------------------------------------
-# This block is the ONE laptop-side verifier. It is duplicated verbatim into the
-# control plane's add-node flasher (rasputin-control-plane
-# api/internal/api/flash.sh); the markers exist so the copy can be compared
-# mechanically. Change it HERE and copy the whole block, markers included.
+# This block is the ONE laptop-side verifier, kept BYTE-IDENTICAL in two places:
+#
+#   rasputin-site               static/bootstrap.sh          (canonical copy)
+#   rasputin-control-plane      api/internal/api/flash.sh    (vendored copy)
+#
+# The markers are how the two are compared: rasputin-control-plane's
+# TestFlashScriptVerifierMatchesCanonical extracts everything between them and
+# checks it against a pinned hash, so an edit to one copy fails that repo's
+# tests until the other is updated. Change the canonical copy, then copy the
+# whole block across, markers included.
+#
+# The two scripts are otherwise different programs — bootstrap.sh flashes a
+# FIRST control plane from a public release, flash.sh joins a node to a running
+# cluster and is handed the manifest by that cluster — and only this part is
+# shared, because only this part is a security decision.
 #
 # WHAT IT ESTABLISHES (geekdojo/geekdojo-brain#528)
 #   Before this, a first flash trusted the release manifest on HTTPS plus GitHub
