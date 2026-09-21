@@ -2,14 +2,14 @@
 title: "Rasputin on a Turing Pi 2"
 description: "Provisioning a Turing Pi 2 cluster board with Rasputin — including a flashing path that needs no USB cable, and the module choice that avoids the whole problem."
 weight: 22
-applies-to: "2026.07.7"
+applies-to: "2026.09.4"
 ---
 
 The [Turing Pi 2](https://turingpi.com/) puts four compute modules on one mini-ITX board with a BMC that can power,
 flash and reach the serial console of every slot over the network. That maps closely onto
 what Rasputin already does, so a Turing Pi makes a tidy Rasputin cluster.
 
-This guide is written against **Rasputin OS 2026.07.7**, Turing Pi board revision 2.5.1, Turing
+This guide is written against **Rasputin OS 2026.09.4**, Turing Pi board revision 2.5.1, Turing
 Pi BMC firmware 2.3.2, and Raspberry Pi Compute Module 4. Everything here was run on that
 hardware.
 
@@ -129,22 +129,62 @@ credentials.**
 The SSH key is load-bearing. Rasputin images bake **no** SSH key of any kind, so without one
 your only way in is the serial console.
 
-### Stage the image on the BMC's card
+### Put each node's seed inside its own copy of the image
+
+**This is the step that replaces logging in at the console.** A seed sitting on the image's
+`RASPUTIN-OS` volume before the node ever boots is how every other Rasputin install is
+provisioned — the one-line installer on the [download page](/download/) does exactly this to a
+drive attached to your machine. Here you do it to the image file instead, because the drive is
+soldered to the module.
+
+Do this once per node, because each node's seed is different. The commands below are macOS; on
+Linux use `losetup -P` and `mount` instead of `hdiutil` and `diskutil`.
+
+```bash
+# decompress once — the BMC needs the raw .img
+xz -dk rasputin-os-rpi-<version>.img.xz
+
+# then, per node:
+cp rasputin-os-rpi-<version>.img rasputin-os-rpi-<version>-<node>.img
+hdiutil attach -imagekey diskimage-class=CRawDiskImage -nomount \
+  rasputin-os-rpi-<version>-<node>.img          # prints e.g. /dev/disk4
+mkdir -p /tmp/seed
+diskutil mount -mountPoint /tmp/seed /dev/disk4s1
+cp ./my-cluster/seed-<node>.env /tmp/seed/rasputin-seed.env
+sync && diskutil unmount /tmp/seed
+hdiutil detach /dev/disk4
+```
+
+Substitute `<version>` (e.g. `2026.09.4`), `<node>` (the node id you gave
+`rasputin-provision`, e.g. `node-1`), and the `/dev/diskN` that `hdiutil attach` actually
+printed — do not assume `disk4`.
+
+**Check the volume you mounted is named `RASPUTIN-OS`** before copying, with
+`diskutil info /dev/disk4s1 | grep "Volume Name"`. The image has three FAT volumes and only that
+one is the seed. Writing to the wrong one verifies clean and boots the node unseeded.
+
+The file **must** be named `rasputin-seed.env` — that is the name firstboot looks for.
+
+### Stage the images on the BMC's card
 
 The card is not mounted automatically — and until it is, the BMC will report its own 144 MB of
 internal storage, which is misleading if you are checking for free space.
 
 ```bash
 ssh root@<bmc-ip> 'mkdir -p /mnt/sdcard && mount /dev/mmcblk0p1 /mnt/sdcard'
-scp -O rasputin-os-rpi-2026.07.7.img root@<bmc-ip>:/mnt/sdcard/rasputin-rpi.img
+scp -O rasputin-os-rpi-<version>-<node>.img root@<bmc-ip>:/mnt/sdcard/
 ```
 
-The `rpi` image from the [download page](/download/) is compressed, and the BMC needs it
-**decompressed** — `xz -d rasputin-os-rpi-2026.07.7.img.xz` gives roughly 3.1 GB. Substitute
-whichever version you downloaded for `2026.07.7`, here and in the `scp` above. Copying it
-across takes about 8 minutes.
+Copy one image per node; each is about 3.3 GB and takes roughly 8 minutes. A 64 GB card holds
+several comfortably.
 
-Stage it once: the same file flashes every node.
+Confirm each arrived intact before you flash it — a truncated image gives a node the wrong
+identity or no identity at all:
+
+```bash
+shasum -a 256 rasputin-os-rpi-<version>-<node>.img
+ssh root@<bmc-ip> 'sha256sum /mnt/sdcard/rasputin-os-rpi-<version>-<node>.img'
+```
 
 ### Flash a node
 
@@ -153,7 +193,7 @@ Drive the BMC's REST API directly:
 ```bash
 # node is 0-BASED here: node=0 is slot 1, node=1 is slot 2
 curl -sk -u root:turing \
-  "https://<bmc-ip>/api/bmc?opt=set&type=flash&node=0&file=/mnt/sdcard/rasputin-rpi.img&local=true"
+  "https://<bmc-ip>/api/bmc?opt=set&type=flash&node=0&file=/mnt/sdcard/rasputin-os-rpi-<version>-<node>.img&local=true"
 # -> {"handle":<id>}
 
 # poll for progress
@@ -183,77 +223,35 @@ Expect roughly 17 minutes per node.
 > six power cycles. The BMC path above needs no USB cable at all, so that is what we use and
 > what this guide covers.
 
-### First boot
+### First boot provisions the node
 
-Power the node and watch it come up through the BMC's console:
+Power the node and watch it through the BMC's console:
 
 ```bash
 # uart is 0-based too
 curl -sk -u root:turing "https://<bmc-ip>/api/bmc?opt=get&type=uart&node=0"
 ```
 
-You should see:
+Because the seed is already on the card, firstboot consumes it rather than complaining about
+its absence:
 
 ```
-rasputin-firstboot: ERROR: no provisioning seed — this node is un-provisioned.
+rasputin-firstboot: role=compute id=node-1 nats://my-cluster.local:4222
+rasputin-firstboot: wrote the join token to /var/lib/rasputin/bus/join.token (0600)
+rasputin-firstboot: scrubbed consumed secrets (join token, bus key) from seed FAT
+rasputin-firstboot: provisioning complete
 ```
 
-That is expected and safe. Firstboot does not mark itself complete, so it runs again as soon as
-a seed appears. No image changes are needed for the console — the `rpi` image already enables
-the UART the Turing Pi routes to its BMC.
+No image changes are needed for the console — the `rpi` image already enables the UART the
+Turing Pi routes to its BMC.
 
-### Install your SSH key over the console
+The node then reboots itself, picks up a DHCP address, and enrolls. Your SSH key came in with
+the seed, so `ssh root@<node-ip>` works from that point on. Nothing else is required.
 
-Since the image bakes no key, the first one goes in over the serial console. Writes are one
-command at a time:
+Note the scrub: the join token and bus key are removed from the seed volume once consumed, so
+the card does not keep a usable credential after provisioning.
 
-```bash
-u(){ curl -sk -u root:turing --get \
-  --data-urlencode "opt=set" --data-urlencode "type=uart" --data-urlencode "node=0" \
-  --data-urlencode "cmd=$1" "https://<bmc-ip>/api/bmc"; }
-
-u "root"; u "rasputin"
-u "mkdir -p /var/lib/rasputin/dropbear && chmod 700 /var/lib/rasputin/dropbear"
-u "echo '<your-ssh-public-key>' > /var/lib/rasputin/dropbear/authorized_keys"
-u "chmod 600 /var/lib/rasputin/dropbear/authorized_keys"
-```
-
-### Seed each node
-
-The seed partition is mounted read-write on a running node, so seeding is a copy and a reboot —
-no reflash, and nothing to remove from the board.
-
-That holds for a node that has **not** finished provisioning — which is exactly the state the
-console error above reports, and why it is safe. When firstboot does complete, it stamps
-`/var/lib/rasputin/.provisioned`, and its systemd unit runs only while that marker is *absent*
-(`ConditionPathExists=!/var/lib/rasputin/.provisioned`). So **copying a new seed onto a node that
-has already provisioned does nothing** — no error, no re-read, no change, and the node keeps the
-cluster it joined the first time. Moving a working node to a different cluster is therefore not a
-copy-and-reboot: flash it again from the steps above and seed it fresh. Reflashing is also what
-clears `/var/lib/rasputin`, which still holds the previous cluster's identity, its mesh trust and
-any app volumes that lived on that node.
-
-Do the control plane first. `<node-ip>` is that node's address on your LAN — find it in your
-router's DHCP leases, or read it off the node's console with the `uart` command above, which
-prints an `IP address:` line at the login prompt.
-
-```bash
-scp -O ./my-cluster/seed-cp-1.env \
-  root@<node-ip>:/run/rasputin-seed/rasputin-seed.env
-ssh root@<node-ip> reboot
-```
-
-The file must be named `rasputin-seed.env` on the node — that is the name firstboot looks for.
-
-Wait for the control plane to come back, then open **`https://<cluster-id>.local`** — for the
-example above, `https://my-cluster.local` — and register a passkey. A cluster answers to the name
-you gave `--cluster-id`, not to a fixed `rasputin.local`; that name is also its WebAuthn identity,
-which is why two clusters on one LAN need different ones. A cluster provisioned with no
-`--cluster-id` takes the default name `rasputin` and answers `https://rasputin.local`. Repeat the two commands above for each compute node using its own `seed-<name>.env`;
-they will find the control plane and enroll themselves.
-
-From here it is ordinary Rasputin — see [Provisioning & the seed
-file](/docs/provisioning/).
+Do the control plane first, then each compute node. Watch it appear in the dashboard.
 
 ## Power control from the dashboard
 
