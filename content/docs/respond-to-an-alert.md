@@ -2,7 +2,7 @@
 title: "Respond to an alert"
 description: "The ALERTS badge turned red — what raised it, what clicking a row does, which alerts you can acknowledge and which you can only fix, and what the page will never tell you."
 weight: 51
-applies-to: "2026.08.5"
+applies-to: "2026.09.4"
 ---
 
 **Alerts** is the one place that says "look here first". It is a single list: everything the
@@ -50,6 +50,9 @@ scratch every time it is read**, by asking the subsystems that already know:
 | **Backups** | A claimed backup target that failed its health check | CRIT |
 | **Setup** | First-run setup not finished | WARN |
 | **Security** | The node bus running with authentication off | WARN |
+| **Security** | The node bus running without TLS because the control plane's bus key did not load | WARN |
+| **Security** | The node bus still accepting unencrypted connections because its TLS mode was set by hand on the control plane | WARN |
+| **Security** | The node bus still accepting unencrypted connections because the switch to TLS-only failed | WARN |
 
 The 24-hour cut-off on failed jobs is deliberate: past a day a failure is history and belongs on
 the Tasks page, not in a banner.
@@ -144,6 +147,22 @@ walk away.
 The rule evaluator runs as part of the observability stack. With recording off there are no
 recorded metrics to evaluate, so **NodeDown**, **HighCPU** and **DiskAlmostFull** stop firing.
 The derived alerts in the table above are unaffected — they never needed recording.
+
+**A Security warning says the node bus is not encrypted because the bus key did not load.**
+The control plane could not load its bus key, so its bus runs without TLS, and nodes that hold
+the bus pin stay off the bus rather than connect without it. The control plane's log names the
+error. See [The bus key and pin](/docs/provisioning/#the-bus-key-and-pin).
+
+**A Security warning says the node bus accepts plaintext because the bus TLS mode is pinned.**
+The mode was set by hand on the control plane, so the bus keeps accepting unencrypted
+connections and never switches to TLS-only by itself. The warning's detail names the line to
+remove once every node can use TLS.
+
+**A Security warning says the switch to TLS-only failed.**
+Every node was on TLS, so the control plane tried to switch its bus to refuse unencrypted
+connections, and the new bus did not start. The bus came back as it was and the nodes
+reconnected. The warning's detail names the error. The control plane tries again only the next
+time it starts, for example after it reboots.
 
 **An empty page and an empty badge read differently.**
 The badge says `NONE`; the page heading always spells out both counts, `0 CRIT · 0 WARN`

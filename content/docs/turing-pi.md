@@ -154,7 +154,8 @@ from there as `./rasputin-provision`. Then:
 - `--out` — a directory to write into.
 
 Among the files it writes is `seed-cp-1.env` (`seed-<name>.env`). That is the control plane's
-seed. Keep the whole directory private.
+seed. **Keep the whole directory private; the control plane's seed contains the cluster's bus
+private key.**
 
 The SSH key is load-bearing. Rasputin images bake **no** SSH key of any kind, so without one
 your only way in is the serial console.

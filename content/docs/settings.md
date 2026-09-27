@@ -2,7 +2,7 @@
 title: "Settings"
 description: "Two settings you can change on a whim, and four that change how your cluster is reached, defended, and accessed — with the consequence of each choice spelled out."
 weight: 100
-applies-to: "2026.08.5"
+applies-to: "2026.09.4"
 ---
 
 **Settings** is the last icon on the nav rail. Two of its sections are preferences you can
@@ -122,13 +122,14 @@ hand. Rasputin cannot undo a change you made in your router.
 
 ## Operator SSH key
 
-The SSH **public** key or keys this cluster remembers for you, so the Add-node wizard can
-prefill one instead of asking you to paste a key at every enrollment.
+The one SSH **public** key this cluster saves for you, so the Add-node wizard can prefill it
+instead of asking you to paste a key at every enrollment. It is written into the enrollment
+file of each node you add after you save it.
 
 **Put your key here before you enroll anything, and take the prefill every time.** A node
 can only be given an SSH key as it is enrolled. A node enrolled without one has no network
 shell for the rest of its service — the only way into it is the local console, protected by
-a default password shared by every Rasputin OS node. Storing your key here once means every
+a default password shared by every Rasputin OS node. Saving your key here once means every
 later enrollment offers it already filled in, so you cannot forget it on the node you add in
 a hurry. This is the single cheapest thing you can do now to avoid a node you can only fix
 by carrying a keyboard to it.
@@ -137,18 +138,23 @@ by carrying a keyboard to it.
 authentication at all — and the image bakes in no key. A key seeded at enrollment is
 therefore the only thing that makes SSH to that node possible.
 
-Paste a public key line, the kind in `~/.ssh/id_ed25519.pub`, and press **ADD KEY**; the
-field refuses a malformed line or a duplicate before saving. **✕** removes a key from the
-list. On a fresh cluster you do not have to seed it by hand: the first Add-node enrollment
-that uses a key stores it here automatically.
+Paste a public key line, the kind in `~/.ssh/id_ed25519.pub`, and press `SAVE KEY` — or
+`REPLACE KEY` once a key is saved. A malformed line is refused with the reason under the field.
+`CLEAR` removes the saved key once you confirm with `CLEAR KEY`, and the wizard then stops
+filling one in.
+On a fresh cluster you do not have to save it by hand: while no key is saved, the next node you
+add with a key saves that key here. A key you type in the wizard for a single node never
+replaces a key that is already saved.
 
-**What it does not protect.** This list is a convenience for the Add-node wizard, not an
-access-control surface. In the section's own words: *"Changes apply to future enrollments
-only; nodes already running keep the key they were seeded with."* Concretely:
+**What it does not protect.** This key is a convenience for the Add-node wizard, not an
+access-control surface. In the section's own words: *"It does not change nodes that are already
+enrolled. Each keeps the key it was enrolled with — replacing or clearing the key here does not
+remove it from any node."* Concretely:
 
-- Adding a key **does not** grant you SSH access to nodes that are already enrolled. Only
-  nodes enrolled after the change get it.
-- Removing a key here **revokes nothing**. A node seeded with that key still accepts it.
+- Saving or replacing the key **does not** grant you SSH access to nodes that are already
+  enrolled. Only nodes you add after the change get it.
+- Replacing or clearing the key **revokes nothing**. A node enrolled with the old key still
+  accepts it.
 
 **The consequence** is that rotating your key is forward-only as far as this page goes. To
 change the key on a node that is already running, either edit
@@ -156,10 +162,10 @@ change the key on a node that is already running, either edit
 its SSH server re-reads it on every attempt, so nothing needs restarting — or re-enroll the
 node. Editing it needs a way in already: the key the node already has, or its local console.
 [Replace or revoke an SSH key on a node](/docs/replace-or-revoke-an-ssh-key/) walks through the
-edit.
+edit, and the section links to it.
 
-**What you cannot take back.** Removing a key from this list is not a revocation and cannot
-be treated as one; if you need a key to stop working on a node, you have to do it on the
+**What you cannot take back.** Clearing or replacing the key here is not a revocation and
+cannot be treated as one; if you need a key to stop working on a node, you have to do it on the
 node.
 
 ## BMC / power & console
@@ -235,6 +241,11 @@ fallen back to a public one. Enter an address and **SAVE**.
 That node's agent was started with the backend fixed. It cannot be managed from this page
 until that is removed and the agent restarted.
 
-**You added an SSH key but still cannot SSH into a node.**
-The key applies to future enrollments only. A node already running keeps the key it was
-seeded with — change it on the node, or re-enroll.
+**You saved an SSH key but still cannot SSH into a node.**
+The key applies only to nodes you add after saving it. A node already running keeps the key it
+was enrolled with — change it on the node, or re-enroll.
+
+**An amber note under the key says an earlier version saved more keys here.**
+An earlier release kept a list of keys. Only the first was ever filled in by the wizard, so it
+is the key shown, and the others are ignored. Saving the key — even the same key again — or
+clearing it removes the ignored keys from this setting. That changes no node.

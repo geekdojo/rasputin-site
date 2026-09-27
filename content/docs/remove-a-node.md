@@ -2,7 +2,7 @@
 title: "Remove a node"
 description: "Retire a node from the cluster — the six steps, exactly which records REMOVE NODE deletes and which it leaves alone, and what none of it can undo."
 weight: 32
-applies-to: "2026.08.5"
+applies-to: "2026.09.4"
 ---
 
 `REMOVE NODE` is the most consequential control on the **Nodes** page, and it does something
@@ -36,10 +36,11 @@ as well if something else asks.
 ## What REMOVE NODE actually does
 
 **What it protects.** It takes the node's standing in the cluster away. It deletes the node's
-device from the mesh, **revokes the join token** the node uses to get onto the bus, and deletes
-the control plane's own records for it: its app deployment records, its firewall
-reconciliation state, and its inventory row. After a clean removal the machine has no way back
-onto the bus or the mesh and no place in the cluster's inventory.
+device from the mesh, **revokes the join token** the node uses to get onto the bus and closes
+the bus connection it made with that token, and deletes the control plane's own records for it:
+its app deployment records, its firewall reconciliation state, and its inventory row. After a
+clean removal the machine has no way back onto the bus or the mesh and no place in the
+cluster's inventory.
 
 **What it does not protect.** It does not touch the physical machine. Nothing is wiped, nothing
 is reinstalled, the machine is not powered off, and **its agent keeps running**. Specifically:
@@ -48,17 +49,18 @@ is reinstalled, the machine is not powered off, and **its agent keeps running**.
   control-plane *records* are deleted — nothing reaches onto the machine to stop containers or
   delete data. Whatever was running keeps running, and its app data is untouched. Removing a
   node is not a way to uninstall its apps.
-- **It does not cut a live connection instantly.** Revoking the token stops the node the next
-  time it needs to reconnect; an agent already connected keeps its existing session until
-  then. That window is bounded — a bus credential is capped at 24 hours — but if you need a
-  machine off the cluster *now*, power it down or unplug it as well.
+- **It cuts the bus connection only while bus authentication is on**, which is the default.
+  Then the node's live bus connection is closed as part of the removal, and the agent's attempt
+  to reconnect is refused. The bus knows which connection to close from the join token, so on a
+  bus running with authentication off — which shows as a **Security** warning under **Alerts** —
+  an agent already connected stays connected.
 - **It does not erase the node's history.** Its metrics, backup records and update history stay
   in the control plane's database under the old node id.
 - **The token revocation is best-effort.** If it fails, the control plane logs it and carries
   on with the removal rather than blocking it, so a removal can complete with the old token
-  still live — and the dialog does not tell you when that happened. If you are retiring a node
-  for security reasons rather than for convenience, check the control plane's log, and treat
-  the old enrollment file as still sensitive until you have.
+  still live and its connection still open — and the dialog does not tell you when that
+  happened. If you are retiring a node for security reasons rather than for convenience, check
+  the control plane's log, and treat the old enrollment file as still sensitive until you have.
 - **The cascade preview is a summary, not the full list.** It does not mention the token
   revocation at all, and its count for apps means *records* removed.
 
@@ -126,8 +128,9 @@ next time — uninstall from the **Apps** page before removing the node.
 
 **You removed a node for security reasons and want to be sure the token is dead.**
 The dialog will not tell you: the revocation is best-effort and a failure is logged rather than
-surfaced. Read the control plane's log for the removal, treat the old enrollment file as live
-until you have, and power the machine down if you need it off the cluster immediately.
+surfaced. Read the control plane's log for the removal: a revocation that worked logs how many
+tokens it revoked and how many live bus connections it closed. Treat the old enrollment file as
+live until you have read it, and power the machine down if the revocation failed.
 
 **You removed the wrong node.**
 There is no restore. Enroll the machine again from scratch with a new enrollment file — see

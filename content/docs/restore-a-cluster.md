@@ -2,13 +2,13 @@
 title: "Restore a cluster"
 description: "Putting a cluster's identity back onto a re-flashed control plane from an adopted backup disk — the first-run-only window, why it needs no sign-in, and why your app data is deliberately left alone."
 weight: 62
-applies-to: "2026.08.5"
+applies-to: "2026.09.4"
 ---
 
 This is the screen you use after the machine running your control plane died. You flash a
 replacement, plug your backup disk into it, and `/restore` puts your cluster's identity back
-onto the new box — your operators, your passkeys, your nodes' tokens, and your cluster's
-certificate authority.
+onto the new box — your operators, your passkeys, your nodes' tokens, your cluster's bus key,
+and your cluster's certificate authority.
 
 It is a rare, one-way, one-time job, and three things decide whether it will work at all.
 Check them before you start:
@@ -45,8 +45,8 @@ typing the address. `<original-name>` below is the name the dead cluster answere
    plane restarts onto it, and the page waits — up to four minutes — for it to come back
    reporting operators.
 8. **Press `SIGN IN WITH YOUR PASSKEY`** and use the passkey you had before the machine died.
-9. **Check your nodes.** They reconnect with the tokens they already hold and need no
-   re-enrolling. A node enrolled *after* the re-flash holds the wrong certificate authority;
+9. **Check your nodes.** They reconnect with the tokens they already hold, to a bus holding the
+   key their pin names, and need no re-enrolling. A node enrolled *after* the re-flash holds the wrong certificate authority;
    the control plane re-delivers it automatically, shown under **Mesh → DEVICES** as
    `TRUST STALE · re-delivering`, which clears itself.
 10. **Restore app data per app, from Apps, only if you need to** — see
@@ -144,6 +144,11 @@ Read this before you start; it is the single most misread thing about restore.
   tokens, and your app declarations.
 - The **mesh certificate authority**.
 - The **mesh state**.
+- The **bus key**: the key every node checks the control plane's bus against, by its pin. Without
+  it the replacement makes a new key, and no node holding the old pin connects to it. A
+  generation written before your cluster had a bus key holds none, so restoring one leaves the
+  replacement's new key in place — see
+  [The bus key and pin](/docs/provisioning/#the-bus-key-and-pin).
 
 **Not restored — your app data.** Every app volume the generation holds stays **sealed on the
 backup disk**, untouched. The page names them by volume twice: once under the generation you

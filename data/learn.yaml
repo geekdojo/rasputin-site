@@ -345,8 +345,8 @@ lessons:
     minutes: 35
     prereqs: [provisioning.beginner]
     anchors: ["provisioning design", "first-run bootstrap design", "rasputin-os board/rasputin/common/rootfs-overlay/usr/lib/rasputin/firstboot/rasputin-firstboot.sh"]
-    applies-to: "2026.08.5"
-    reviewed: 2026-09-12
+    applies-to: "2026.09.4"
+    reviewed: 2026-09-17
     lab: build
   - id: backup.intermediate
     title: "Why restore is never automatic"
