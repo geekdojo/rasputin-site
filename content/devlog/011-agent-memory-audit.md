@@ -6,9 +6,14 @@ summary: "My coding agent's persistent memory reached 93 files and tripped the i
 ---
 
 I'll preface this entire devlog with the statement that both Karpathy and Cherny 
-recommend simply deleting your Claude|agents.md and memory files whenever a new model is 
-released. So some of what I talk about below is technically at odds with their 
-guidance. With that said...
+recommend simply deleting your Claude|agents.md and memory files periodically — Cherny's 
+advice, in his Y Combinator interview, is every six months. So some of what I talk about 
+below is technically at odds with their guidance. With that said...
+
+*Correction, 2026-09-17: as first published, this paragraph said both of them recommend 
+deleting these files "whenever a new model is released". Cherny's recommendation is every six 
+months, and the sentence has been corrected. This is the only change made to this post since 
+publication.*
 
 My coding agent (Claude) keeps a persistent memory — a directory of small markdown files it
 writes to when it learns something durable, plus an index it loads every session. I

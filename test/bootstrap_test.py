@@ -16,12 +16,25 @@ under a pseudo-terminal (the script reads answers from /dev/tty so it works unde
 template is evaluated as shell. Nothing here is a copy of the script, so the
 tests cannot drift away from what ships.
 
+Cases F-H cover the shared release verifier (geekdojo/geekdojo-brain#528): the
+block between the BEGIN/END markers is extracted from the shipped script and
+driven against a throwaway PKI built here. Its failures are the point — a
+verifier that accepts a manifest it should have refused is invisible until
+someone flashes a tampered image, so every refusal is pinned: a root CA that
+does not match the baked fingerprint, an absent signature, a tampered manifest,
+a signer without the release purpose OID, a signer with no extended key usage at
+all, a near-miss OID a prefix test would have accepted, and an expired signing
+certificate (which must be reported as a stale release, not as tampering).
+
+No network: the fixtures are generated with the local openssl.
+
 Run:  python3 test/bootstrap_test.py
 """
 
 import os
 import pty
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -221,14 +234,334 @@ def test_prompt_rejects_bad_names():
               out)
 
 
+
+# --------------------------------------------------------------------------
+# F + G + H. the shared release verifier
+# --------------------------------------------------------------------------
+BEGIN = "# BEGIN shared release verifier"
+END = "# END shared release verifier"
+
+# The helpers the block leans on. Taken from the script itself so a rename in
+# bootstrap.sh cannot leave the tests exercising a stale prelude.
+def extract_verifier():
+    text = script_text()
+    i = text.index(BEGIN)
+    j = text.index(END) + len(END)
+    block = text[i:j]
+    prelude = "\n".join(
+        m.group(0) for m in re.finditer(r"^(say|info|warn|die|have)\(\).*$", text, re.M)
+    )
+    return prelude + "\n" + block + "\n"
+
+
+def openssl_bin():
+    return shutil.which("openssl") or "/usr/bin/openssl"
+
+
+class PKI:
+    """A throwaway root -> intermediate -> leaf chain, with the leaf variants the
+    verifier is supposed to tell apart."""
+
+    EXT = """
+[ca]
+basicConstraints=critical,CA:TRUE
+keyUsage=critical,keyCertSign,cRLSign
+[leaf_release]
+basicConstraints=critical,CA:FALSE
+keyUsage=critical,digitalSignature
+extendedKeyUsage=critical,codeSigning,emailProtection,1.3.6.1.4.1.66587.1.1.1
+[leaf_catalog]
+basicConstraints=critical,CA:FALSE
+keyUsage=critical,digitalSignature
+extendedKeyUsage=critical,codeSigning,emailProtection,1.3.6.1.4.1.66587.1.1.2
+[leaf_nearmiss]
+basicConstraints=critical,CA:FALSE
+keyUsage=critical,digitalSignature
+extendedKeyUsage=critical,codeSigning,emailProtection,1.3.6.1.4.1.66587.1.1.11
+[leaf_noeku]
+basicConstraints=critical,CA:FALSE
+keyUsage=critical,digitalSignature
+"""
+
+    def __init__(self, d):
+        self.d = d
+        self.ssl = openssl_bin()
+        self.ext = os.path.join(d, "ext.cnf")
+        with open(self.ext, "w", encoding="utf-8") as f:
+            f.write(self.EXT)
+        self._run("req -x509 -newkey rsa:2048 -nodes -keyout %s -out %s -days 3650 "
+                  "-subj /CN=Test-Root -extensions ca -config %s"
+                  % (self.p("root.key"), self.p("root.pem"), self._reqcnf()))
+        self._leafcsr("int")
+        self._run("x509 -req -in %s -CA %s -CAkey %s -CAcreateserial -out %s -days 1825 "
+                  "-extfile %s -extensions ca"
+                  % (self.p("int.csr"), self.p("root.pem"), self.p("root.key"),
+                     self.p("int.pem"), self.ext))
+        for kind in ("release", "catalog", "nearmiss", "noeku"):
+            self._leafcsr(kind)
+            self._run("x509 -req -in %s -CA %s -CAkey %s -CAcreateserial -out %s -days 730 "
+                      "-extfile %s -extensions leaf_%s"
+                      % (self.p(kind + ".csr"), self.p("int.pem"), self.p("int.key"),
+                         self.p(kind + ".pem"), self.ext, kind))
+
+    def _reqcnf(self):
+        path = self.p("req.cnf")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("[req]\ndistinguished_name=dn\n[dn]\n" + self.EXT)
+        return path
+
+    def p(self, name):
+        return os.path.join(self.d, name)
+
+    def _run(self, args, check=True):
+        r = subprocess.run([self.ssl] + args.split(), capture_output=True, text=True)
+        if check and r.returncode != 0:
+            raise RuntimeError("openssl %s failed: %s" % (args, r.stderr))
+        return r
+
+    def _leafcsr(self, name):
+        self._run("req -new -newkey rsa:2048 -nodes -keyout %s -out %s -subj /CN=Test-%s"
+                  % (self.p(name + ".key"), self.p(name + ".csr"), name))
+
+    # A minimal `openssl ca` config. This path exists because `x509 -req
+    # -not_before/-not_after` is OpenSSL 3.5+, and the CI runner (Ubuntu 24.04,
+    # OpenSSL 3.0) and macOS (LibreSSL 3.3.6) both lack it — so the case that
+    # covers the leaf-expiry cliff would have skipped everywhere it matters.
+    # `openssl ca -startdate/-enddate` works on all of them.
+    CA_CNF = """
+[ca]
+default_ca = CA_default
+[CA_default]
+dir = %(dir)s
+database = $dir/index.txt
+new_certs_dir = $dir/newcerts
+serial = $dir/serial
+certificate = %(cert)s
+private_key = %(key)s
+default_md = sha256
+policy = pol
+email_in_dn = no
+rand_serial = no
+unique_subject = no
+[pol]
+commonName = supplied
+[leaf_release]
+basicConstraints=critical,CA:FALSE
+keyUsage=critical,digitalSignature
+extendedKeyUsage=critical,codeSigning,emailProtection,1.3.6.1.4.1.66587.1.1.1
+"""
+
+    def expired_leaf(self):
+        """A release leaf whose validity is in the past — the dec-24 cliff.
+
+        Returns the path, or None if this box cannot mint one at all (then the
+        case skips rather than failing for the wrong reason). Two mechanisms are
+        tried so that the case actually runs on CI and on a developer Mac, not
+        only on a very new OpenSSL."""
+        self._leafcsr("expired")
+        out = self.p("expired.pem")
+
+        # 1. `x509 -req -not_before/-not_after` — OpenSSL 3.5+.
+        r = self._run("x509 -req -in %s -CA %s -CAkey %s -CAcreateserial -out %s "
+                      "-not_before 20240101000000Z -not_after 20250101000000Z "
+                      "-extfile %s -extensions leaf_release"
+                      % (self.p("expired.csr"), self.p("int.pem"), self.p("int.key"),
+                         out, self.ext), check=False)
+        if r.returncode == 0:
+            return out
+
+        # 2. `openssl ca -startdate/-enddate` — everywhere else, including
+        #    OpenSSL 3.0 and LibreSSL 3.3.6.
+        cadir = self.p("cadir")
+        os.makedirs(os.path.join(cadir, "newcerts"), exist_ok=True)
+        open(os.path.join(cadir, "index.txt"), "w").close()
+        with open(os.path.join(cadir, "serial"), "w", encoding="utf-8") as f:
+            f.write("1000\n")
+        cacnf = self.p("ca.cnf")
+        with open(cacnf, "w", encoding="utf-8") as f:
+            f.write(self.CA_CNF % {"dir": cadir, "cert": self.p("int.pem"),
+                                   "key": self.p("int.key")})
+        r = self._run("ca -batch -config %s -in %s -out %s -notext "
+                      "-startdate 240101000000Z -enddate 250101000000Z "
+                      "-extfile %s -extensions leaf_release"
+                      % (cacnf, self.p("expired.csr"), out, cacnf), check=False)
+        return out if r.returncode == 0 and os.path.exists(out) else None
+
+    def sign(self, leaf, content, out):
+        self._run("cms -sign -binary -in %s -signer %s -certfile %s -inkey %s "
+                  "-outform DER -out %s"
+                  % (content, leaf, self.p("int.pem"),
+                     leaf.replace(".pem", ".key"), out))
+
+    def fingerprint(self, pem):
+        r = self._run("x509 -in %s -noout -fingerprint -sha256" % pem)
+        return r.stdout.split("=", 1)[1].strip().replace(":", "").lower()
+
+
+def run_verifier(pki, manifest, sig, root, advice="Update the cluster first."):
+    """Drive rasputin_verify_manifest from the shipped block. Returns (rc, output)."""
+    work = os.path.join(pki.d, "work")
+    os.makedirs(work, exist_ok=True)
+    prog = (
+        extract_verifier()
+        + '\nrasputin_verify_manifest %s %s %s %s %s\n'
+        % (quote(manifest), quote(sig), quote(root), quote(work), quote(advice))
+    )
+    return sh(prog)
+
+
+def run_trusted_root(pki, ca_file):
+    work = os.path.join(pki.d, "rootwork")
+    os.makedirs(work, exist_ok=True)
+    prog = (
+        extract_verifier()
+        + '\nRASPUTIN_ROOT_CA_FILE=%s\nrasputin_trusted_root %s\n'
+        % (quote(ca_file), quote(work))
+    )
+    return sh(prog)
+
+
+def test_verifier():
+    print("F. the verifier accepts exactly one thing: a release-purpose signature")
+    with tempfile.TemporaryDirectory() as d:
+        try:
+            pki = PKI(d)
+        except RuntimeError as e:
+            check("openssl can build the fixture PKI", False, str(e))
+            return
+        manifest = os.path.join(d, "manifest.json")
+        with open(manifest, "w", encoding="utf-8") as f:
+            f.write('{"version":"2026.09.9","channel":"stable","artifacts":[]}\n')
+
+        good = os.path.join(d, "good.sig")
+        pki.sign(pki.p("release.pem"), manifest, good)
+        rc, out = run_verifier(pki, manifest, good, pki.p("root.pem"))
+        check("a release-purpose signature verifies", rc == 0, out)
+        check("…and it says who signed it", "Test-release" in out, out)
+
+        print("G. every refusal the verifier exists for")
+        # An artifact signed by the CATALOG leaf. It chains to the same root, so
+        # only the purpose OID tells it apart — this is the whole reason the OID
+        # check exists rather than relying on the chain.
+        cat = os.path.join(d, "catalog.sig")
+        pki.sign(pki.p("catalog.pem"), manifest, cat)
+        rc, out = run_verifier(pki, manifest, cat, pki.p("root.pem"))
+        check("a catalog-purpose signer is refused", rc != 0, out)
+        # It must be refused for the RIGHT reason: `-purpose any` on the CMS
+        # verify means the chain check passes for a catalog leaf, so this
+        # message appearing proves the OID check is what turned it away.
+        check("…and the message names the missing authorization",
+              "NOT authorized" in out and "1.3.6.1.4.1.66587.1.1.1" in out, out)
+
+        # …1.1.11 — a valid future OID that a prefix/substring test would accept.
+        nm = os.path.join(d, "nearmiss.sig")
+        pki.sign(pki.p("nearmiss.pem"), manifest, nm)
+        rc, out = run_verifier(pki, manifest, nm, pki.p("root.pem"))
+        check("an OID that merely starts with the release OID is refused",
+              rc != 0, out)
+
+        # A leaf with NO extendedKeyUsage extension at all. This is the shape
+        # of the oldest published release leaf, and it is the case that caught
+        # a silent `set -e` abort: the EKU grep found nothing, the assignment
+        # failed, and the script exited 1 without printing a word. The least
+        # authorized signer must produce the clearest refusal, not the quietest.
+        noeku = os.path.join(d, "noeku.sig")
+        pki.sign(pki.p("noeku.pem"), manifest, noeku)
+        rc, out = run_verifier(pki, manifest, noeku, pki.p("root.pem"))
+        check("a signer with no EKU at all is refused", rc != 0, out)
+        check("…and says why, rather than dying silently",
+              "NOT authorized" in out, "output was: %r" % out)
+
+        # A tampered manifest against a good signature.
+        tampered = os.path.join(d, "tampered.json")
+        with open(tampered, "w", encoding="utf-8") as f:
+            f.write('{"version":"2026.09.8","channel":"stable","artifacts":[]}\n')
+        rc, out = run_verifier(pki, tampered, good, pki.p("root.pem"))
+        check("a tampered manifest is refused", rc != 0, out)
+        check("…and is reported as a verification failure, not a stale release",
+              "did NOT verify" in out, out)
+
+        # A signature from a root we do not trust.
+        with tempfile.TemporaryDirectory() as d2:
+            other = PKI(d2)
+            rogue = os.path.join(d, "rogue.sig")
+            other.sign(other.p("release.pem"), manifest, rogue)
+            rc, out = run_verifier(pki, manifest, rogue, pki.p("root.pem"))
+            check("a signature from another root is refused", rc != 0, out)
+
+        # No signature at all — an unsigned (pre-2026-09) release.
+        missing = os.path.join(d, "absent.sig")
+        rc, out = run_verifier(pki, manifest, missing, pki.p("root.pem"))
+        check("an unsigned release is refused, not waved through", rc != 0, out)
+        check("…and says the release is unsigned", "no signature" in out, out)
+
+        print("H. an expired signing certificate reads as a stale release (dec 24)")
+        exp = pki.expired_leaf()
+        if exp is None:
+            print("  skip  this openssl cannot mint a back-dated certificate")
+        else:
+            esig = os.path.join(d, "expired.sig")
+            pki.sign(exp, manifest, esig)
+            rc, out = run_verifier(pki, manifest, esig, pki.p("root.pem"),
+                                   advice="Update the cluster before adding a node.")
+            check("an expired signer is refused", rc != 0, out)
+            check("…reported as expiry, not as tampering", "expired on" in out, out)
+            check("…and it says the signature itself is intact",
+                  "signature itself is intact" in out, out)
+            check("…and it carries the caller's remedy",
+                  "Update the cluster before adding a node." in out, out)
+
+
+def test_root_fingerprint():
+    print("I. the root CA is pinned by the fingerprint baked into the script")
+    with tempfile.TemporaryDirectory() as d:
+        try:
+            pki = PKI(d)
+        except RuntimeError as e:
+            check("openssl can build the fixture PKI", False, str(e))
+            return
+        # A perfectly valid CA that is simply not ours.
+        rc, out = run_trusted_root(pki, pki.p("root.pem"))
+        check("a root that does not match the baked fingerprint is refused",
+              rc != 0, out)
+        check("…and the message shows both fingerprints",
+              "expected" in out and "got" in out, out)
+
+    # The check that matters: the shipped verifier must ACCEPT the root CA this
+    # site actually serves, computed the way the script computes it. Comparing
+    # two numbers that were both derived here would agree with itself while the
+    # script disagreed with both — which is exactly how an early version of this
+    # pinned the hash of the PEM file while comparing it to the fingerprint of
+    # the certificate, and passed.
+    served = os.path.join(ROOT, "static", "rasputin-root-ca.pem")
+    with tempfile.TemporaryDirectory() as d:
+        pki = type("Shim", (), {"d": d})()
+        rc, out = run_trusted_root(pki, served)
+        check("the verifier accepts the root CA this site serves", rc == 0, out)
+        check("…and hands back a path to it", out.strip().endswith("root-ca.pem"), out)
+
+    # And the number in the script is the published one, so the fingerprint a
+    # human compares by eye is the same fingerprint the script enforces.
+    r = subprocess.run([openssl_bin(), "x509", "-in", served, "-noout",
+                        "-fingerprint", "-sha256"], capture_output=True, text=True)
+    got = r.stdout.split("=", 1)[1].strip().replace(":", "").lower() if r.returncode == 0 else ""
+    m = re.search(r'^RASPUTIN_ROOT_CA_SHA256="([0-9a-f]{64})"', script_text(), re.M)
+    check("bootstrap.sh pins a fingerprint", m is not None)
+    if m:
+        check("…and it is the fingerprint of static/rasputin-root-ca.pem",
+              m.group(1) == got, "script=%s served=%s" % (m.group(1), got))
+
+
 if __name__ == "__main__":
     test_valid_label()
     test_seed_render()
     test_example_parity()
     test_prompts()
     test_prompt_rejects_bad_names()
+    test_verifier()
+    test_root_fingerprint()
     print()
     if failures:
         print("FAILED (%d): %s" % (len(failures), ", ".join(failures)))
         sys.exit(1)
-    print("all bootstrap.sh seed/prompt tests passed")
+    print("all bootstrap.sh seed/prompt/verifier tests passed")
