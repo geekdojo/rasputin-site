@@ -3,7 +3,7 @@ title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 111
 applies-to: "evergreen"
-reviewed: 2026-09-13
+reviewed: 2026-10-08
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -92,6 +92,9 @@ hand you afterwards.
 
 ## Next
 
+**Secrets management (OpenBao).** Pulling secrets management forward in order to support hardening activities.
+An OpenBao secrets store runs on the control-plane node, and apps get their secrets from it.
+
 **The first hour, hardened.** The setup wizard's three deployment modes validated end to end
 on every major browser and platform — including Linux desktops, where your passkey comes from
 a password manager, a security key, or your phone rather than from the desktop itself — plus
@@ -138,5 +141,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-09-13. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-10-08. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
