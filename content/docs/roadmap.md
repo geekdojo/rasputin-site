@@ -3,7 +3,7 @@ title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 111
 applies-to: "evergreen"
-reviewed: 2026-10-08
+reviewed: 2026-10-15
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -90,10 +90,11 @@ artifact, and tamper/downgrade rejection tests on the signed update chain. The w
 in the images themselves — the cluster is hardened when it boots, not by a checklist we
 hand you afterwards.
 
-## Next
+**Secrets management (OpenBao).** As of `2026.10.1` an OpenBao secrets store ships in the image
+and runs on the control-plane node, sealed at rest and with its own audit log. Next, the control
+plane and then your apps get their secrets from it, never from a table of their own.
 
-**Secrets management (OpenBao).** Pulling secrets management forward in order to support hardening activities.
-An OpenBao secrets store runs on the control-plane node, and apps get their secrets from it.
+## Next
 
 **The first hour, hardened.** The setup wizard's three deployment modes validated end to end
 on every major browser and platform — including Linux desktops, where your passkey comes from
@@ -141,5 +142,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-10-08. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-10-15. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
