@@ -567,3 +567,38 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 }
 .hw-tested { color: var(--accent); }
 .hw-expected { color: var(--muted); }
+
+/* Homepage: setup first, useful apps next, then the system around them. */
+.home-story h1 { max-width: 980px; }
+.home-story .lede { max-width: 720px; }
+.home-story .hero { padding: 72px 0 0; }
+.home-story .band { border-bottom: 1px solid var(--line); }
+.home-story .band-alt { border-top: 0; }
+.home-story h2 { border: 0; padding: 0; margin-bottom: 18px; font-size: 1.9rem; line-height: 1.2; }
+.home-story h3 { font-size: 1.15rem; margin-bottom: 12px; line-height: 1.35; }
+.home-story .home-split > div > p:not(.eyebrow) { color: #aeb3bc; }
+.home-story .eyebrow { margin-bottom: 18px; }
+.home-proof { list-style: none; display: flex; flex-wrap: wrap; gap: 12px 28px; padding: 22px 0;
+  margin-top: 48px; border-top: 1px solid var(--line); color: #aeb3bc; font: 0.78rem/1.6 var(--mono); }
+.home-proof a { color: inherit; }
+.home-split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.home-split > * { min-width: 0; }
+.home-top { align-items: start; }
+.home-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.home-tags li { border: 1px solid var(--line); padding: 7px 10px; font: 0.75rem/1.5 var(--mono); }
+.home-story .home-note { margin-top: 18px; }
+.home-link { display: inline-block; margin-top: 22px; font-size: 0.9rem; }
+.home-links { display: flex; flex-wrap: wrap; gap: 14px 24px; margin-top: 24px; font-size: 0.9rem; }
+.home-benefits { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.home-benefits .card { display: flex; flex-direction: column; }
+.home-benefits .card .eyebrow { color: var(--accent); font-size: 0.75rem; }
+.home-benefits .home-link { margin-top: auto; padding-top: 22px; }
+.home-story section[id] { scroll-margin-top: 80px; }
+.home-story .email-form { margin-top: 0; }
+@media (max-width: 760px) {
+  .home-split, .home-benefits { grid-template-columns: 1fr; gap: 28px; }
+  .home-story .hero { padding-top: 48px; }
+  .home-story .band { padding: 40px 0; }
+  .home-story h2 { font-size: 1.65rem; }
+  .home-proof { margin-top: 32px; }
+}
