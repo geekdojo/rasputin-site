@@ -3,7 +3,7 @@ title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 111
 applies-to: "evergreen"
-reviewed: 2026-10-08
+reviewed: 2026-10-25
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -22,6 +22,10 @@ Two ground rules:
 
 ## Recently shipped
 
+**Integrated secrets store** — available in `2026.10.2`, 19 Oct 2026. The control-plane
+node runs OpenBao, with the API configured to use it for secrets storage. Further recovery
+and lifecycle hardening continues alongside the rest of the security work.
+
 **App upgrades that keep your data** — `2026.09.0`, 13 Sep 2026. Installed apps now upgrade
 in place when the catalog has a newer version, keeping their data, and can be reverted to the
 previous version. Custom apps get a compose editor with the same guarantees, and no change
@@ -31,8 +35,9 @@ with no DHCP server, and moves to a DHCP address when one appears.
 **Backups that survive losing the box** — `2026.08.5`, 10 Sep 2026. Point the cluster at a USB
 disk or a second NVMe and it backs itself up on a schedule: the control plane's identity and
 your apps' data, media libraries aside, sealed so the disk is useless to anyone without your
-passphrase or recovery code. After a reflash, the setup wizard finds that disk and brings the
-cluster back as it was, and any app's data can be restored on its own from that app's page.
+passphrase or recovery code. After a reflash, the recovery flow restores the cluster's
+identity before you create a new operator account. App data is restored separately from each app's page when needed. See
+[Restore a cluster](/docs/restore-a-cluster/) for the recovery steps and requirements.
 
 **The app catalog earns its launch set** — `2026.08.4`, 30 Aug 2026. Sixteen apps ship as a
 benched launch set, each one deployed and checked on the reference Pi + N100 cluster before
@@ -92,9 +97,6 @@ hand you afterwards.
 
 ## Next
 
-**Secrets management (OpenBao).** Pulling secrets management forward in order to support hardening activities.
-An OpenBao secrets store runs on the control-plane node, and apps get their secrets from it.
-
 **The first hour, hardened.** The setup wizard's three deployment modes validated end to end
 on every major browser and platform — including Linux desktops, where your passkey comes from
 a password manager, a security key, or your phone rather than from the desktop itself — plus
@@ -141,5 +143,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-10-08. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-10-25. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
