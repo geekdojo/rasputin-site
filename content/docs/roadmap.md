@@ -3,7 +3,7 @@ title: "Roadmap"
 description: "What we're building now, next, and later — honestly sequenced, kept current as reality changes, with no dates on anything unshipped."
 weight: 111
 applies-to: "evergreen"
-reviewed: 2026-10-27
+reviewed: 2026-10-25
 ---
 
 This is the order of execution — what we're building **now**, what comes **next**, and
@@ -22,10 +22,9 @@ Two ground rules:
 
 ## Recently shipped
 
-**Integrated secrets store** — available in `2026.10.2`, 19 Oct 2026; backup, restore and
-rollback in `2026.10.3`, 27 Oct 2026. The control-plane node runs OpenBao, with the API
-configured to use it for secrets storage. Backups now carry the store, a restore onto new
-hardware brings it back, and an OS update that rolls back takes the store back with it.
+**Integrated secrets store** — available in `2026.10.2`, 19 Oct 2026. The control-plane
+node runs OpenBao, with the API configured to use it for secrets storage. Further recovery
+and lifecycle hardening continues alongside the rest of the security work.
 
 **App upgrades that keep your data** — `2026.09.0`, 13 Sep 2026. Installed apps now upgrade
 in place when the catalog has a newer version, keeping their data, and can be reverted to the
@@ -144,5 +143,5 @@ is audible.
 
 ---
 
-*Last reviewed: 2026-10-27. If this page and reality disagree, that's a bug —
+*Last reviewed: 2026-10-25. If this page and reality disagree, that's a bug —
 [tell us](https://github.com/geekdojo/rasputin-site/issues/new?title=Roadmap%20drift).*
