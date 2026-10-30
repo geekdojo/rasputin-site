@@ -1,6 +1,6 @@
 {{ define "main" }}
 <article class="band">
-  <div class="wrap narrow">
+  <div class="wrap">
     {{ partial "crumbtrail.html" . }}
     <p class="post-date muted">{{ partial "applies-to.html" (index .Params "applies-to") }}</p>
     <h1>{{ .Title }}</h1>
