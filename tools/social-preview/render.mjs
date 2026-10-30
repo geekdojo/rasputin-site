@@ -139,7 +139,8 @@ const card = ({ name, role }) => `<!doctype html>
       <div class="brand">
         <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 1 23 12 12 23 1 12Z" fill="none" stroke="#fa4616" stroke-width="2.4" stroke-linejoin="round"/>
-          <path d="M4 12h16" stroke="#fa4616" stroke-width="2.4"/>
+          <path d="M5.4 10.8h13.2" stroke="#fa4616" stroke-width="1.1"/>
+          <path d="M5.4 13.2h13.2" stroke="#fa4616" stroke-width="1.1"/>
         </svg>
         RASPUTIN
       </div>
