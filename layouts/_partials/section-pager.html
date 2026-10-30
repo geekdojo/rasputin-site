@@ -1,0 +1,74 @@
+{{- /* In-section previous/next, so crawlers and readers can walk a cluster of
+     related pages without returning to the section index.
+     Docs: the weight decade (10s, 20s, …) matches a job group on /docs/.
+     Learn: the next published level of the same topic (beginner → … → advanced).
+     Devlog: chronological. */ -}}
+{{- if .IsPage -}}
+  {{- if eq .Section "docs" -}}
+    {{- $band := div .Weight 10 -}}
+    {{- $sibs := slice -}}
+    {{- range .CurrentSection.RegularPages.ByWeight -}}
+      {{- if eq (div .Weight 10) $band -}}
+        {{- $sibs = $sibs | append . -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $prev := false -}}
+    {{- $next := false -}}
+    {{- range $i, $p := $sibs -}}
+      {{- if eq $p.RelPermalink $.RelPermalink -}}
+        {{- if gt $i 0 -}}
+          {{- $q := index $sibs (sub $i 1) -}}
+          {{- $prev = dict "url" $q.RelPermalink "title" $q.Title -}}
+        {{- end -}}
+        {{- if lt $i (sub (len $sibs) 1) -}}
+          {{- $q := index $sibs (add $i 1) -}}
+          {{- $next = dict "url" $q.RelPermalink "title" $q.Title -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- partial "pager.html" (dict "prev" $prev "next" $next) -}}
+  {{- else if eq .Section "learn" -}}
+    {{- with partial "learn-lesson.html" . -}}
+      {{- $e := . -}}
+      {{- $levels := slice "beginner" "intermediate" "advanced" -}}
+      {{- $idx := -1 -}}
+      {{- range $i, $l := $levels -}}
+        {{- if eq $l $e.level }}{{ $idx = $i }}{{ end -}}
+      {{- end -}}
+      {{- $prev := false -}}
+      {{- $next := false -}}
+      {{- if gt $idx 0 -}}
+        {{- $id := printf "%s.%s" $e.topic (index $levels (sub $idx 1)) -}}
+        {{- with index (where site.RegularPages "Params.lesson" $id) 0 -}}
+          {{- $pe := partial "learn-lesson.html" . -}}
+          {{- $prev = dict "url" .RelPermalink "title" $pe.title -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if and (ge $idx 0) (lt $idx (sub (len $levels) 1)) -}}
+        {{- $id := printf "%s.%s" $e.topic (index $levels (add $idx 1)) -}}
+        {{- with index (where site.RegularPages "Params.lesson" $id) 0 -}}
+          {{- $ne := partial "learn-lesson.html" . -}}
+          {{- $next = dict "url" .RelPermalink "title" $ne.title -}}
+        {{- end -}}
+      {{- end -}}
+      {{- partial "pager.html" (dict "prev" $prev "next" $next) -}}
+    {{- end -}}
+  {{- else if eq .Section "devlog" -}}
+    {{- $pages := .CurrentSection.RegularPages.ByDate -}}
+    {{- $prev := false -}}
+    {{- $next := false -}}
+    {{- range $i, $p := $pages -}}
+      {{- if eq $p.RelPermalink $.RelPermalink -}}
+        {{- if gt $i 0 -}}
+          {{- $q := index $pages (sub $i 1) -}}
+          {{- $prev = dict "url" $q.RelPermalink "title" $q.Title -}}
+        {{- end -}}
+        {{- if lt $i (sub (len $pages) 1) -}}
+          {{- $q := index $pages (add $i 1) -}}
+          {{- $next = dict "url" $q.RelPermalink "title" $q.Title -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- partial "pager.html" (dict "prev" $prev "next" $next) -}}
+  {{- end -}}
+{{- end -}}

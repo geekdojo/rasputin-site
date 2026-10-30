@@ -1,6 +1,7 @@
 {{ define "main" }}
 <section class="band">
   <div class="wrap narrow">
+    {{ partial "crumbtrail.html" . }}
     <h1>{{ .Title }}</h1>
     {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
     <div class="post-list">

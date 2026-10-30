@@ -2,6 +2,7 @@
 {{- $_ := partialCached "learn-guard.html" "learn-guard" "learn-guard" -}}
 <section class="hero hero-sub">
   <div class="wrap">
+    {{ partial "crumbtrail.html" . }}
     <p class="eyebrow">Lessons · new</p>
     <h1>Learn <span class="accent">how it works</span></h1>
     <p class="lede">{{ .Description }}</p>
@@ -24,15 +25,22 @@
     <div class="post-list learn-rows">
       {{ range hugo.Data.learn.topics }}
         {{ $topic := . }}
+        {{ $published := slice }}
         {{ range slice "beginner" "intermediate" "advanced" }}
           {{ with where hugo.Data.learn.lessons "id" (printf "%s.%s" $topic.id .) }}
-            {{ $e := index . 0 }}
-            {{ $p := index (where $section.RegularPagesRecursive "Params.lesson" $e.id) 0 }}
-            <a class="post-row" href="{{ $p.RelPermalink }}">
-              <span class="post-date muted">{{ $topic.title }} · {{ humanize (index (split $e.id ".") 1) }}</span>
-              <span class="post-title">{{ $e.title }}</span>
-            </a>
+            {{ $published = $published | append (index . 0) }}
           {{ end }}
+        {{ end }}
+        {{ if $published }}
+        <h3 class="learn-topic" id="{{ $topic.id }}">{{ $topic.title }}</h3>
+        {{ range $published }}
+          {{ $e := . }}
+          {{ $p := index (where $section.RegularPagesRecursive "Params.lesson" $e.id) 0 }}
+          <a class="post-row" href="{{ $p.RelPermalink }}">
+            <span class="post-date muted">{{ humanize (index (split $e.id ".") 1) }}</span>
+            <span class="post-title">{{ $e.title }}</span>
+          </a>
+        {{ end }}
         {{ end }}
       {{ end }}
     </div>

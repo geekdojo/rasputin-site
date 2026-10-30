@@ -1,11 +1,13 @@
 {{ define "main" }}
 <article class="band">
   <div class="wrap narrow">
+    {{ partial "crumbtrail.html" . }}
     <p class="post-date muted">{{ .Date.Format "January 2, 2006" }} · devlog</p>
     <h1>{{ .Title }}</h1>
     <div class="prose">
       {{ .Content }}
     </div>
+    {{ partial "section-pager.html" . }}
     <hr class="rule">
     <p class="muted">Want the next one in your inbox? <a href="{{ "/" | relURL }}#updates">Subscribe</a>,
     or grab the <a href="{{ "devlog/index.xml" | relURL }}">RSS feed</a>.

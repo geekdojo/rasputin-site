@@ -1,0 +1,16 @@
+{{- /* Visible breadcrumb nav. Renders nothing unless there are at least two
+     items — a lone "Rasputin" crumb on the homepage is not a trail. */ -}}
+{{- $crumbs := partial "crumbs.html" . -}}
+{{- if ge (len $crumbs) 2 -}}
+<nav class="crumbs" aria-label="Breadcrumb">
+  <ol>
+    {{- range $i, $c := $crumbs }}
+    <li>{{- if eq $i (sub (len $crumbs) 1) -}}
+      <span aria-current="page">{{ $c.name }}</span>
+    {{- else -}}
+      <a href="{{ $c.href }}">{{ $c.name }}</a>
+    {{- end -}}</li>
+    {{- end }}
+  </ol>
+</nav>
+{{- end -}}
