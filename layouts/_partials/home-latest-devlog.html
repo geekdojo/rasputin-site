@@ -1,0 +1,23 @@
+{{- /* Latest posts on the homepage. A new section of its own so it does not
+     rewrite the hero, dashboard, or network copy. Labels are short on purpose. */ -}}
+{{- with site.GetPage "/devlog" -}}
+{{- $posts := .RegularPages.ByDate.Reverse -}}
+{{- if $posts -}}
+<section class="band" id="from-the-devlog">
+  <div class="wrap">
+    <div class="row-head">
+      <h2>Latest from the devlog</h2>
+      <a class="more" href="{{ .RelPermalink }}">All posts</a>
+    </div>
+    <div class="post-list">
+      {{- range first 3 $posts }}
+      <a class="post-row" href="{{ .RelPermalink }}">
+        <span class="post-date muted">{{ .Date.Format "2006-01-02" }}</span>
+        <span class="post-title">{{ .Title }}</span>
+      </a>
+      {{- end }}
+    </div>
+  </div>
+</section>
+{{- end -}}
+{{- end -}}

@@ -27,6 +27,11 @@ jobs:
       HUGO_VERSION: "0.164.0"
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: enableGitInfo stamps sitemap lastmod from the commit
+          # that last touched each page. A shallow clone would omit lastmod or
+          # stamp every page with the tip commit, which Google treats as noise.
+          fetch-depth: 0
       - name: Install Hugo
         run: |
           curl -sSL -o "${{ runner.temp }}/hugo.deb" \

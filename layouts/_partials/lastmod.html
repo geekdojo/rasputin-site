@@ -1,0 +1,15 @@
+{{- /* Best last-modified time for a page.
+     Prefer Hugo's Lastmod (git author date via enableGitInfo, then lastmod /
+     date / publishDate). Learn lessons are stubs whose body lives in
+     data/learn.yaml — use that entry's `reviewed` stamp when it is later,
+     so a re-read bumps the sitemap without a dummy commit on the stub. */ -}}
+{{- $t := .Lastmod -}}
+{{- with partial "learn-lesson.html" . -}}
+  {{- with .reviewed -}}
+    {{- $r := time.AsTime . -}}
+    {{- if or $t.IsZero ($r.After $t) -}}
+      {{- $t = $r -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $t -}}

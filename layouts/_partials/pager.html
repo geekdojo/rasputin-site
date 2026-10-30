@@ -1,0 +1,18 @@
+{{- /* Compact previous/next pair. Caller passes prev/next as either false or
+     a dict {url, title}. Either side may be absent. */ -}}
+{{- if or .prev .next -}}
+<nav class="pager" aria-label="Previous and next">
+  {{- with .prev }}
+  <a class="pager-link pager-prev" href="{{ .url }}">
+    <span class="muted">Previous</span>
+    <span class="pager-title">{{ .title }}</span>
+  </a>
+  {{- end }}
+  {{- with .next }}
+  <a class="pager-link pager-next" href="{{ .url }}">
+    <span class="muted">Next</span>
+    <span class="pager-title">{{ .title }}</span>
+  </a>
+  {{- end }}
+</nav>
+{{- end -}}

@@ -16,8 +16,16 @@
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:image" content="{{ if .IsHome }}{{ "img/ui/dashboard.png" | absURL }}{{ else }}{{ "brand/rasputin-mark-512.png" | absURL }}{{ end }}">
-{{ if .IsHome }}{{ partial "structured-data.html" . }}
-{{ end -}}
+{{- if .IsPage }}
+{{- if not .Date.IsZero }}
+<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05-07:00" }}">
+{{- end }}
+{{- $mod := partial "lastmod.html" . }}
+{{- if not $mod.IsZero }}
+<meta property="article:modified_time" content="{{ $mod.Format "2006-01-02T15:04:05-07:00" }}">
+{{- end }}
+{{- end }}
+{{ partial "structured-data.html" . }}
 {{ if .Params.noindex }}<meta name="robots" content="noindex">
 {{ end -}}
 <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
@@ -68,6 +76,8 @@
       Built in the open by <a href="{{ site.Params.parentUrl }}/about/">one person</a>. A <a href="{{ site.Params.parentUrl }}">geekdojo</a> project.</p>
     </div>
     <div class="foot-links">
+      <a href="{{ "docs/" | relURL }}">Docs</a>
+      <a href="{{ "learn/" | relURL }}">Learn</a>
       <a href="{{ "docs/roadmap/" | relURL }}">Roadmap</a>
       <a href="{{ "devlog/" | relURL }}">Devlog</a>
       <a href="{{ "/" | relURL }}#partners">Partners</a>

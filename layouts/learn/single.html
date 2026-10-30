@@ -3,7 +3,7 @@
 {{- if not $e }}{{ errorf "learn: page %q has no entry in data/learn.yaml" .Path }}{{ end -}}
 <article class="band">
   <div class="wrap narrow">
-    <p class="post-date muted"><a href="{{ "learn/" | relURL }}">Learn</a> › {{ $e.topicTitle }} ›</p>
+    {{ partial "crumbtrail.html" . }}
     <p class="post-date muted">{{ partial "applies-to.html" (index $e "applies-to") }}</p>
     <h1>{{ $e.title }}</h1>
     <p class="post-date muted">{{ humanize $e.level }} · about {{ $e.minutes }} minutes · {{ partial "learn-lab-label.html" $e.lab }}</p>
@@ -23,6 +23,7 @@
     <div class="prose">
       {{ .Content }}
     </div>
+    {{ partial "section-pager.html" . }}
     <hr class="rule">
     <p class="muted">Reviewed {{ $e.reviewed }}.
     Something wrong or unclear in this lesson? <a href="{{ site.Params.docIssueUrl }}">Tell us</a>.</p>

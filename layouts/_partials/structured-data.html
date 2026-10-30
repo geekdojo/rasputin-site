@@ -1,28 +1,103 @@
-{{- /* schema.org SoftwareApplication for the homepage, so search engines read
-     "Rasputin" as software rather than the historical figure. Version and device
-     list render from data/releases.json — never hand-edit them here.
-     No aggregateRating/review: Google requires one for the software rich result,
-     and we have no genuine ratings to publish. */ -}}
-{{- $app := dict
-  "@context" "https://schema.org"
-  "@type" "SoftwareApplication"
-  "name" site.Title
-  "description" site.Params.description
-  "url" site.Home.Permalink
-  "applicationCategory" "UtilitiesApplication"
-  "operatingSystem" "Linux"
-  "downloadUrl" ("download/" | absURL)
-  "screenshot" ("img/ui/dashboard.png" | absURL)
-  "license" "https://www.gnu.org/licenses/agpl-3.0.html"
-  "isAccessibleForFree" true
-  "offers" (dict "@type" "Offer" "price" "0" "priceCurrency" "USD")
-  "author" (dict "@type" "Organization" "name" "Geekdojo" "url" "https://geekdojo.com/" "sameAs" (slice site.Params.githubUrl))
+{{- /* JSON-LD for the HTML page. Types match visible content; nothing here
+     invents a rating, a search box, or a date we don't have.
+     Homepage: SoftwareApplication so "Rasputin" is software, not the
+     historical figure (version/devices from data/releases.json).
+     Every indexable page: WebSite + Organization, plus a page type and a
+     BreadcrumbList that mirrors the visible crumbtrail.
+     No aggregateRating/review: Google requires one for the software rich
+     result, and we have no genuine ratings to publish. */ -}}
+{{- if or .Params.noindex (eq .Kind "404") -}}
+{{- else -}}
+{{- $home := site.Home.Permalink -}}
+{{- $orgId := printf "%s#organization" $home -}}
+{{- $siteId := printf "%s#website" $home -}}
+{{- $sameAs := slice site.Params.githubUrl site.Params.blueskyUrl -}}
+{{- with site.Params.mastodonUrl }}{{ $sameAs = $sameAs | append . }}{{ end -}}
+{{- with site.Params.lemmyUrl }}{{ $sameAs = $sameAs | append . }}{{ end -}}
+{{- $org := dict
+  "@type" "Organization"
+  "@id" $orgId
+  "name" "Geekdojo"
+  "url" "https://geekdojo.com/"
+  "sameAs" $sameAs
 -}}
-{{- with hugo.Data.releases }}{{ with .os }}
-  {{- with .version }}{{ $app = merge $app (dict "softwareVersion" .) }}{{ end }}
-  {{- with .images }}
-    {{- $devices := slice }}{{ range . }}{{ $devices = $devices | append .label }}{{ end }}
-    {{- $app = merge $app (dict "availableOnDevice" (delimit $devices ", ")) }}
-  {{- end }}
-{{- end }}{{ end }}
-<script type="application/ld+json">{{ $app | jsonify | safeJS }}</script>
+{{- $website := dict
+  "@type" "WebSite"
+  "@id" $siteId
+  "name" site.Title
+  "url" $home
+  "description" site.Params.description
+  "inLanguage" "en-US"
+  "publisher" (dict "@id" $orgId)
+-}}
+{{- $graph := slice $website $org -}}
+{{- if .IsHome -}}
+  {{- $app := dict
+    "@type" "SoftwareApplication"
+    "@id" (printf "%s#software" $home)
+    "name" site.Title
+    "description" site.Params.description
+    "url" $home
+    "applicationCategory" "UtilitiesApplication"
+    "operatingSystem" "Linux"
+    "downloadUrl" ("download/" | absURL)
+    "screenshot" ("img/ui/dashboard.png" | absURL)
+    "license" "https://www.gnu.org/licenses/agpl-3.0.html"
+    "isAccessibleForFree" true
+    "offers" (dict "@type" "Offer" "price" "0" "priceCurrency" "USD")
+    "author" (dict "@id" $orgId)
+  -}}
+  {{- with hugo.Data.releases }}{{ with .os }}
+    {{- with .version }}{{ $app = merge $app (dict "softwareVersion" .) }}{{ end }}
+    {{- with .images }}
+      {{- $devices := slice }}{{ range . }}{{ $devices = $devices | append .label }}{{ end }}
+      {{- $app = merge $app (dict "availableOnDevice" (delimit $devices ", ")) }}
+    {{- end }}
+  {{- end }}{{ end }}
+  {{- $graph = $graph | append $app -}}
+{{- end -}}
+{{- $title := .Title -}}
+{{- $description := .Description -}}
+{{- $lesson := partial "learn-lesson.html" . -}}
+{{- with $lesson }}{{ $title = .title }}{{ $description = .description }}{{ end }}
+{{- if not $description }}{{ $description = site.Params.description }}{{ end }}
+{{- $mod := partial "lastmod.html" . -}}
+{{- $page := dict
+  "name" $title
+  "description" $description
+  "url" .Permalink
+  "isPartOf" (dict "@id" $siteId)
+  "inLanguage" "en-US"
+-}}
+{{- if not $mod.IsZero }}{{ $page = merge $page (dict "dateModified" ($mod.Format "2006-01-02T15:04:05-07:00")) }}{{ end -}}
+{{- if .IsHome -}}
+  {{- $page = merge $page (dict "@type" "WebPage" "@id" (printf "%s#webpage" .Permalink)) -}}
+{{- else if and (eq .Section "docs") .IsPage -}}
+  {{- $page = merge $page (dict "@type" "TechArticle" "@id" (printf "%s#article" .Permalink) "headline" $title "author" (dict "@id" $orgId) "publisher" (dict "@id" $orgId) "mainEntityOfPage" .Permalink) -}}
+{{- else if and (eq .Section "learn") .IsPage -}}
+  {{- $page = merge $page (dict "@type" "LearningResource" "@id" (printf "%s#lesson" .Permalink) "learningResourceType" "Lesson" "isAccessibleForFree" true "author" (dict "@id" $orgId)) -}}
+  {{- with $lesson }}
+    {{- $page = merge $page (dict "educationalLevel" (humanize .level) "timeRequired" (printf "PT%dM" .minutes)) -}}
+  {{- end -}}
+{{- else if and (eq .Section "devlog") .IsPage -}}
+  {{- $page = merge $page (dict "@type" "BlogPosting" "@id" (printf "%s#article" .Permalink) "headline" $title "author" (dict "@id" $orgId) "publisher" (dict "@id" $orgId) "mainEntityOfPage" .Permalink "image" ("brand/rasputin-mark-512.png" | absURL)) -}}
+  {{- with .Date }}{{ if not .IsZero }}{{ $page = merge $page (dict "datePublished" (.Format "2006-01-02T15:04:05-07:00")) }}{{ end }}{{ end -}}
+{{- else if and (eq .Section "devlog") .IsSection -}}
+  {{- $page = merge $page (dict "@type" "Blog" "@id" (printf "%s#blog" .Permalink)) -}}
+{{- else if .IsSection -}}
+  {{- $page = merge $page (dict "@type" "CollectionPage" "@id" (printf "%s#webpage" .Permalink)) -}}
+{{- else -}}
+  {{- $page = merge $page (dict "@type" "WebPage" "@id" (printf "%s#webpage" .Permalink)) -}}
+{{- end -}}
+{{- $graph = $graph | append $page -}}
+{{- $crumbs := partial "crumbs.html" . -}}
+{{- if ge (len $crumbs) 2 -}}
+  {{- $items := slice -}}
+  {{- range $i, $c := $crumbs -}}
+    {{- $items = $items | append (dict "@type" "ListItem" "position" (add $i 1) "name" $c.name "item" $c.url) -}}
+  {{- end -}}
+  {{- $graph = $graph | append (dict "@type" "BreadcrumbList" "@id" (printf "%s#breadcrumb" .Permalink) "itemListElement" $items) -}}
+{{- end -}}
+{{- $ld := dict "@context" "https://schema.org" "@graph" $graph }}
+<script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
+{{- end -}}

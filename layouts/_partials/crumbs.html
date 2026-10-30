@@ -1,0 +1,38 @@
+{{- /* Breadcrumb items for a page, Home first, current page last. Each item
+     is {name, url, href}: `url` is absolute (JSON-LD requires it), `href` is
+     site-root-relative so the visible trail works on hugo server too.
+     Names match in both places — Google's breadcrumb rich result requires that.
+     Home, 404, and noindex pages return an empty slice (no trail). */ -}}
+{{- $crumb := dict "name" site.Title "url" site.Home.Permalink "href" (site.Home.RelPermalink) -}}
+{{- $crumbs := slice -}}
+{{- if or .IsHome (eq .Kind "404") .Params.noindex -}}
+{{- else -}}
+  {{- $crumbs = slice $crumb -}}
+  {{- $section := .Section -}}
+  {{- if eq $section "docs" -}}
+    {{- $crumbs = $crumbs | append (dict "name" "Docs" "url" ("docs/" | absURL) "href" ("docs/" | relURL)) -}}
+    {{- if not .IsSection -}}
+      {{- $crumbs = $crumbs | append (dict "name" .Title "url" .Permalink "href" .RelPermalink) -}}
+    {{- end -}}
+  {{- else if eq $section "learn" -}}
+    {{- $crumbs = $crumbs | append (dict "name" "Learn" "url" ("learn/" | absURL) "href" ("learn/" | relURL)) -}}
+    {{- if not .IsSection -}}
+      {{- with partial "learn-lesson.html" . -}}
+        {{- $topicAbs := printf "%s#%s" ("learn/" | absURL) .topic -}}
+        {{- $topicRel := printf "%s#%s" ("learn/" | relURL) .topic -}}
+        {{- $crumbs = $crumbs | append (dict "name" .topicTitle "url" $topicAbs "href" $topicRel) -}}
+        {{- $crumbs = $crumbs | append (dict "name" .title "url" $.Permalink "href" $.RelPermalink) -}}
+      {{- else -}}
+        {{- $crumbs = $crumbs | append (dict "name" $.Title "url" $.Permalink "href" $.RelPermalink) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else if eq $section "devlog" -}}
+    {{- $crumbs = $crumbs | append (dict "name" "Devlog" "url" ("devlog/" | absURL) "href" ("devlog/" | relURL)) -}}
+    {{- if not .IsSection -}}
+      {{- $crumbs = $crumbs | append (dict "name" .Title "url" .Permalink "href" .RelPermalink) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $crumbs = $crumbs | append (dict "name" .Title "url" .Permalink "href" .RelPermalink) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $crumbs -}}

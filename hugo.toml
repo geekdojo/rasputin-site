@@ -4,6 +4,14 @@ title = "Rasputin"
 timeZone = "America/Los_Angeles"
 enableRobotsTXT = true
 disableKinds = ["taxonomy", "term"]
+# Git author date of the last commit that touched the page's file. The sitemap
+# and JSON-LD dateModified use this (via :git below) so crawlers see a real
+# content change, not the build time. CI must fetch full history — see
+# fetch-depth: 0 in .github/workflows/{ci,deploy}.yml.
+enableGitInfo = true
+
+[frontmatter]
+  lastmod = [":git", "lastmod", "date", "publishDate"]
 
 [params]
   description = "Rasputin is an open-source homelab cluster system: Raspberry Pis and UEFI amd64 boxes in any combination, plus an optional firewall node, managed from one web UI — opinionated where you want guidance, open where you want control, and built to work in the first hour."
