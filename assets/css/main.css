@@ -28,10 +28,10 @@ body {
 }
 
 .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
-/* Same 1060px rail as .wrap (and the header logo). Children keep a ~720px
-   reading measure and stay left-aligned — do not shrink-and-center the
-   outer box, or breadcrumbs/H1 jump when moving from an index page. */
-.wrap.narrow > * { max-width: 720px; }
+/* Content pages (.wrap.narrow) fill the same 1060px rail as index pages on
+   both edges. Index-page .prose keeps its 46em measure; only prose inside
+   the narrow wrap is uncapped. */
+.wrap.narrow .prose { max-width: none; }
 
 a { color: var(--text); text-decoration-color: var(--accent); text-underline-offset: 3px; }
 a:hover { color: var(--accent); }
@@ -266,6 +266,7 @@ h2 {
 }
 
 .honest { list-style: none; max-width: 52em; }
+.wrap.narrow .honest { max-width: none; }
 .honest li {
   padding: 14px 0 14px 26px;
   border-bottom: 1px solid var(--line);
