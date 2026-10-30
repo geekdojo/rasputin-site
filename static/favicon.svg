@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" fill="#0b0c0e"/><path d="M12 2 22 12 12 22 2 12Z" fill="none" stroke="#fa4616" stroke-width="2.6" stroke-linejoin="round"/><path d="M4.5 12h15" stroke="#fa4616" stroke-width="2.6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Current Rasputin mark (display master). Two-rail equatorial trench,
+       Pantone 172 C on near-black. Replaces the old favicon-scale single-bar
+       diamond; this file is the same drawing as static/brand/rasputin-mark.svg. -->
+  <rect width="512" height="512" fill="#0b0c0e"/>
+  <path d="M256 86 426 256 256 426 86 256Z" fill="none" stroke="#fa4616" stroke-width="28" stroke-linejoin="round"/>
+  <path d="M100 248h312" stroke="#fa4616" stroke-width="12"/>
+  <path d="M100 264h312" stroke="#fa4616" stroke-width="12"/>
+</svg>

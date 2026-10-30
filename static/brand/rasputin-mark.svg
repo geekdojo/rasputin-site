@@ -2,7 +2,7 @@
   <!-- Rasputin mark, display master: diamond + equatorial trench, Pantone 172 C
        on near-black. Rounded tips (round joins), sharp interior corners; the
        trench is two rails with a 4-unit groove that closes into the walls.
-       Small sizes (≤64px) use the separately-tuned favicon.svg master. -->
+       Favicon.svg is this same drawing. -->
   <rect width="512" height="512" fill="#0b0c0e"/>
   <path d="M256 86 426 256 256 426 86 256Z" fill="none" stroke="#fa4616" stroke-width="28" stroke-linejoin="round"/>
   <path d="M100 248h312" stroke="#fa4616" stroke-width="12"/>
