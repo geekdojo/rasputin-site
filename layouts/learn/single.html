@@ -2,7 +2,7 @@
 {{- $e := partial "learn-lesson.html" . -}}
 {{- if not $e }}{{ errorf "learn: page %q has no entry in data/learn.yaml" .Path }}{{ end -}}
 <article class="band">
-  <div class="wrap narrow">
+  <div class="wrap">
     {{ partial "crumbtrail.html" . }}
     <p class="post-date muted">{{ partial "applies-to.html" (index $e "applies-to") }}</p>
     <h1>{{ $e.title }}</h1>

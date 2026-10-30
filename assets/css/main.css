@@ -12,8 +12,11 @@
   --notch: 14px; /* corner cut size */
   --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --rail: 1060px;
+  --rail-pad: 24px;
 }
 
+/* Zero inherited spacing so the .wrap rail is the only page gutter. */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
@@ -27,11 +30,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
-/* Content pages (.wrap.narrow) fill the same 1060px rail as index pages on
-   both edges. Index-page .prose keeps its 46em measure; only prose inside
-   the narrow wrap is uncapped. */
-.wrap.narrow .prose { max-width: none; }
+/* The only horizontal page layout: header, footer, and every section share
+   this rail. Children inherit its width — do not add max-width or side
+   margins on inner text. */
+.wrap { max-width: var(--rail); margin: 0 auto; padding: 0 var(--rail-pad); }
 
 a { color: var(--text); text-decoration-color: var(--accent); text-underline-offset: 3px; }
 a:hover { color: var(--accent); }
@@ -49,7 +51,7 @@ code {
 .accent { color: var(--accent); }
 
 .visually-hidden {
-  position: absolute; width: 1px; height: 1px;
+  position: absolute; width: 1px; height: 1px; /* clipped, not a layout width */
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
 
@@ -121,7 +123,7 @@ h1 {
   margin-bottom: 22px;
 }
 
-.lede { font-size: 1.15rem; max-width: 46em; color: #b9bdc6; margin-bottom: 30px; }
+.lede { font-size: 1.15rem; color: #b9bdc6; margin-bottom: 30px; }
 
 .cta-row { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
 
@@ -158,7 +160,7 @@ h1 {
 
 .shot img {
   display: block;
-  width: 100%;
+  width: 100%; /* fill the figure; the wrap rail is the width constraint */
   height: auto;
   border: 1px solid var(--line);
 }
@@ -175,7 +177,7 @@ h1 {
 
 .shot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); /* column floor inside the rail */
   gap: 16px;
 }
 
@@ -194,7 +196,7 @@ h1 {
   z-index: 50;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 16px; /* overlay inset, not the page rail */
   background: rgba(8, 9, 11, 0.94);
   cursor: zoom-out;
 }
@@ -202,7 +204,7 @@ h1 {
 .lb-toggle:checked ~ .lb-overlay { display: flex; }
 
 .lb-overlay img {
-  width: 100%;
+  width: 100%; /* lightbox is viewport-fixed, not the page rail */
   height: auto;
   max-height: 94vh;
   object-fit: contain;
@@ -216,13 +218,7 @@ body:has(.lb-toggle:checked) { overflow: hidden; }
    thumbnail, so zoom to 94vh and let the viewer pan sideways instead. */
 @media (max-width: 640px) {
   .lb-overlay { padding: 0; align-items: center; overflow-x: auto; justify-content: flex-start; }
-  .lb-overlay img { width: auto; height: 94vh; max-width: none; flex: none; }
-}
-
-.band-lede {
-  max-width: 52em;
-  color: #aeb3bc;
-  margin: -8px 0 26px;
+  .lb-overlay img { width: auto; height: 94vh; max-width: none; flex: none; } /* pan a full-res shot on a phone */
 }
 
 /* ---- bands & cards ---- */
@@ -234,10 +230,11 @@ h2 {
   font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 28px;
-  padding-left: 14px;
+  padding-left: 14px; /* accent stripe, not a page gutter */
   border-left: 3px solid var(--accent);
 }
 
+/* Card columns share the rail; minmax is a column floor, not a page cap. */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -260,22 +257,21 @@ h2 {
 
 .partner-cols {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* column floor inside the rail */
   gap: 16px;
   margin-bottom: 28px;
 }
 
-.honest { list-style: none; max-width: 52em; }
-.wrap.narrow .honest { max-width: none; }
+.honest { list-style: none; }
 .honest li {
-  padding: 14px 0 14px 26px;
+  padding: 14px 0 14px 26px; /* room for the diamond marker */
   border-bottom: 1px solid var(--line);
   position: relative;
 }
 .honest li::before {
   content: "";
   position: absolute; left: 0; top: 24px;
-  width: 10px; height: 10px;
+  width: 10px; height: 10px; /* diamond marker */
   background: var(--accent);
   clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
 }
@@ -347,21 +343,20 @@ h2 {
   border: 1px solid var(--line);
   background: var(--panel);
   padding: 14px 16px;
-  min-width: 0;
+  min-width: 0; /* let the flex item shrink inside the rail */
 }
 .pager-link:hover { border-color: var(--accent-dim); }
-.pager-next { margin-left: auto; text-align: right; }
+.pager-next { margin-left: auto; text-align: right; } /* pin Next to the rail's right edge */
 .pager-title { display: block; font-weight: 600; }
 
-.prose { max-width: 46em; }
 .prose h2 { margin-top: 40px; }
 .prose h3 { margin: 28px 0 12px; }
 .prose p, .prose ul, .prose ol { margin-bottom: 18px; }
-.prose ul, .prose ol { padding-left: 24px; }
+.prose ul, .prose ol { padding-left: 24px; } /* list marker indent, not a page gutter */
 .prose li { margin-bottom: 6px; }
 .prose blockquote {
   border-left: 3px solid var(--accent-dim);
-  padding-left: 18px;
+  padding-left: 18px; /* quote stripe, not a page gutter */
   color: var(--muted);
   margin-bottom: 18px;
 }
@@ -374,7 +369,7 @@ h2 {
   font-size: 0.88rem;
 }
 .prose pre code { background: none; border: 0; padding: 0; }
-.prose img { max-width: 100%; border: 1px solid var(--line); }
+.prose img { max-width: 100%; border: 1px solid var(--line); } /* don't overflow the rail */
 
 article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 
@@ -417,7 +412,7 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 
 .dl-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); /* column floor inside the rail */
   gap: 16px;
 }
 
@@ -454,10 +449,10 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 .dl-notes a { color: var(--muted); text-decoration: none; }
 .dl-notes a:hover { color: var(--accent); }
 
-.steps { list-style: none; counter-reset: step; max-width: 52em; }
+.steps { list-style: none; counter-reset: step; }
 .steps li {
   position: relative;
-  padding: 14px 0 14px 44px;
+  padding: 14px 0 14px 44px; /* room for the numbered marker */
   border-bottom: 1px solid var(--line);
   color: #aeb3bc;
   font-size: 0.98rem;
@@ -466,7 +461,7 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
   counter-increment: step;
   content: counter(step);
   position: absolute; left: 0; top: 12px;
-  width: 26px; height: 26px;
+  width: 26px; height: 26px; /* numbered marker */
   display: grid; place-items: center;
   font-family: var(--mono); font-size: 0.85rem; font-weight: 700;
   color: var(--accent);
@@ -512,8 +507,8 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 .learn-section > summary::after {
   content: "";
   flex: none;
-  margin: 0 8px 0 auto;
-  width: 9px; height: 9px;
+  margin: 0 8px 0 auto; /* pin the chevron to the rail's right edge */
+  width: 9px; height: 9px; /* chevron */
   border-right: 2px solid var(--accent);
   border-bottom: 2px solid var(--accent);
   transform: rotate(-45deg); /* points right: closed */
@@ -524,7 +519,7 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 .learn-section > summary:hover h2 { color: var(--accent); }
 .learn-section > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .learn-count {
-  margin-left: 10px;
+  margin-left: 10px; /* gap after the heading, not a page gutter */
   font-family: var(--mono); font-size: 0.85rem; font-weight: 400;
   color: var(--muted);
   white-space: nowrap;
@@ -621,8 +616,6 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 .hw-expected { color: var(--muted); }
 
 /* Homepage: setup first, useful apps next, then the system around them. */
-.home-story h1 { max-width: 980px; }
-.home-story .lede { max-width: 720px; }
 .home-story .hero { padding: 72px 0 0; }
 .home-story .band { border-bottom: 1px solid var(--line); }
 .home-story .band-alt { border-top: 0; }
@@ -633,8 +626,9 @@ article h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 10px 0 30px; }
 .home-proof { list-style: none; display: flex; flex-wrap: wrap; gap: 12px 28px; padding: 22px 0;
   margin-top: 48px; border-top: 1px solid var(--line); color: #aeb3bc; font: 0.78rem/1.6 var(--mono); }
 .home-proof a { color: inherit; }
+/* Two columns inside the rail — not a reading-measure cap. */
 .home-split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-.home-split > * { min-width: 0; }
+.home-split > * { min-width: 0; } /* keep grid items from overflowing the rail */
 .home-top { align-items: start; }
 .home-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 .home-tags li { border: 1px solid var(--line); padding: 7px 10px; font: 0.75rem/1.5 var(--mono); }
