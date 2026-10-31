@@ -1,8 +1,8 @@
 ---
 title: "How much RAM does monitoring 24 Pis take? A week of numbers from the Pi 5 that does it"
 date: 2026-11-03
-description: "A week of memory numbers from the Pi 5 that manages my 24-Pi rack and runs its whole monitoring stack, why I set Rasputin's control-plane minimum at 4 GB, and the query to check your own."
-summary: "A week of memory numbers from the Pi 5 that manages my 24-Pi rack and runs its whole monitoring stack, why I set Rasputin's control-plane minimum at 4 GB, and the query to check your own."
+description: "A week of memory numbers from the Pi 5 that manages my 24-Pi rack with Rasputin, my homelab cluster system, and runs its whole monitoring stack, with the query to check your own."
+summary: "A week of memory numbers from the Pi 5 that manages my 24-Pi rack with Rasputin, my homelab cluster system, and runs its whole monitoring stack, with the query to check your own."
 ---
 
 Just how much RAM does a Raspberry Pi 5 need to run a full observability stack, backups, a job 
