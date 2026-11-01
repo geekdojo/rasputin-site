@@ -5,49 +5,40 @@ weight: 60
 applies-to: "2026.10.5"
 ---
 
-Setting up backups is a one-time job: give Rasputin a disk, mint the key your archives are
-sealed to, and choose how often a backup runs. The whole of it happens on **Storage**, which
-has one tab, **BACKUPS**.
+Setting up backups is a one-time job on **Storage**: give Rasputin a disk, mint the key your
+archives are sealed to, and choose how often a backup runs.
 
-Read [The archive key and its two secrets](#the-archive-key-and-its-two-secrets) before you
-start. It is the only part of this page that can cost you your backups, and the decision it
-asks you to make is one you make away from the keyboard.
-
-`<cluster-id>` is your cluster's own identifier, fixed when you provisioned it. `<key id>` is the
-identifier Rasputin prints for an archive key, and `<generation-id>` the identifier of one
-backup.
+Before you start, decide where you will keep the passphrase and the recovery code. Lose both and
+nobody can open your backups; [The archive key and its two secrets](#the-archive-key-and-its-two-secrets)
+explains why.
 
 ## Do this
 
 <!-- SCREENSHOT: storage.png -->
 
 1. **Attach the disk to the control-plane node** — a USB disk, or a second internal drive.
-   It has to be a disk the control plane can reach directly; no other node in the cluster can
-   hold a backup target.
-2. **Open Storage.** The node selector is already on the control-plane node. Press `RESCAN`
-   after plugging a disk in.
-3. **Read the disk's partition list before you touch anything.** The badge decides your path:
-   a blank disk offers **`CLAIM THIS DISK`**, a disk already carrying Rasputin backups offers
-   **`REVIEW…`**, and the disk the machine boots from is badged `BOOT MEDIUM` and can never
-   be claimed.
-4. **Press the button and read the callout at the top of the drawer** — amber on a blank disk
-   (it will be formatted), green on a disk with a set (nothing is destroyed). **If you plugged
-   this disk in to restore from it, take the green path.**
+2. **Open Storage and press `RESCAN`.** The control-plane node is already selected.
+3. **Find your disk by its badge and partition list, not its device name.** A blank disk offers
+   **`CLAIM THIS DISK`**, a disk already carrying Rasputin backups offers **`REVIEW…`**, and
+   the disk badged `BOOT MEDIUM` can never be claimed.
+4. **Press the button and read the callout at the top of the drawer.** If you plugged this disk
+   in to restore from it, take the green path.
 5. **Give it a `LABEL` if you like**, up to 64 characters.
-6. **On a blank disk, choose a passphrase and type it twice.** Minimum 12 characters.
-7. **Save the recovery code**, shown once. You must tick *I have saved this recovery code
-   somewhere outside this cluster* to go on.
+6. **On a blank disk, choose a passphrase of at least 12 characters and type it twice.**
+7. **Save the recovery code**, shown once, and tick *I have saved this recovery code somewhere
+   outside this cluster*.
 8. **Finish the claim** — **`FORMAT AND CLAIM`** on a blank disk; on a disk with a set,
    **`CONTINUE — UNLOCK THIS DISK`**, then **`PASSPHRASE`** or **`RECOVERY CODE`** and your
-   secret. Either way this starts a job; the last screen names it, and you watch it in
-   **Tasks**.
+   secret. Watch the job it starts in **Tasks**.
 9. **Set the cadence.** The first dropdown under `BACKUP RUNS`: `Daily`, `Every 3 days`,
    `Weekly (default)`, `Fortnightly`, `Monthly`, or `Scheduled backups off`.
 10. **Set how much history to keep** — the second dropdown, `Keep 4 (default)`.
-11. **Press `BACK UP NOW`** and read the row it produces. A run's own row is the only proof a
-    backup worked.
+11. **Press `BACK UP NOW`** and read the row it produces; that row is the only proof a backup
+    worked.
 
-## The archive key and its two secrets
+## Details
+
+### The archive key and its two secrets
 
 **Decide where the two secrets live before you mint them.** Losing one of them is
 survivable. Losing both is not, and there is nobody to ask.
@@ -107,10 +98,12 @@ One narrower thing you cannot take back: if the claim job fails *after* the form
 the key is already stamped on the disk. **Keep the recovery code anyway** — adopting that disk
 later will ask for exactly that code or passphrase.
 
-## Adopt, format, or destroy
+### Adopt, format, or destroy
 
 The same drawer opens from both buttons, and its title tells you which of three things you are
-about to do. They are not variations on each other.
+about to do. They are not variations on each other. The callout at the top of the drawer is
+amber on a blank disk, which will be formatted, and green on a disk with a set, where nothing is
+destroyed.
 
 | Path | What happens to the disk | What happens to the key |
 | --- | --- | --- |
@@ -139,24 +132,7 @@ that specific disk while scanning; on a disk it did not, there is no destroy pat
 drawer to find, not even a grayed-out one. There is no undo and no other copy unless you made
 one.
 
-## Superseding the current target
-
-A cluster has at most one current backup target. If one is already claimed, the drawer shows
-an amber block titled **THIS CLUSTER ALREADY HAS A TARGET**, and the continue button stays
-disabled until you tick **Supersede the current backup target**. That gate exists because this
-is easy to do by accident.
-
-**Read it literally.** Superseding changes where *future* generations go. It does not erase,
-format, reclaim, or copy anything: the old disk keeps every generation it already holds, keeps
-its own archive key, and its row stays in the table badged `REPLACED`. Rows are never deleted,
-because a superseded disk may hold the only copy of an archive and the row is the durable
-answer to "what happened to the disk that used to be in there".
-
-**What it does not protect.** Nothing is added to the old disk from that moment on, and its
-health is no longer what protects you. Two disks in rotation is not what this gives you — it
-gives you one live target and one frozen archive.
-
-## Rasputin will not format the boot medium
+### Rasputin will not format the boot medium
 
 The card for the disk the machine runs from carries the guarantee in the product's own words:
 *"Rasputin will not format it, and re-checks that immediately before any format runs."*
@@ -186,7 +162,24 @@ A disk badged `WEAK IDENTITY` reported neither a WWN nor a serial, so it is iden
 model, size and partition table alone. Two identical blank sticks from one batch can look the
 same to that test. Check the bus and the contents before you continue.
 
-## The secret store: what it protects, and what it does not
+### Superseding the current target
+
+A cluster has at most one current backup target. If one is already claimed, the drawer shows
+an amber block titled **THIS CLUSTER ALREADY HAS A TARGET**, and the continue button stays
+disabled until you tick **Supersede the current backup target**. That gate exists because this
+is easy to do by accident.
+
+**Read it literally.** Superseding changes where *future* generations go. It does not erase,
+format, reclaim, or copy anything: the old disk keeps every generation it already holds, keeps
+its own archive key, and its row stays in the table badged `REPLACED`. Rows are never deleted,
+because a superseded disk may hold the only copy of an archive and the row is the durable
+answer to "what happened to the disk that used to be in there".
+
+**What it does not protect.** Nothing is added to the old disk from that moment on, and its
+health is no longer what protects you. Two disks in rotation is not what this gives you — it
+gives you one live target and one frozen archive.
+
+### The secret store: what it protects, and what it does not
 
 Some apps need secrets of their own, such as a database password. The control plane generates
 these for your apps and keeps them in its **secret store**, an encrypted database on the control
@@ -225,7 +218,7 @@ identity.
 **If the store's key is lost,** the control plane will not start, and only a backup brings it
 back. See [If the secret store's key is lost](/docs/restore-a-cluster/#if-the-secret-stores-key-is-lost).
 
-### Reading the audit log
+#### Reading the audit log
 
 The audit log is shown nowhere in the web interface, and none of the cluster's other logs carry
 it. Today the only way to read it is over SSH, on the control plane. This prints its last 20
@@ -235,6 +228,7 @@ lines:
 ssh root@<control-plane-address> 'tail -n 20 /var/lib/rasputin/openbao-audit/audit.log'
 ```
 
+- `<cluster-id>` — your cluster's own name, fixed when you provisioned it.
 - `<control-plane-address>` — your control plane's address on your network right now.
   `ping -c 1 <cluster-id>.local` prints it in parentheses on its first line (`-c 1` sends one
   ping). Look it up again each time: it can change after a reboot.
@@ -247,7 +241,7 @@ ssh root@<control-plane-address> 'tail -n 20 /var/lib/rasputin/openbao-audit/aud
 
 The command only reads the log. It changes nothing and leaves no file behind.
 
-### Licence
+#### Licence
 
 The secret store is OpenBao, shipped as the unmodified upstream release under the Mozilla
 Public License 2.0. Its source is at [github.com/openbao/openbao](https://github.com/openbao/openbao).

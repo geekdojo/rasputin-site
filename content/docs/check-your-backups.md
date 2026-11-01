@@ -5,45 +5,36 @@ weight: 61
 applies-to: "2026.10.5"
 ---
 
-Backups are a thing you check, not a thing you finish. This is the recurring visit: open
-**Storage**, and in under a minute know whether your cluster is backed up, and if not, since
-when.
-
-Everything below assumes a claimed backup target — see [Set up backups](/docs/set-up-backups/).
-
-`<generation-id>` stands for the identifier of one backup, and `<size>` for a size the page
-prints. Your cluster shows its own values.
+Backups are a thing you check, not a thing you finish. Open **Storage**, and in under a minute
+you know whether your cluster is backed up, and if not, since when. This assumes you have a
+claimed backup target — see [Set up backups](/docs/set-up-backups/).
 
 ## Do this
 
 <!-- SCREENSHOT: storage.png -->
 
-1. **Look at the `HEALTH` badge** on the target's row. `OK` and `UNCHECKED` are the only two
-   states that are not a problem. **Every other state fails every backup run until it
-   changes**, and a badge that has been red for days means nothing has been backed up since it
-   turned red. Hover it for the probe's own finding and when it last ran.
-2. **Read the line at the top of `BACKUP RUNS`.** It reports the *last success*, never the
-   last attempt: `Last successful backup 1d ago <generation-id>`, or
+1. **Look at the `HEALTH` badge** on the target's row. Only `OK` and `UNCHECKED` are fine; any
+   other state fails every backup run until it changes.
+2. **Read the line at the top of `BACKUP RUNS`.** It reports the last *success*, never the last
+   attempt: `Last successful backup 1d ago <generation-id>`, or
    `No backup has ever completed on this installation.`
-3. **Check for a warning banner above that line.** If one is there, the generations it
-   describes do **not** reach everything, and you should treat them as not containing your app
-   data until it goes away on its own.
+3. **Check for a warning banner above that line.** If there is one, treat those backups as not
+   holding your app data until it goes away on its own.
 4. **Read the newest row in the runs table** — its `STATUS`, its `SCOPE`, and how long ago.
-   `SCOPE` is `full` in green when the archive reached everything, and amber otherwise; hover
-   it for the per-volume tally.
-5. **If you need one now, press `BACK UP NOW`.** It runs immediately *in addition to* the
-   schedule — it does not reset or reschedule anything, and its row is tagged `· manual`.
-6. **To answer "how often do backups run?", read the schedule dropdown.** Nothing else on the
-   screen answers that question.
+   `SCOPE` is `full` in green when the archive reached everything.
+5. **If you need a backup now, press `BACK UP NOW`.** It runs in addition to the schedule and
+   changes nothing about it.
+6. **To see how often backups run, read the schedule dropdown.** Nothing else on the screen
+   answers that.
 
-`REFRESH` re-reads the run list and the schedule and changes nothing.
+## Details
 
-## What the health probe proves, and what it does not
+### What the health probe proves, and what it does not
 
 Every five minutes Rasputin writes a small file to the target, flushes it to the disk with
 `fsync`, reads it back, deletes it, and flushes the directory too. The whole probe runs under a
 short budget, so a disk that has stopped answering produces a failure rather than a hung
-check.
+check. Hover the `HEALTH` badge for the probe's own finding and when it last ran.
 
 **What it protects you from.** The gap between backups. A disk that has left the bus, been
 unmounted, or stopped taking writes is caught within five minutes instead of at the next
@@ -67,17 +58,25 @@ build does not recognize is rendered as its own upper-cased name **in red** rath
 or treated as fine. A new failure mode reported by a newer control plane must never read as
 green.
 
-## `STATUS` is your decision; `HEALTH` is the disk
+### `STATUS` is your decision; `HEALTH` is the disk
 
 | Column | What it tracks |
 | --- | --- |
 | `STATUS` — `CLAIMED`, `PENDING`, `REPLACED`, `FAILED` | What you decided about this disk. `CLAIMED` does **not** change when the disk is unplugged |
 | `HEALTH` — `OK`, `UNCHECKED`, `MISSING · since …`, `UNMOUNTED · since …`, `UNWRITABLE · since …`, `UNREACHABLE · since …` | What the disk is actually doing right now |
 
+Any `HEALTH` state other than `OK` or `UNCHECKED` fails every backup run until it changes, so a
+badge that has been red for days means nothing has been backed up since it turned red.
+
 The table carries a row for every target this cluster has ever had, and rows are never
 deleted. A `REPLACED` disk is still listed because it may hold the only copy of an archive.
 
-## Three things on this screen say "kept"
+A `SCOPE` that did not reach everything is amber; hover it for the per-volume tally. A run started
+with `BACK UP NOW` is tagged `· manual`.
+
+`REFRESH` re-reads the run list and the schedule and changes nothing.
+
+### Three things on this screen say "kept"
 
 This is the part of the page people misread, so read it once carefully.
 
@@ -89,7 +88,8 @@ This is the part of the page people misread, so read it once carefully.
    about that one run*: how many generations were on the disk at the moment that run finished.
    Only a succeeded run has a number there; every other status renders `—`.
 
-A young cluster shows exactly this, and it is correct:
+A young cluster shows exactly this, and it is correct (`<generation-id>` stands for the
+identifier of one backup, and `<size>` for a size the page prints):
 
 | `STATUS` | `GENERATION` | `SCOPE` | `SIZE` | `RETENTION` | `WHEN` |
 | --- | --- | --- | --- | --- | --- |
@@ -121,7 +121,7 @@ Nd Nh"*. That is an orientation estimate for one app's backup state. It is not p
 restore flow, it does not appear beside a generation, and it is not a promise of a backup at a
 particular clock time.
 
-## What this screen never tells you
+### What this screen never tells you
 
 Worth knowing before you go looking for it:
 
@@ -133,7 +133,7 @@ Worth knowing before you go looking for it:
 - **Free space and retention headroom are never shown.** Nothing on this page tells you
   whether the next generation will fit.
 
-## The secret store pauses while a backup runs
+### The secret store pauses while a backup runs
 
 Every backup carries your apps' secret store (see
 [The secret store](/docs/set-up-backups/#the-secret-store-what-it-protects-and-what-it-does-not)).

@@ -5,148 +5,42 @@ weight: 62
 applies-to: "2026.10.5"
 ---
 
-This is the screen you use after the machine running your control plane died. You flash a
-replacement, plug your backup disk into it, and `/restore` puts your cluster's identity back
-onto the new box — your operators, your passkeys, your nodes' tokens, your cluster's bus key,
-your cluster's certificate authority, and your apps' secret store with the key that opens it.
+Use this page when the machine running your control plane has died. You flash a replacement,
+plug in your backup disk, and `/restore` puts your cluster back: your operators, passkeys, node
+tokens, keys and your apps' secret store. App data is restored separately, one app at a time.
 
-It is a rare, one-way, one-time job, and three things decide whether it will work at all.
-Check them before you start:
+Before you start, you need all three:
 
-- **The disk must have been *adopted*, not claimed as blank.** See
-  [Only an adopted disk can be restored from](#only-an-adopted-disk-can-be-restored-from).
-- **The replacement must be flashed with the *original* cluster name and the same Rasputin
-  release the backup was taken on.** See [The cluster-id refusal](#the-cluster-id-refusal) and
-  step 1 below.
-- **You need the passphrase or the recovery code.** Either alone is enough; without both there
-  is no path.
-
-`/restore` is **not** part of first-run setup. It is reached from the sign-in page, or by
-typing the address. `<original-name>` below is the name the dead cluster answered to, and
-`<generation-id>` the identifier of one backup.
+- A backup disk you **adopted**, not one you claimed as blank.
+- The **original cluster name**, and the **Rasputin release** the backup was taken on.
+- Your **passphrase** or your **recovery code**. Either one is enough.
 
 ## Do this
 
 <!-- SCREENSHOT: restore.png -->
 
-1. **Flash the replacement control plane with the same cluster name the old one had, and the
-   same Rasputin release the backup was taken on.** Restore refuses a backup taken on any other
-   release. Release images are listed on
-   [the rasputin-os releases page](https://github.com/geekdojo/rasputin-os/releases). If you do
-   not know which release took the backup, the refusal at step 7 names it. You can update to a
-   newer release once the restore is done.
-2. **Plug the adopted backup disk into the replacement machine.** Restore reads the disk
-   locally, so it must be on this box.
-3. **Go to the sign-in page.** With a backup set attached it grows a section offering
-   **`RESTORE FROM BACKUP →`** and names how many sets it can see. Typing the address
-   `/restore` also works, including with no disk attached yet.
-4. **Pick the disk under `1 · BACKUP DISK`.** If exactly one can be restored from, it is
-   selected for you. `SCAN AGAIN` re-scans if you plugged the disk in late.
-5. **Pick a generation under `2 · GENERATION`** — newest first, newest usable pre-selected.
-   The **IDENTITY ONLY** notice then names every app volume that will *not* be restored.
+1. **Flash the replacement control plane with the original cluster name and the release the
+   backup was taken on.** [Get in the first time](/docs/get-in-the-first-time/#before-you-start)
+   shows how to flash and where the name is set; older releases are on
+   [the rasputin-os releases page](https://github.com/geekdojo/rasputin-os/releases).
+2. **Plug the adopted backup disk into the replacement machine.**
+3. **Open the sign-in page and press `RESTORE FROM BACKUP →`.** Do not press
+   `REGISTER PASSKEY`: it closes restore for good.
+4. **Pick the disk under `1 · BACKUP DISK`.** Press `SCAN AGAIN` if you plugged it in late.
+5. **Pick a generation under `2 · GENERATION`.** The newest usable one is already selected.
 6. **Under `3 · UNLOCK THE ARCHIVE KEY`, choose `PASSPHRASE` or `RECOVERY CODE`** and type
-   your secret. A recovery code ignores dashes and letter case; submit stays disabled until
-   what you typed reduces to exactly 32 characters, which is a useful check you dropped none.
-7. **Press `RESTORE THIS GENERATION`.** The identity set is staged and verified, the control
-   plane restarts onto it, and the page waits — up to four minutes — for it to come back
-   reporting operators.
+   your secret.
+7. **Press `RESTORE THIS GENERATION`** and wait; the control plane restarts, which can take up
+   to four minutes.
 8. **Press `SIGN IN WITH YOUR PASSKEY`** and use the passkey you had before the machine died.
-9. **Check your nodes and the secret store.** Nodes reconnect with the tokens they already hold, to a bus holding the
-   key their pin names, and need no re-enrolling. A node enrolled *after* the re-flash holds the wrong certificate authority;
-   the control plane re-delivers it automatically, shown under **Mesh → DEVICES** as
-   `TRUST STALE · re-delivering`, which clears itself. Then open
-   [Alerts](/docs/respond-to-an-alert/) and check that no secret-store alert is open: no alert
-   whose title begins `The secret store`, no `The control plane cannot use the secret store.`,
-   and no `A seal-key rotation did not finish.`. The one exception is
-   `The secret store is paused for a backup.`, which is normal while a backup runs. If another
-   is open, read its detail on **Alerts**; the empty-store alert has its own entry under
-   [Troubleshooting](#troubleshooting).
-10. **Restore app data per app, from Apps, only if you need to** — see
-    [Identity only, and why](#identity-only-and-why-your-app-data-is-left-alone), and
-    [Restoring one app's data](/docs/your-apps/#restoring-one-apps-data) for that flow.
+9. **Open [Alerts](/docs/respond-to-an-alert/) and check that no secret-store alert is open.**
+   `The secret store is paused for a backup.` is normal while a backup runs.
+10. **Restore app data from Apps, one app at a time, only if you need to** — see
+    [Restoring one app's data](/docs/your-apps/#restoring-one-apps-data).
 
-## Only an adopted disk can be restored from
+## Details
 
-This is the precondition, and it is not decided on this page. It was decided on **Storage**,
-possibly months ago.
-
-A backup disk carries the two sealed copies of its archive key in its own marker file, and
-`/restore` needs those copies — they are what your passphrase or recovery code unwraps.
-
-- **A disk you adopted** — taken over as it stood — still carries them, and can be restored
-  from.
-- **A disk you claimed as blank, wiped, or reformatted does not.** Claiming destroys the
-  marker, and with it the only copies of the wrapped key. The archives may still be sitting
-  there; nothing will ever open them again.
-
-**What you cannot take back.** That one. If you plug a disk in to restore from it and the
-drawer on Storage offers you both paths, adopt. The green callout says so in as many words:
-*"If you plugged this disk in to restore from it, this is the choice you want."*
-
-## Why this page needs no sign-in, and when it closes forever
-
-The page and the two endpoints behind it are **unauthenticated**, and they have to be. A
-re-flashed control plane has no users, so there is no session to require and no passkey to
-present. Requiring one would make restore impossible in exactly the situation restore exists
-for.
-
-What gates it instead is the fact that decides whether a box is at first run at all: **does
-any operator exist?** The moment the first passkey is registered, both endpoints answer with a
-refusal and **stay closed for the life of the installation**. There is no setting, no
-override, and no re-opening. Visit `/restore` on a cluster that is already set up and the
-whole page is a refusal plus a `SIGN IN` button.
-
-**What makes that safe is custody, not authentication.** The control plane will only unpack an
-archive whose key *you* supplied, and only a key that proves it belongs to the disk in front
-of it:
-
-- The archive's contents are sealed under a key that exists only in two wrapped copies on the
-  disk itself, openable by your passphrase or your recovery code and nothing else.
-- Before anything is touched, the supplied key must derive the **public key written on that
-  disk's own marker**. A key that opens some other disk is refused.
-- There is deliberately no separate signature to check: a signing key that survived a re-flash
-  would be the same custody problem over again.
-
-So restoring onto a fresh box needs all three of: reach to a freshly flashed machine on your
-network, your backup disk physically plugged into it, and your custody secret. That is a
-description of you, doing the thing this page is for. It is the same open window that
-first-passkey registration already accepts on a fresh box on a private network, and it closes
-at the same moment.
-
-**What that does not protect.** Restore stays open until the first passkey is registered, and
-the archive secret is the only thing authorizing it. So the practical care is ordinary: keep the
-backup disk and its secret apart rather than together in the same bag, and register the first
-passkey on a replacement box once you are done rather than leaving it unfinished.
-
-**What you cannot take back.** Registering the first passkey. Do the restore *before* you
-create an account on the replacement — getting back to this page afterwards means re-flashing
-the control plane onto a fresh partition.
-
-## Where your secret goes
-
-The page states it under the form: *"The secret never leaves this browser. It unwraps the
-disk's archive key here; that key is checked against the disk, sent once to the controlplane
-over its secure connection, and discarded on both sides when the restore ends."*
-
-That is literally what happens. Your passphrase or recovery code is used **in the browser** to
-unwrap the disk's archive key. The browser then checks that the unwrapped key really belongs
-to this disk before sending anything. The control plane repeats that check on its own side,
-against the marker it reads off the mounted disk rather than the listing your browser worked
-from — so the two catch different things: a wrong secret never leaves the browser, and a
-right-looking key aimed at the wrong disk is stopped by the control plane. Only the unwrapped
-key is transmitted, once, for this one
-restore, and both sides overwrite their copy when the restore ends — bar one copy of the
-encoded key inside the request itself, which the control plane cannot overwrite and instead
-drops with the request.
-
-**What that protects.** Your passphrase and your recovery code are never sent anywhere and are
-never stored on the cluster. A wrong secret fails in your browser, before anything is
-submitted.
-
-**What it does not protect.** It is the same property that means nobody — Rasputin included —
-can recover a backup set for you if you lose both secrets. There is no escrow behind this.
-
-## Identity only, and why your app data is left alone
+### Identity only, and why your app data is left alone
 
 Read this before you start; it is the single most misread thing about restore.
 
@@ -194,9 +88,27 @@ opened. The fresh install's own identity files are moved aside rather than delet
 restore that fails leaves the machine exactly as it found it. Nothing on the backup disk is
 modified at any point, so there is no risk in trying again.
 
-## The cluster-id refusal
+### Only an adopted disk can be restored from
 
-If the archive was written by a cluster with a **different name** than the one this box was
+This is the precondition, and it is not decided on this page. It was decided on **Storage**,
+possibly months ago.
+
+A backup disk carries the two sealed copies of its archive key in its own marker file, and
+`/restore` needs those copies — they are what your passphrase or recovery code unwraps.
+
+- **A disk you adopted** — taken over as it stood — still carries them, and can be restored
+  from.
+- **A disk you claimed as blank, wiped, or reformatted does not.** Claiming destroys the
+  marker, and with it the only copies of the wrapped key. The archives may still be sitting
+  there; nothing will ever open them again.
+
+**What you cannot take back.** That one. If you plug a disk in to restore from it and the
+drawer on Storage offers you both paths, adopt. The green callout says so in as many words:
+*"If you plugged this disk in to restore from it, this is the choice you want."*
+
+### The cluster-id refusal
+
+`<original-name>` here is the name the dead cluster answered to. If the archive was written by a cluster with a **different name** than the one this box was
 flashed with, the page refuses to submit and explains why in full — that the archive's
 passkeys bind to `<original-name>.local`, that your nodes dial that name, and that you should
 re-flash with the original cluster name before restoring.
@@ -216,7 +128,103 @@ cluster name and come back.** Nothing is wrong with your disk, and refusing is t
 outcome: the alternative is a box that half-works, with credentials nothing will offer and
 nodes calling an address that does not exist.
 
-## If the secret store's key is lost
+### If it does not come back — the four-minute deadline
+
+The page polls every couple of seconds, waiting for the control plane to come back **reporting
+operators** — which is the only real proof that the restored database is the one now serving.
+That is why the wait is not a spinner with a guess on it.
+
+It waits four minutes, which is generous on purpose: a restart is seconds, but an appliance
+with no battery-backed clock can hold its HTTPS listener considerably longer while it settles
+its time. After four minutes the page says the restore is staged but the control plane has not
+come back, and that **nothing on the backup disk was changed**.
+
+What to do, in order:
+
+1. **Press `RELOAD`.** If the control plane came back while the page was not looking, this
+   finds it.
+2. **If the address does not answer at all, power-cycle or restart the machine.** The staged
+   restore is not lost — it applies on the next start, whenever that is. **The backup disk does
+   not need to be attached for that restart**: everything the restore needs was copied off it
+   before the page ever said `RESTORING`.
+
+### Checking your nodes and the secret store afterwards
+
+Nodes reconnect with the tokens they already hold, to a bus holding the key their pin names, and
+need no re-enrolling. A node enrolled *after* the re-flash holds the wrong certificate authority;
+the control plane re-delivers it automatically, shown under **Mesh → DEVICES** as
+`TRUST STALE · re-delivering`, which clears itself.
+
+On **Alerts**, a secret-store alert is one whose title begins `The secret store`, or
+`The control plane cannot use the secret store.`, or `A seal-key rotation did not finish.`. The
+one exception is `The secret store is paused for a backup.`, which is normal while a backup runs.
+If another is open, read its detail on **Alerts**; the empty-store alert has its own entry under
+[Troubleshooting](#troubleshooting).
+
+### Why this page needs no sign-in, and when it closes forever
+
+The page and the two endpoints behind it are **unauthenticated**, and they have to be. A
+re-flashed control plane has no users, so there is no session to require and no passkey to
+present. Requiring one would make restore impossible in exactly the situation restore exists
+for.
+
+What gates it instead is the fact that decides whether a box is at first run at all: **does
+any operator exist?** The moment the first passkey is registered, both endpoints answer with a
+refusal and **stay closed for the life of the installation**. There is no setting, no
+override, and no re-opening. Visit `/restore` on a cluster that is already set up and the
+whole page is a refusal plus a `SIGN IN` button.
+
+**What makes that safe is custody, not authentication.** The control plane will only unpack an
+archive whose key *you* supplied, and only a key that proves it belongs to the disk in front
+of it:
+
+- The archive's contents are sealed under a key that exists only in two wrapped copies on the
+  disk itself, openable by your passphrase or your recovery code and nothing else.
+- Before anything is touched, the supplied key must derive the **public key written on that
+  disk's own marker**. A key that opens some other disk is refused.
+- There is deliberately no separate signature to check: a signing key that survived a re-flash
+  would be the same custody problem over again.
+
+So restoring onto a fresh box needs all three of: reach to a freshly flashed machine on your
+network, your backup disk physically plugged into it, and your custody secret. That is a
+description of you, doing the thing this page is for. It is the same open window that
+first-passkey registration already accepts on a fresh box on a private network, and it closes
+at the same moment.
+
+**What that does not protect.** Restore stays open until the first passkey is registered, and
+the archive secret is the only thing authorizing it. So the practical care is ordinary: keep the
+backup disk and its secret apart rather than together in the same bag, and register the first
+passkey on a replacement box once you are done rather than leaving it unfinished.
+
+**What you cannot take back.** Registering the first passkey. Do the restore *before* you
+create an account on the replacement — getting back to this page afterwards means re-flashing
+the control plane onto a fresh partition.
+
+### Where your secret goes
+
+The page states it under the form: *"The secret never leaves this browser. It unwraps the
+disk's archive key here; that key is checked against the disk, sent once to the controlplane
+over its secure connection, and discarded on both sides when the restore ends."*
+
+That is literally what happens. Your passphrase or recovery code is used **in the browser** to
+unwrap the disk's archive key. The browser then checks that the unwrapped key really belongs
+to this disk before sending anything. The control plane repeats that check on its own side,
+against the marker it reads off the mounted disk rather than the listing your browser worked
+from — so the two catch different things: a wrong secret never leaves the browser, and a
+right-looking key aimed at the wrong disk is stopped by the control plane. Only the unwrapped
+key is transmitted, once, for this one
+restore, and both sides overwrite their copy when the restore ends — bar one copy of the
+encoded key inside the request itself, which the control plane cannot overwrite and instead
+drops with the request.
+
+**What that protects.** Your passphrase and your recovery code are never sent anywhere and are
+never stored on the cluster. A wrong secret fails in your browser, before anything is
+submitted.
+
+**What it does not protect.** It is the same property that means nobody — Rasputin included —
+can recover a backup set for you if you lose both secrets. There is no escrow behind this.
+
+### If the secret store's key is lost
 
 **What you see.** The control plane's web page never loads. On the control plane's own console —
 a monitor on its HDMI port, or its serial line — this line appears while it boots, sometimes
@@ -247,26 +255,6 @@ none of them joins the new cluster until it is provisioned again — see
 Rasputin stops here on purpose. A store that came back empty under a cluster that still expects
 its secrets would break your apps in ways no one could predict.
 
-## If it does not come back — the four-minute deadline
-
-The page polls every couple of seconds, waiting for the control plane to come back **reporting
-operators** — which is the only real proof that the restored database is the one now serving.
-That is why the wait is not a spinner with a guess on it.
-
-It waits four minutes, which is generous on purpose: a restart is seconds, but an appliance
-with no battery-backed clock can hold its HTTPS listener considerably longer while it settles
-its time. After four minutes the page says the restore is staged but the control plane has not
-come back, and that **nothing on the backup disk was changed**.
-
-What to do, in order:
-
-1. **Press `RELOAD`.** If the control plane came back while the page was not looking, this
-   finds it.
-2. **If the address does not answer at all, power-cycle or restart the machine.** The staged
-   restore is not lost — it applies on the next start, whenever that is. **The backup disk does
-   not need to be attached for that restart**: everything the restore needs was copied off it
-   before the page ever said `RESTORING`.
-
 ## Troubleshooting
 
 **`Restore is offered only before the first operator is registered`.**
@@ -275,7 +263,9 @@ control plane, then restore before registering anything.
 
 **You cannot find restore in first-run setup.**
 It is not there and never was. Identity restore lives at `/restore`, reached from the sign-in
-page — a first-run branch on a replacement machine, not a step of setup.
+page — a first-run branch on a replacement machine, not a step of setup. The sign-in page offers
+it only while a backup set is attached; typing the address `/restore` works with no disk
+attached too.
 
 **`No attached disk carries a Rasputin backup set`.**
 The disk is not attached, not mounted, or is not a Rasputin backup set. Attach it to *this*
@@ -313,8 +303,9 @@ with their reasons.
 
 **`That does not open this disk's archive key.`**
 Wrong passphrase or recovery code — and **nothing was sent**, this failed in your browser. Try
-the other custody path. A recovery code ignores dashes and case, and its alphabet has no `I`,
-`L`, `O` or `U`; the field strips punctuation and upper-cases what you type but does not reject
+the other custody path. A recovery code ignores dashes and case, and submit stays disabled
+until what you typed reduces to exactly 32 characters, a useful check you dropped none. Its
+alphabet has no `I`, `L`, `O` or `U`; the field strips punctuation and upper-cases what you type but does not reject
 those letters, so an `O` typed where a `0` belongs still counts toward the 32 and fails here.
 
 **`The controlplane refused the key: it does not belong to this disk.`**
