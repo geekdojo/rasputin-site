@@ -12,7 +12,8 @@ tokens, keys and your apps' secret store. App data is restored separately, one a
 Before you start, you need all three:
 
 - A backup disk you **adopted**, not one you claimed as blank.
-- The **original cluster name**, and the **Rasputin release** the backup was taken on.
+- The **original cluster name**, and the **Rasputin release** the backup was taken on. If you
+  don't know the release, flash the latest; step 7 refuses and names the one you need.
 - Your **passphrase** or your **recovery code**. Either one is enough.
 
 ## Do this
