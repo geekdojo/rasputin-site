@@ -2,7 +2,7 @@
 title: "Check your backups"
 description: "Answering \"is my data actually backed up?\" from the Storage page — the one line that means yes, what the health probe does and does not prove, and the three numbers on the screen that all say \"kept\"."
 weight: 61
-applies-to: "2026.08.5"
+applies-to: "2026.10.5"
 ---
 
 Backups are a thing you check, not a thing you finish. This is the recurring visit: open
@@ -133,6 +133,15 @@ Worth knowing before you go looking for it:
 - **Free space and retention headroom are never shown.** Nothing on this page tells you
   whether the next generation will fit.
 
+## The secret store pauses while a backup runs
+
+Every backup carries your apps' secret store (see
+[The secret store](/docs/set-up-backups/#the-secret-store-what-it-protects-and-what-it-does-not)).
+To copy it, a run stops the store for part of the run, and while it is stopped the warning alert
+`The secret store is paused for a backup.` is open. Until it clears, apps that use secrets cannot
+be deployed. Running apps are not affected, and the alert clears by itself; there is nothing to
+do.
+
 ## Troubleshooting
 
 **`HEALTH` reads `MISSING · since …`.**
@@ -154,6 +163,17 @@ error; if the table is empty, check the schedule dropdown is not `Scheduled back
 **A run row is `FAILED` with an error under the generation id.**
 That run produced no generation. The error is the control plane's own. Fix the cause, then
 re-run with `BACK UP NOW`.
+
+**A run is `FAILED` and its error is about the secret store.**
+For example, the error begins `The secret store` and says the backup wrote nothing. That run
+wrote no generation at all, because an archive without the secret store cannot be restored.
+Once the store is ready — no secret-store alert open on **Alerts** — press `BACK UP NOW`.
+
+**Every run is refused while `The secret store is empty, but this cluster was set up.` is open.**
+That is on purpose: a backup of an empty store must never replace a good backup. Only a restore
+brings the store's data back. Re-flash the control plane with the original cluster name and the
+release your latest backup was taken on, then restore — see
+[Restore a cluster](/docs/restore-a-cluster/).
 
 **A run `SUCCEEDED` but its scope is amber.**
 The archive does not reach everything. Hover the scope cell for the volume tally. A volume the
