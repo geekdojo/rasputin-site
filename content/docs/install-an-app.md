@@ -4,7 +4,7 @@ aliases:
   - /docs/app-catalog/
 description: "Pick an app from the catalog, place it on a node, deploy it — and understand what consenting to a privileged app actually grants."
 weight: 40
-applies-to: "2026.08.5"
+applies-to: "2026.10.5"
 ---
 
 Every app on your cluster comes from the **App Catalog**. Installing one is two presses
@@ -29,15 +29,22 @@ apart: `INSTALL` declares the app, `DEPLOY NOW` starts it.
    Most tiles ask nothing here. See [Consenting to what an app asks for](#consenting-to-what-an-app-asks-for).
 5. **Name it and place it.** The **instance name** defaults to the tile's id, must be unique,
    and becomes the app's DNS label — it is what you will type to reach it. The **target node**
-   defaults to the first eligible one, and only nodes that can actually host the app are
-   offered.
+   defaults to an online node on the cluster's mesh, the one that joined first, and only nodes
+   that can actually host the app are offered.
 6. **Leave `LAN ACCESS` off** unless you want the app to have a name on your home network.
    Off is the default and you can change it later on the live app. See
    [`LAN ACCESS`](/docs/your-apps/#lan-access).
 7. **Press `INSTALL`.** This *declares* the app — it does not start it, so you get a chance to
    review what you just created.
-8. **Press `DEPLOY NOW`.** The footer then hands you the app's address, its `FIRST RUN` note
+8. **If the footer lists keys, type the ones you have.**
+9. **Press `DEPLOY NOW`.** The footer then hands you the app's address, its `FIRST RUN` note
    from the publisher, and a way through to the **Apps** page to watch it come up.
+
+The keys in the footer are the ones the app's tile asks you for, each marked `SET` or
+`NOT SET` and `required` or `optional`. `DEPLOY NOW` saves what you typed and then deploys, and
+it deploys with nothing typed too. If a key cannot be saved, nothing is deployed and what you
+typed stays in its field. You can set the keys later instead; see
+[The keys you give an app](/docs/your-apps/#the-keys-you-give-an-app-secrets).
 
 One more thing can appear in the footer. If the tile declares a `CRITICAL` volume and your
 cluster has no backup target or schedule, you get a `BACKUP` acknowledgement — not a refusal,
@@ -62,8 +69,10 @@ clear the search and choose `ALL` to get them back.
 A card's badges are short: a RAM floor (`256M RAM`, `2G RAM`) is what the node needs free;
 `PREFERS X86` is a placement hint and not a restriction; `NEEDS KEYS` means the app needs
 accounts you hold with a third-party service before it does anything useful, and the drawer
-names which — you add them to the app after install, and Rasputin never asks for them or
-holds them; `ELEVATED` is a privilege tier, below.
+names which services — after `INSTALL` you can type the keys in the footer, or later in the
+app's drawer, and the cluster stores them write-only (see
+[The keys you give an app](/docs/your-apps/#the-keys-you-give-an-app-secrets)); `ELEVATED` is a
+privilege tier, below.
 
 **The strip across the top of the page** carries `CATALOG v<N>`, the tile count, when the
 cluster last looked for a published catalog, and `CHECK NOW` to look immediately instead of
@@ -82,8 +91,8 @@ rewrite your catalog. **Catalog versions move forward only, and a downgrade is r
 even of an older catalog we published and signed ourselves, because an old catalog pins old
 images and a signature cannot tell "current" from "validly signed three months ago". A bad
 catalog is fixed by publishing forward, never by rolling back. Apps you have already
-installed are untouched by any of it: an app keeps running on the stack it was installed
-with.
+installed are untouched by any of it: an app keeps running its current stack until you
+upgrade it.
 
 **Forward-only is not the same as auto-updating.** Worth separating, because they get
 conflated:
@@ -91,7 +100,7 @@ conflated:
 | | Updates itself? | Can you go back? |
 |---|---|---|
 | The **catalog** (the menu of apps) | Yes, daily | No — forward only |
-| An **installed app** | No | It keeps running exactly as installed |
+| An **installed app** | No | It keeps running its current stack until you upgrade it |
 | The **OS image** | Only when you ask | Yes — A/B slots, with automatic rollback on a failed boot |
 
 The one thing that moves on its own is the list of apps you *could* install. Nothing you're
@@ -128,10 +137,11 @@ actually takes, the tile is refused. **It is what the app takes, not what it cla
 grants an app root by clicking the same button they click for a note-taking app. It is **not
 a sandbox**, and it does not constrain the app at all. What actually confines an app is its
 Compose file and the container runtime that enforces it; Rasputin runs what the signed tile
-says, and that Compose is copied onto the app at install and does not change afterwards.
-Consent is also all-or-nothing: you cannot agree to half of the `THIS APP CAN` list, and
-nothing re-asks you afterwards, because the stack you consented to is the stack that keeps
-running.
+says. That Compose is copied onto the app at install, and it changes only when you upgrade
+the app with `UPGRADE…` in its drawer, or revert that upgrade. Consent is also
+all-or-nothing: you cannot agree to half of the `THIS APP CAN` list, and nothing re-asks you
+unless an upgrade raises the app's privilege tier; then the upgrade asks for consent again
+before it runs.
 
 **The consequence of each choice.** A routine tile asks nothing. An `ELEVATED` tile asks you
 to flip a `CONSENT` toggle reading *"Let \<app\> reach beyond its own container"*. A

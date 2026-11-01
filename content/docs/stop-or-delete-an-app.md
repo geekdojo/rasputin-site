@@ -77,6 +77,8 @@ any of this: the class the tile declares is what the backup job acts on.
 - **Its data stays on the node's disk.** Nothing owns it and **nothing backs it up any
   more.** It reappears under `ORPHANED VOLUMES`, where you can see it, size it, and remove it
   later.
+- The keys you set for the app under `SECRETS` are deleted, so reinstalling it means typing
+  them again. See [The keys you give an app](/docs/your-apps/#the-keys-you-give-an-app-secrets).
 
 `DELETE APP + VOLUMES` — the checkbox ticked:
 
@@ -93,7 +95,8 @@ any of this: the class the tile declares is what the backup job acts on.
 tick it over a `CRITICAL` or `STATE` volume that has **never** been captured into a retained
 backup, the dialog says so in red before you can confirm — naming the volume and telling you
 plainly that deleting it destroys the only copy of that data. Read that sentence; it is the
-last thing standing between you and a gone password vault.
+last thing standing between you and a gone password vault. The keys you set for the app under
+`SECRETS` are deleted with either choice.
 
 **When the node cannot be reached**, the two choices diverge:
 

@@ -1,8 +1,8 @@
 ---
 title: "Your apps"
-description: "The Apps list and the detail drawer: reading an app's status, opening it, and the two addresses every app gets — plus what the LAN ACCESS toggle really controls."
+description: "The Apps list and the detail drawer: reading an app's status, opening it, the keys you give it, and the two addresses every app gets — plus what the LAN ACCESS toggle really controls."
 weight: 41
-applies-to: "2026.08.5"
+applies-to: "2026.10.5"
 ---
 
 **Apps** is the ledger of everything your cluster has been told to run — one row per app,
@@ -32,7 +32,7 @@ which the drawer prints in full — use its `COPY` button rather than typing it.
    Compose stack up on its target node, and `STOP` and `DELETE` are covered in
    [Stop or delete an app](/docs/stop-or-delete-an-app/).
 
-Two badges can appear beside a name, never both at once. `OVERDUE · 9d` (red) means this app
+Two backup badges can appear beside a name, never both at once. `OVERDUE · 9d` (red) means this app
 has something worth backing up and the backup did not happen — hover it for the recorded
 reason, click it for **Storage**. `NO BACKUP TARGET` (amber) means the app has data worth
 keeping and the cluster has nowhere to put it. **Apps whose backup did not happen are listed
@@ -127,6 +127,8 @@ detail message — that message **unabridged** under `FAILURE` (red) or `LAST DE
   `Nothing to back up — no volume of this app is classed critical or state.` Where the control
   plane recorded a reason it appears underneath. `VIEW BACKUPS` opens **Storage**, where the
   runs table names every run and what it captured.
+- **`SECRETS`** holds the keys the app's tile asks you for, one write-only field each. It is
+  covered in [The keys you give an app](#the-keys-you-give-an-app-secrets) below.
 - **`DATA` → `RESTORE DATA FROM A BACKUP…`** is offered for apps installed from a catalog
   tile, because only a tile classifies what its volumes hold. It is covered in full in
   [Restoring one app's data](#restoring-one-apps-data) below.
@@ -137,6 +139,57 @@ detail message — that message **unabridged** under `FAILURE` (red) or `LAST DE
   `Custom app — no catalog guide. Manage it from the table.`
 
 `BACK TO CATALOG` at the bottom returns you to the App Catalog.
+
+## The keys you give an app (`SECRETS`)
+
+Some apps need an account you hold with a third-party service, such as an API key for a data
+feed. The app's tile names each key it needs, and you set them in the app's drawer.
+
+1. **Click the app's name** on the **Apps** page to open its drawer.
+2. **Find `SECRETS`.**
+3. **Type the value** into the key's field.
+4. **Press `SAVE`.**
+
+Each field carries the tile's label for the key, such as "AISStream API key (ships)", and is
+marked `SET` or `NOT SET` and `required` or `optional`. A field you leave blank keeps the value
+already stored. If the app is `RUNNING` or `FAILED`, the save redeploys it once so it picks up
+the new value, and the drawer says `Saved. A redeploy has started so the app picks up the change.`
+with a `VIEW TASK` button for that redeploy. Otherwise the drawer says
+`Saved. It takes effect the next time the app is deployed.` and nothing starts until you deploy
+the app from its row.
+
+A tile can also have the cluster create a password for the app's own use, such as one the app
+shares with its own database. Nobody types it or sees it, and it does not appear under
+`SECRETS`.
+
+**What it protects.** A key is write-only. Once it is saved, no screen and no API response
+returns its value, not even to you: the drawer shows only `SET` or `NOT SET`. The field is a
+password field, and it clears after a save. The stored keys are part of the cluster backup, so
+restoring the cluster brings them back.
+
+**What it does not protect.**
+
+- The app receives the value as an environment variable. Root on the node can read it, and so
+  can the app itself; what the app does with the key after that is up to the app.
+- Any other app on the same node that can reach the container runtime can read it too: a
+  `HOST-TRUSTING` tile (see
+  [Consenting to what an app asks for](/docs/install-an-app/#consenting-to-what-an-app-asks-for)),
+  or a custom app whose Compose gives it that access (see
+  [Your own Compose stack](/docs/install-an-app/#your-own-compose-stack)).
+- The keys are held in the cluster's secret store, and the store's own limits apply to every
+  key you type; see
+  [what the secret store protects, and what it does not](/docs/set-up-backups/#the-secret-store-what-it-protects-and-what-it-does-not).
+
+**The consequence of each choice.**
+
+- Leave an optional key unset, and the app gets an empty value and still deploys.
+- Leave a required key unset, and the deploy is refused. The refusal names the key, and any
+  containers already running are left as they were.
+- Save a new value on a running app, and it is redeployed once to pick it up.
+
+**What you cannot take back.** You can replace a key's value, but you cannot clear it back to
+unset. Deleting the app deletes its stored keys, whether you keep its volumes or not, so
+reinstalling it means typing them again.
 
 ## Restoring one app's data
 
@@ -190,6 +243,20 @@ operation on that node rather than a button here. The app's downtime during the 
 spent — it is short, but it is real, and it lands on whatever was using the app at the time.
 
 ## Troubleshooting
+
+**A deploy is refused with `This app needs secrets that only its owner can supply`.**
+A required key is not set, and the message names it. Set it under `SECRETS` in the app's
+drawer, then deploy the app again.
+
+**You saved a key and nothing changed.**
+The app was not `RUNNING` or `FAILED`, so the save started no redeploy. Deploy the app from its
+row.
+
+**There is no `SECRETS` section in the drawer.**
+Either the app's tile asks for no keys, or it is a custom app, which has no tile to ask for
+them. Or the app was installed before its tile asked for keys: the drawer's `FIRST RUN` note
+can still tell you to use `SECRETS`, because that note comes from the current tile. Press
+`UPGRADE…` under `COMPOSE`, and the section appears once the upgrade finishes.
 
 **The app never becomes `RUNNING`.**
 Read the `STATUS` detail. The table clips a detail longer than 36 characters to its first 33
