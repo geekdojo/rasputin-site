@@ -38,8 +38,8 @@ Read these three in order on a new cluster.
 
 - **[Install an app](/docs/install-an-app/)** — you want something new running, and the catalog is
   asking you to consent to something before it will.
-- **[Your apps](/docs/your-apps/)** — where an app's two addresses, its backup state and its
-  restore-data action live, and what `LAN ACCESS` actually turns on.
+- **[Your apps](/docs/your-apps/)** — where an app's two addresses, its backup state, the keys you
+  give it and its restore-data action live, and what `LAN ACCESS` actually turns on.
 - **[Stop or delete an app](/docs/stop-or-delete-an-app/)** — you want an app gone, and one
   checkbox decides whether its data goes with it.
 
