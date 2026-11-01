@@ -16,7 +16,7 @@ which the drawer prints in full — use its `COPY` button rather than typing it.
 
 ## Do this
 
-1. **Open `Apps`** on the nav rail. Each row carries the app's `NAME`, the `TARGET` node it
+1. **Click the `Apps` icon**, second on the nav rail. Each row carries the app's `NAME`, the `TARGET` node it
    runs on (chosen at install and fixed thereafter), its `STATUS`, and the clock time of the
    last deploy.
 2. **Read the status.** `RUNNING` is green. `DEPLOYING`, `STARTING` and `STOPPING` are amber
@@ -142,54 +142,53 @@ detail message — that message **unabridged** under `FAILURE` (red) or `LAST DE
 
 ## The keys you give an app (`SECRETS`)
 
-Some apps need an account you hold with a third-party service, such as an API key for a data
-feed. The app's tile names each key it needs, and you set them in the app's drawer.
+Some apps use an account you hold with a third-party service, such as an API key for a data
+feed. The app's tile names each key, and you set them in the app's drawer.
 
 1. **Click the app's name** on the **Apps** page to open its drawer.
 2. **Find `SECRETS`.**
 3. **Type the value** into the key's field.
 4. **Press `SAVE`.**
 
-Each field carries the tile's label for the key, such as "AISStream API key (ships)", and is
-marked `SET` or `NOT SET` and `required` or `optional`. A field you leave blank keeps the value
-already stored. If the app is `RUNNING` or `FAILED`, the save redeploys it once so it picks up
-the new value, and the drawer says `Saved. A redeploy has started so the app picks up the change.`
-with a `VIEW TASK` button for that redeploy. Otherwise the drawer says
-`Saved. It takes effect the next time the app is deployed.` and nothing starts until you deploy
-the app from its row.
+On a `RUNNING` app the drawer says `Saved. A redeploy has started so the app picks up the change.`,
+the key reads `SET`, and `VIEW TASK` opens the redeploy.
 
-A tile can also have the cluster create a password for the app's own use, such as one the app
-shares with its own database. Nobody types it or sees it, and it does not appear under
-`SECRETS`.
+- A field you leave blank keeps the value already stored.
+- An app that is not `RUNNING` or `FAILED` is not redeployed. The drawer says
+  `Saved. It takes effect the next time the app is deployed.` Deploy it from its row.
+- Saving a value redeploys a running app even when the value is the one already stored.
 
-**What it protects.** A key is write-only. Once it is saved, no screen and no API response
-returns its value, not even to you: the drawer shows only `SET` or `NOT SET`. The field is a
-password field, and it clears after a save. The stored keys are part of the cluster backup, so
+**What it protects.** A key is write-only. Once saved, no screen and no API response returns
+its value, not even to you: the drawer shows only `SET` or `NOT SET`. The field is a password
+field, and it clears after a save. The stored keys are part of the cluster backup, so
 restoring the cluster brings them back.
 
 **What it does not protect.**
 
 - The app receives the value as an environment variable. Root on the node can read it, and so
-  can the app itself; what the app does with the key after that is up to the app.
-- Any other app on the same node that can reach the container runtime can read it too: a
+  can the app, which does what it likes with it.
+- So can any other app on the same node that can reach the container runtime: a
   `HOST-TRUSTING` tile (see
   [Consenting to what an app asks for](/docs/install-an-app/#consenting-to-what-an-app-asks-for)),
   or a custom app whose Compose gives it that access (see
   [Your own Compose stack](/docs/install-an-app/#your-own-compose-stack)).
-- The keys are held in the cluster's secret store, and the store's own limits apply to every
-  key you type; see
+- The keys live in the cluster's secret store, and its limits apply; see
   [what the secret store protects, and what it does not](/docs/set-up-backups/#the-secret-store-what-it-protects-and-what-it-does-not).
 
 **The consequence of each choice.**
 
-- Leave an optional key unset, and the app gets an empty value and still deploys.
-- Leave a required key unset, and the deploy is refused. The refusal names the key, and any
-  containers already running are left as they were.
-- Save a new value on a running app, and it is redeployed once to pick it up.
+- An optional key left unset: the app gets an empty value and still deploys.
+- A required key left unset: the deploy is refused, naming the key, and any containers
+  already running are left as they were.
+- A key saved on a running app: the app is redeployed once to pick it up.
 
 **What you cannot take back.** You can replace a key's value, but you cannot clear it back to
 unset. Deleting the app deletes its stored keys, whether you keep its volumes or not, so
 reinstalling it means typing them again.
+
+A tile can also have the cluster create a password for the app's own use, such as one the app
+shares with its own database. Nobody types it or sees it, and it does not appear under
+`SECRETS`.
 
 ## Restoring one app's data
 

@@ -16,8 +16,8 @@ apart: `INSTALL` declares the app, `DEPLOY NOW` starts it.
 
 ## Do this
 
-1. **Open `App Catalog`** on the nav rail. The `ADD APP` button on the **Apps** page goes to
-   the same place.
+1. **Click the `App Catalog` icon**, third on the nav rail. The `ADD APP` button on the
+   **Apps** page goes to the same place.
 2. **Find the app.** The search box filters the tiles already loaded in your browser,
    matching name, tagline, description and category; the buttons beside it filter by
    category. Unfiltered, the tiles sit in curated sections.
@@ -27,23 +27,23 @@ apart: `INSTALL` declares the app, `DEPLOY NOW` starts it.
    stack, to read and copy before you commit to anything.
 4. **If the drawer shows a privilege panel, read the `THIS APP CAN` list and flip `CONSENT`.**
    Most tiles ask nothing here. See [Consenting to what an app asks for](#consenting-to-what-an-app-asks-for).
-5. **Name it and place it.** The **instance name** defaults to the tile's id, must be unique,
-   and becomes the app's DNS label — it is what you will type to reach it. The **target node**
-   defaults to an online node on the cluster's mesh, the one that joined first, and only nodes
-   that can actually host the app are offered.
+5. **Name it and place it.** The name box holds the **instance name**. It defaults to the
+   tile's id, must be unique, and becomes the app's DNS label — it is what you will type to
+   reach it. The node list beside it picks the **target node**. It defaults to an online node
+   on the cluster's mesh, and only nodes that can actually host the app are offered.
 6. **Leave `LAN ACCESS` off** unless you want the app to have a name on your home network.
    Off is the default and you can change it later on the live app. See
    [`LAN ACCESS`](/docs/your-apps/#lan-access).
 7. **Press `INSTALL`.** This *declares* the app — it does not start it, so you get a chance to
    review what you just created.
 8. **If the footer lists keys, type the ones you have.**
-9. **Press `DEPLOY NOW`.** The footer then hands you the app's address, its `FIRST RUN` note
-   from the publisher, and a way through to the **Apps** page to watch it come up.
+9. **Press `DEPLOY NOW`.** The footer then hands you the app's address, the publisher's note
+   for its first run, and a way through to the **Apps** page to watch it come up.
 
-The keys in the footer are the ones the app's tile asks you for, each marked `SET` or
-`NOT SET` and `required` or `optional`. `DEPLOY NOW` saves what you typed and then deploys, and
-it deploys with nothing typed too. If a key cannot be saved, nothing is deployed and what you
-typed stays in its field. You can set the keys later instead; see
+Each key in the footer is marked `required` or `optional`, and an `optional` key can be left
+blank. `DEPLOY NOW` saves what you typed, then deploys, even if you typed nothing. To check a key was saved, open the
+app's drawer on the **Apps** page: the key reads `SET`. If a key cannot be saved, nothing is
+deployed and what you typed stays in its field. You can also set the keys later; see
 [The keys you give an app](/docs/your-apps/#the-keys-you-give-an-app-secrets).
 
 One more thing can appear in the footer. If the tile declares a `CRITICAL` volume and your
@@ -67,12 +67,14 @@ soon as you type or pick a category the sections collapse into one flat `N RESUL
 clear the search and choose `ALL` to get them back.
 
 A card's badges are short: a RAM floor (`256M RAM`, `2G RAM`) is what the node needs free;
-`PREFERS X86` is a placement hint and not a restriction; `NEEDS KEYS` means the app needs
-accounts you hold with a third-party service before it does anything useful, and the drawer
-names which services — after `INSTALL` you can type the keys in the footer, or later in the
-app's drawer, and the cluster stores them write-only (see
-[The keys you give an app](/docs/your-apps/#the-keys-you-give-an-app-secrets)); `ELEVATED` is a
-privilege tier, below.
+`PREFERS X86` is a placement hint and not a restriction; `ELEVATED` is a privilege tier,
+below.
+
+`NEEDS KEYS` means the app uses keys from accounts you hold with third-party services, and
+the install drawer names the services. The footer after `INSTALL` marks each key `required` or
+`optional`. You can type the keys there or later in the app's drawer, and the cluster stores
+them write-only. See
+[The keys you give an app](/docs/your-apps/#the-keys-you-give-an-app-secrets).
 
 **The strip across the top of the page** carries `CATALOG v<N>`, the tile count, when the
 cluster last looked for a published catalog, and `CHECK NOW` to look immediately instead of
