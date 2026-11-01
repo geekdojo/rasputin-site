@@ -2,7 +2,7 @@
 title: "Set up backups"
 description: "Claim or adopt a backup disk, mint the archive key and its two secrets, and set the cadence — with the consequence of each choice and the one mistake you cannot take back."
 weight: 60
-applies-to: "2026.08.5"
+applies-to: "2026.10.5"
 ---
 
 Setting up backups is a one-time job: give Rasputin a disk, mint the key your archives are
@@ -74,7 +74,9 @@ on any Rasputin that can mount the disk.
 **What it does not protect.** It is not a backup *of* the secrets. It is not escrow: there is
 no reset, no override, and no support path. And it protects the archive, not the disk — a
 disk that dies physically takes the sealed copies with it, so the key is not a substitute for
-a second copy of the data.
+a second copy of the data. Every archive also holds your apps' secret store and the key that
+opens it, so whoever opens an archive can read your apps' secrets too — see
+[The secret store](#the-secret-store-what-it-protects-and-what-it-does-not).
 
 **The consequence of each choice.**
 
@@ -183,6 +185,74 @@ counting. A backup disk looks nothing like it — one partition, ext4, usually l
 A disk badged `WEAK IDENTITY` reported neither a WWN nor a serial, so it is identified by
 model, size and partition table alone. Two identical blank sticks from one batch can look the
 same to that test. Check the bus and the contents before you continue.
+
+## The secret store: what it protects, and what it does not
+
+Some apps need secrets of their own, such as a database password. The control plane generates
+these for your apps and keeps them in its **secret store**, an encrypted database on the control
+plane's own disk. The store holds app secrets only. It answers only on the control plane itself
+(on the machine's internal loopback address, which no other machine can reach), and only to a
+caller that shows a certificate the store trusts.
+
+Every backup carries the store, and a backup is the only way to get it back.
+[Restore a cluster](/docs/restore-a-cluster/) puts it back with the rest of your cluster's
+identity.
+
+**What it protects.**
+
+- Secret values are not written in clear in the control plane's own database.
+- Nothing else on your network can talk to the store.
+- Every request to the store is written to an audit log. Secret values and access tokens are
+  written there as one-way hashes, never in clear. The request paths are written as they are,
+  so the names of your apps and of their secrets can be read in the log.
+
+**What it does not protect.** In each of these cases, someone can read your apps' secrets:
+
+- **A stolen control-plane disk.** On every board Rasputin supports today, the key that unlocks
+  the store is kept on the same disk as the store's data. Whoever has the disk can read every
+  stored secret. Treat that disk the way you would treat the secrets themselves.
+- **A compromised control plane.** The control plane is allowed to read and write every app
+  secret. Whoever takes over its software can read them all.
+- **A compute node that ran the app.** To run an app, the control plane hands the app's secrets
+  to the node that runs it, in clear. They end up in the app's container settings and in the
+  node's container engine's records on that node's disk. Whoever gets hold of that node — stolen,
+  sold or returned — can read the secrets of every app it ran.
+- **A backup disk plus either secret.** Every backup carries the store's data *and* the key that
+  opens it, sealed under your archive key. Anyone with your backup disk and either the
+  passphrase or the recovery code can read every stored secret. Keep the two secrets away from
+  the disk — see [The archive key and its two secrets](#the-archive-key-and-its-two-secrets).
+
+**If the store's key is lost,** the control plane will not start, and only a backup brings it
+back. See [If the secret store's key is lost](/docs/restore-a-cluster/#if-the-secret-stores-key-is-lost).
+
+### Reading the audit log
+
+The audit log is shown nowhere in the web interface, and none of the cluster's other logs carry
+it. Today the only way to read it is over SSH, on the control plane. This prints its last 20
+lines:
+
+```
+ssh root@<control-plane-address> 'tail -n 20 /var/lib/rasputin/openbao-audit/audit.log'
+```
+
+- `<control-plane-address>` — your control plane's address on your network right now.
+  `ping -c 1 <cluster-id>.local` prints it in parentheses on its first line (`-c 1` sends one
+  ping). Look it up again each time: it can change after a reboot.
+- `ssh root@<control-plane-address>` logs in to the control plane as `root`, with an SSH key the
+  control plane already accepts. The text in single quotes is a command that runs **on the
+  control plane**, not on your computer. If you have no SSH client yet, or no key the control
+  plane accepts, start with
+  [Replace or revoke an SSH key on a node](/docs/replace-or-revoke-an-ssh-key/).
+- `tail -n 20` prints the last 20 lines of the file. Change the number to see more or fewer.
+
+The command only reads the log. It changes nothing and leaves no file behind.
+
+### Licence
+
+The secret store is OpenBao, shipped as the unmodified upstream release under the Mozilla
+Public License 2.0. Its source is at [github.com/openbao/openbao](https://github.com/openbao/openbao).
+Every control plane carries the licence text, and a link to the source of the exact version it
+runs, in `/usr/share/licenses/openbao/`.
 
 ## Troubleshooting
 

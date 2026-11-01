@@ -2,21 +2,22 @@
 title: "Restore a cluster"
 description: "Putting a cluster's identity back onto a re-flashed control plane from an adopted backup disk — the first-run-only window, why it needs no sign-in, and why your app data is deliberately left alone."
 weight: 62
-applies-to: "2026.09.4"
+applies-to: "2026.10.5"
 ---
 
 This is the screen you use after the machine running your control plane died. You flash a
 replacement, plug your backup disk into it, and `/restore` puts your cluster's identity back
 onto the new box — your operators, your passkeys, your nodes' tokens, your cluster's bus key,
-and your cluster's certificate authority.
+your cluster's certificate authority, and your apps' secret store with the key that opens it.
 
 It is a rare, one-way, one-time job, and three things decide whether it will work at all.
 Check them before you start:
 
 - **The disk must have been *adopted*, not claimed as blank.** See
   [Only an adopted disk can be restored from](#only-an-adopted-disk-can-be-restored-from).
-- **The replacement must be flashed with the *original* cluster name.** See
-  [The cluster-id refusal](#the-cluster-id-refusal).
+- **The replacement must be flashed with the *original* cluster name and the same Rasputin
+  release the backup was taken on.** See [The cluster-id refusal](#the-cluster-id-refusal) and
+  step 1 below.
 - **You need the passphrase or the recovery code.** Either alone is enough; without both there
   is no path.
 
@@ -28,7 +29,12 @@ typing the address. `<original-name>` below is the name the dead cluster answere
 
 <!-- SCREENSHOT: restore.png -->
 
-1. **Flash the replacement control plane with the same cluster name the old one had.**
+1. **Flash the replacement control plane with the same cluster name the old one had, and the
+   same Rasputin release the backup was taken on.** Restore refuses a backup taken on any other
+   release. Release images are listed on
+   [the rasputin-os releases page](https://github.com/geekdojo/rasputin-os/releases). If you do
+   not know which release took the backup, the refusal at step 7 names it. You can update to a
+   newer release once the restore is done.
 2. **Plug the adopted backup disk into the replacement machine.** Restore reads the disk
    locally, so it must be on this box.
 3. **Go to the sign-in page.** With a backup set attached it grows a section offering
@@ -45,10 +51,16 @@ typing the address. `<original-name>` below is the name the dead cluster answere
    plane restarts onto it, and the page waits — up to four minutes — for it to come back
    reporting operators.
 8. **Press `SIGN IN WITH YOUR PASSKEY`** and use the passkey you had before the machine died.
-9. **Check your nodes.** They reconnect with the tokens they already hold, to a bus holding the
+9. **Check your nodes and the secret store.** Nodes reconnect with the tokens they already hold, to a bus holding the
    key their pin names, and need no re-enrolling. A node enrolled *after* the re-flash holds the wrong certificate authority;
    the control plane re-delivers it automatically, shown under **Mesh → DEVICES** as
-   `TRUST STALE · re-delivering`, which clears itself.
+   `TRUST STALE · re-delivering`, which clears itself. Then open
+   [Alerts](/docs/respond-to-an-alert/) and check that no secret-store alert is open: no alert
+   whose title begins `The secret store`, no `The control plane cannot use the secret store.`,
+   and no `A seal-key rotation did not finish.`. The one exception is
+   `The secret store is paused for a backup.`, which is normal while a backup runs. If another
+   is open, read its detail on **Alerts**; the empty-store alert has its own entry under
+   [Troubleshooting](#troubleshooting).
 10. **Restore app data per app, from Apps, only if you need to** — see
     [Identity only, and why](#identity-only-and-why-your-app-data-is-left-alone), and
     [Restoring one app's data](/docs/your-apps/#restoring-one-apps-data) for that flow.
@@ -145,10 +157,11 @@ Read this before you start; it is the single most misread thing about restore.
 - The **mesh certificate authority**.
 - The **mesh state**.
 - The **bus key**: the key every node checks the control plane's bus against, by its pin. Without
-  it the replacement makes a new key, and no node holding the old pin connects to it. A
-  generation written before your cluster had a bus key holds none, so restoring one leaves the
-  replacement's new key in place — see
+  it the replacement makes a new key, and no node holding the old pin connects to it. See
   [The bus key and pin](/docs/provisioning/#the-bus-key-and-pin).
+- The **secret store**: its data (your apps' secrets), the seal key that opens it, and the
+  store's own certificate authority. See
+  [The secret store](/docs/set-up-backups/#the-secret-store-what-it-protects-and-what-it-does-not).
 
 **Not restored — your app data.** Every app volume the generation holds stays **sealed on the
 backup disk**, untouched. The page names them by volume twice: once under the generation you
@@ -156,6 +169,10 @@ picked, and again in the result.
 
 > **IDENTITY ONLY.** This restores the database (users, passkeys, node tokens, app
 > declarations), the mesh certificate authority and the mesh state.
+
+That on-screen notice does not mention the secret store, but the store is restored all the same.
+
+**Not restored — the secret store's audit log.** The replacement starts a new, empty one.
 
 **Why the separation exists.** This is a design decision, not an unfinished feature. A
 restored control plane is usually standing in front of **nodes that were never wiped**. The
@@ -198,6 +215,37 @@ when you flashed the machine. **So the fix is to re-flash the replacement with t
 cluster name and come back.** Nothing is wrong with your disk, and refusing is the right
 outcome: the alternative is a box that half-works, with credentials nothing will offer and
 nodes calling an address that does not exist.
+
+## If the secret store's key is lost
+
+**What you see.** The control plane's web page never loads. On the control plane's own console —
+a monitor on its HDMI port, or its serial line — this line appears while it boots, sometimes
+after a timestamp:
+
+```
+rasputin-seal-key: outcome=refused key_id=- reason="The secrets store has data but no seal key, so this control plane will not start. A new key cannot open the existing data. Recover by restoring a backup onto a fresh install."
+```
+
+The console in [Open a serial console](/docs/open-a-serial-console/) is opened from the control
+plane's own web page, so it cannot reach a control plane in this state; that page's
+[hardware section](/docs/open-a-serial-console/#whether-your-hardware-has-a-console-at-all) says
+which boards have a serial line at all.
+
+**Why.** The secret store's data is on the disk, but the key that opens it is gone. A new key
+cannot open the old data, so the control plane's service is held back from starting rather than
+coming up on a store nothing can read.
+
+**What brings it back.** Only a restore from a backup. Re-flash the control plane with the
+original cluster name and the release your backup was taken on, then follow [Do this](#do-this).
+
+**With no backup.** The cluster does not start, and nothing in Rasputin re-creates an empty store
+or rebuilds the cluster for you. Rebuilding is your job: re-flash the control plane as a new
+cluster, then provision every node again. Each node still holds the old cluster's bus pin, so
+none of them joins the new cluster until it is provisioned again — see
+[Provisioning](/docs/provisioning/). Every secret the store held is gone.
+
+Rasputin stops here on purpose. A store that came back empty under a cluster that still expects
+its secrets would break your apps in ways no one could predict.
 
 ## If it does not come back — the four-minute deadline
 
@@ -280,6 +328,26 @@ One restore is staged already. Restart the control plane to apply it. One at a t
 **`the archive did not pass verification`.**
 A file in the archive failed its digest or structure check. Nothing was written. Try an older
 generation.
+
+**`This backup was taken on control plane version` … `Flash release` … `onto this board and restore again.`**
+The backup was taken on a different Rasputin release from the one this replacement runs, and a
+restore works only on the release that took the backup. The message names that release. Flash
+the rasputin-os release with that number onto the replacement, with the same cluster name, and
+restore again. You can update to a newer release afterwards.
+
+**`This backup records no control plane version`.**
+The backup was taken on Rasputin 2026.10.2 or earlier, before backups recorded their release.
+2026.10.5 cannot restore it, and neither can any later release. As the message says, it can be
+restored only on the release it was taken on, and the backup does not say which release that
+was: use the one your old control plane last ran. A backup that old holds no secret store.
+
+**`The secret store is empty, but this cluster was set up.`**
+The control plane started with an empty secret store on a cluster that had already been set up,
+so the secrets your apps were given are not there. Apps that use secrets cannot be deployed, and
+backups are refused so the empty store never replaces a good backup. Only a restore brings the
+store's data back, and restore is offered only before the first operator is registered. So
+re-flash the control plane with the original cluster name and the release your latest backup was
+taken on, then restore from that backup.
 
 **`restore is not configured on this api`.**
 This build of the control plane has no restore surface wired. Nothing on this page will help;
