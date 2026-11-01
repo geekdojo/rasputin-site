@@ -294,8 +294,9 @@ rows are not clickable, deliberately.
 **The disk is fine but every generation is unusable.**
 The reason is in amber on each row. The common one is a re-keyed disk — a generation sealed to
 a key the disk's marker no longer names, which your current secret cannot open. Others: no
-identity archive in the generation, a damaged manifest, a manifest written by a newer Rasputin
-than this image (flash a newer image), or a manifest naming no database, which restores nothing
+identity archive in the generation, a damaged manifest, a manifest in a newer format than this
+image reads (if the manifest records the release that took the backup, the reason names it:
+flash that release, as in step 1), or a manifest naming no database, which restores nothing
 this page puts back.
 
 **A generation is badged `incomplete` — can you still use it?**
@@ -305,8 +306,10 @@ the badge and the headline do not spell it the same way — the badge is lower c
 headline shouts it.
 
 **A disk badged `2 generation(s)` shows five rows.**
-The count is only of generations this build can actually restore from. Section 2 lists the
-unusable ones as well, with their reasons.
+The count is only of generations this build can read. It does not check which release took
+each one, so a counted generation can still be refused at step 7 if the backup was taken on a
+different release (see the version refusal below). Section 2 lists the unusable ones as well,
+with their reasons.
 
 **`That does not open this disk's archive key.`**
 Wrong passphrase or recovery code — and **nothing was sent**, this failed in your browser. Try
