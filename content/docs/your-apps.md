@@ -260,7 +260,7 @@ and the section is there.
 
 **The app never becomes `RUNNING`.**
 Read the `STATUS` detail. The table clips a detail longer than 36 characters to its first 33
-and an ellipsis, so hover it for the whole line, or open the drawer for it unabridged and
+and an ellipsis, so hover it for the whole line, or click the app's name to open the drawer for it unabridged and
 press `VIEW TASKS` — the task run that produced it is where the full command output lives.
 
 **There is no `OPEN` button.**

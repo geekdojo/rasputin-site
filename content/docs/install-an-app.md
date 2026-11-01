@@ -30,7 +30,8 @@ apart: `INSTALL` declares the app, `DEPLOY NOW` starts it.
 5. **Name it and place it.** The name box holds the **instance name**. It defaults to the
    tile's id, must be unique, and becomes the app's DNS label — it is what you will type to
    reach it. The node list beside it picks the **target node**. It defaults to an online node
-   on the cluster's mesh, and only nodes that can actually host the app are offered.
+   on the cluster's mesh. Only nodes of the right architecture are offered, and memory is not
+   checked, so pick one with at least the RAM on the card's badge.
 6. **Leave `LAN ACCESS` off** unless you want the app to have a name on your home network.
    Off is the default and you can change it later on the live app. See
    [`LAN ACCESS`](/docs/your-apps/#lan-access).
@@ -41,8 +42,8 @@ apart: `INSTALL` declares the app, `DEPLOY NOW` starts it.
    for its first run, and a way through to the **Apps** page to watch it come up.
 
 Each key in the footer is marked `required` or `optional`, and an `optional` key can be left
-blank. `DEPLOY NOW` saves what you typed, then deploys, even if you typed nothing. To check a key was saved, open the
-app's drawer on the **Apps** page: the key reads `SET`. If a key cannot be saved, nothing is
+blank. `DEPLOY NOW` saves what you typed, then deploys, even if you typed nothing. To check a key was saved, click the
+app's name on the **Apps** page to open its drawer: the key reads `SET`. If a key cannot be saved, nothing is
 deployed and what you typed stays in its field. You can also set the keys later; see
 [The keys you give an app](/docs/your-apps/#the-keys-you-give-an-app-secrets).
 
