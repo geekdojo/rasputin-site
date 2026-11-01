@@ -34,6 +34,11 @@ Working in this repo:
   `ui-strings-freshness` workflow reads those spans and files an issue when a quoted label no
   longer exists in the control plane's latest stable UI (`node scripts/ui-strings-freshness.mjs`
   runs it locally). A label mentioned only in prose or bold is invisible to it.
+- Every docs page puts the reader's task first: a sentence or two on what the page is for, then
+  `## Do this` with lean numbered steps (the action plus at most one short clause), then
+  `## Details` for explanations, edge cases and the why, then `## Troubleshooting` last. Bryce,
+  2026-11-01: *"Meet the need of the reader hitting the page FIRST, then expand on exceptions
+  and details."* When restructuring, keep heading text unchanged so existing anchors resolve.
 - Never claim remote/away-from-home access works in public copy (untested).
 - `content/docs/roadmap.md` is the public mirror of the internal epics view
   (geekdojo-brain `projects/rasputin/backlog/epics.md`). When work you're publishing
