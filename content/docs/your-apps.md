@@ -256,7 +256,8 @@ row.
 Either the app's tile asks for no keys, or it is a custom app, which has no tile to ask for
 them. Or the app was installed before its tile asked for keys: the drawer's `FIRST RUN` note
 can still tell you to use `SECRETS`, because that note comes from the current tile. Press
-`UPGRADE…` under `COMPOSE`, and the section appears once the upgrade finishes.
+`UPGRADE…` under `COMPOSE`. When the upgrade has finished, close the drawer and open it again,
+and the section is there.
 
 **The app never becomes `RUNNING`.**
 Read the `STATUS` detail. The table clips a detail longer than 36 characters to its first 33
