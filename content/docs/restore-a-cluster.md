@@ -23,7 +23,9 @@ Before you start, you need all three:
 1. **Flash the replacement control plane with the original cluster name and the release the
    backup was taken on.** [Get in the first time](/docs/get-in-the-first-time/#before-you-start)
    shows how to flash and where the name is set; older releases are on
-   [the rasputin-os releases page](https://github.com/geekdojo/rasputin-os/releases).
+   [the rasputin-os releases page](https://github.com/geekdojo/rasputin-os/releases). Stop that
+   page once the machine is powered on: do not press `REGISTER PASSKEY`, it closes restore for
+   good.
 2. **Plug the adopted backup disk into the replacement machine.**
 3. **Open the sign-in page and press `RESTORE FROM BACKUP →`.** Do not press
    `REGISTER PASSKEY`: it closes restore for good.
