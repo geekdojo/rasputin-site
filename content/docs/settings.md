@@ -1,12 +1,12 @@
 ---
 title: "Settings"
-description: "Two settings you can change on a whim, and four that change how your cluster is reached, defended, and accessed — with the consequence of each choice spelled out."
+description: "Two settings you can change on a whim, and six that change how your cluster is reached, defended, and accessed — with the consequence of each choice spelled out."
 weight: 100
 applies-to: "2026.09.4"
 ---
 
 **Settings** is the last icon on the nav rail. Two of its sections are preferences you can
-flip freely. The other four decide how your cluster sits on your network and who can get
+flip freely. The other six decide how your cluster sits on your network and who can get
 into it, and each one gets its own section below.
 
 `<cluster-id>` throughout is your cluster's own identifier, fixed when you provisioned it.
@@ -27,7 +27,7 @@ into it, and each one gets its own section below.
    drive rather than a memory card. Turning it off stops recording but **keeps everything
    already recorded**, and turning it back on later picks up where it left off.
 
-Everything else on the page is in one of the four sections that follow. Read the section
+Everything else on the page is in one of the six sections that follow. Read the section
 before you touch the control.
 
 ## Deployment Mode
@@ -120,6 +120,38 @@ back to a public resolver until you enter one.
 anything you pointed at it, your router's DNS setting above all, has to be pointed back by
 hand. Rasputin cannot undo a change you made in your router.
 
+## Console root password
+
+The password `root` uses at a node's own console: a monitor and keyboard plugged into the
+node, or its serial console, reached through a management controller set up under
+**BMC / power & console** below. No Rasputin image ships one. Until you set one here, root's
+console login is locked on every node.
+
+**What it gives you.** A way into a node that SSH cannot reach, because the network is down or
+the node was enrolled without an SSH key. If you set one during first-run setup, the section
+says a password is set and when.
+
+Type the password twice and press `SET ON ALL NODES`, or `CHANGE ON ALL NODES` once one is
+set. It needs at least 12 characters of printable text on one line; spaces are fine. Choose
+something you can type, because a console has no clipboard. Saving applies it to every node
+in the cluster, the control plane included, and to every node that joins later. It is stored
+as a hash and never shown again: to change it, type a new one.
+
+Under the form, each node shows where it stands: `HOLDS IT`, `APPLYING…`,
+`HOLDS AN OLDER PASSWORD`, or `DID NOT TAKE IT` with the reason. `RE-APPLY TO ALL NODES` sends
+the saved password again, and `REFRESH` reads the list again.
+
+**What it does not protect.** It has nothing to do with SSH, which stays key-only: this
+password never opens it. Anyone who knows it and can reach a node's console, at the node or
+through the serial console, is root on that node.
+
+**The consequence.** A node that did not take it keeps whatever its console had before: locked,
+or an older password. A node that was off or disconnected gets the new password when it next
+connects to the control plane.
+
+**What you cannot take back.** Once set, the password can be changed but not removed: nothing
+on this page returns the consoles to locked.
+
 ## Operator SSH key
 
 The one SSH **public** key this cluster saves for you, so the Add-node wizard can prefill it
@@ -128,11 +160,11 @@ file of each node you add after you save it.
 
 **Put your key here before you enroll anything, and take the prefill every time.** A node
 can only be given an SSH key as it is enrolled. A node enrolled without one has no network
-shell for the rest of its service — the only way into it is the local console, protected by
-a default password shared by every Rasputin OS node. Saving your key here once means every
-later enrollment offers it already filled in, so you cannot forget it on the node you add in
-a hurry. This is the single cheapest thing you can do now to avoid a node you can only fix
-by carrying a keyboard to it.
+shell for the rest of its service — the only way into it is its local console, which stays
+locked until you set a [console root password](#console-root-password). Saving your key here
+once means every later enrollment offers it already filled in, so you cannot forget it on the
+node you add in a hurry. This is the single cheapest thing you can do now to avoid a node you
+can only fix by carrying a keyboard to it.
 
 **What it protects.** Rasputin's OS image runs a key-only SSH server — no password
 authentication at all — and the image bakes in no key. A key seeded at enrollment is
@@ -167,6 +199,29 @@ edit, and the section links to it.
 **What you cannot take back.** Clearing or replacing the key here is not a revocation and
 cannot be treated as one; if you need a key to stop working on a node, you have to do it on the
 node.
+
+## Passkeys
+
+Add another passkey to the account you are signed in with, so that losing one device does not
+lock you out.
+
+**What it gives you.** A second way to sign in. Choose where the new passkey lives, then
+confirm with a passkey you already have:
+
+- `THIS DEVICE` uses the fingerprint, face or PIN built into the computer you are on.
+- `PHONE OR TABLET` shows a QR code to scan with the phone or tablet that will hold it.
+- `SECURITY KEY` uses a hardware key you plug in or tap.
+
+That is step 1. Step 2 is `CREATE THE NEW PASSKEY`, which makes it. They are separate clicks
+because a browser asks for a passkey only after a click. When it is done the section says
+*"New passkey added. You can sign in with either passkey."*, and `ADD ANOTHER` starts again.
+
+**What it does not protect.** Every passkey on your account signs in on its own: whoever can
+unlock a device or key that holds one can sign in as you. Add passkeys only to devices you keep.
+
+**The consequence** of having only one: lose every device that holds a passkey and there is no
+way back in from the sign-in page, as [Get in the first time](/docs/get-in-the-first-time/)
+explains.
 
 ## BMC / power & console
 
@@ -249,3 +304,14 @@ was enrolled with — change it on the node, or re-enroll.
 An earlier release kept a list of keys. Only the first was ever filled in by the wizard, so it
 is the key shown, and the others are ignored. Saving the key — even the same key again — or
 clearing it removes the ignored keys from this setting. That changes no node.
+
+**A node shows `DID NOT TAKE IT` under the console root password.**
+The line under it says why. A node that was off or disconnected gets the password when it next
+connects. For anything else, fix what the line names and press `RE-APPLY TO ALL NODES`.
+
+**Adding a passkey says `That authenticator already holds a passkey for this account.`**
+The device or key you chose already has one for your account. Start again and choose a
+different place for the new passkey.
+
+**Adding a passkey says `Cancelled or denied by the authenticator. Start again from step 1.`**
+The prompt was canceled, timed out or refused on the device. Start again from step 1.
