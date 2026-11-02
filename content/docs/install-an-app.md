@@ -43,7 +43,7 @@ apart: `INSTALL` declares the app, `DEPLOY NOW` starts it.
 
 Each key in the footer is marked `required` or `optional`, and an `optional` key can be left
 blank. `DEPLOY NOW` saves what you typed, then deploys, even if you typed nothing. To check a key was saved, click the
-app's name on the **Apps** page to open its drawer: the key reads `SET`. If a key cannot be saved, nothing is
+app's name on the **Apps** page to open its drawer: under `SECRETS`, the key reads `SET`. If a key cannot be saved, nothing is
 deployed and what you typed stays in its field. You can also set the keys later; see
 [The keys you give an app](/docs/your-apps/#the-keys-you-give-an-app-secrets).
 
@@ -73,7 +73,7 @@ below.
 
 `NEEDS KEYS` means the app uses keys from accounts you hold with third-party services, and
 the install drawer names the services. The footer after `INSTALL` marks each key `required` or
-`optional`. You can type the keys there or later in the app's drawer, and the cluster stores
+`optional`. You can type the keys there or later under `SECRETS` in the app's drawer, and the cluster stores
 them write-only. See
 [The keys you give an app](/docs/your-apps/#the-keys-you-give-an-app-secrets).
 
