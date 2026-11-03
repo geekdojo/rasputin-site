@@ -198,35 +198,30 @@ unreachable.
 
 ## Running your own catalog
 
-If you want different behavior from the published catalog, the supported answer is to
-**point your cluster at a different catalog** rather than fork Rasputin. It's a config
-change, but be clear-eyed about the second half of it.
+**Running your own catalog is not supported for now.** Every cluster reads Geekdojo's signed
+catalog and nothing else. The catalog's source is fixed in the release software, and the
+cluster verifies every catalog against the trust root baked into its OS image.
 
-On the control plane, add the repository to `/var/lib/rasputin/node.env` and restart the API:
+If you added `RASPUTIN_CATALOG_REPO` or `RASPUTIN_CATALOG_API_BASE` to
+`/var/lib/rasputin/node.env` on an earlier release, those lines now do nothing on a release
+image. The API ignores them and writes a warning to its log at startup, one per setting:
+`setting ignored on a release build`. Remove them to clear the warning:
 
 ```
-echo 'RASPUTIN_CATALOG_REPO=yourname/your-catalog' >> /var/lib/rasputin/node.env
+sed -i '/^RASPUTIN_CATALOG_/d' /var/lib/rasputin/node.env
 systemctl restart rasputin-api
 ```
 
-`RASPUTIN_CATALOG_REPO` is `owner/repo` on GitHub. If your catalog lives somewhere that isn't
-github.com, set `RASPUTIN_CATALOG_API_BASE` to that host's API base as well. Neither is part
-of the [seed file](/docs/provisioning/) — the seed's key list is closed, so this is an edit on
-a running node, not something you can bake into a fresh flash.
+A trust root you installed on the control plane for your own catalog is ignored as well, and
+the API names it in a warning at startup. The cluster fetches Geekdojo's catalog. The forward-only rule above still holds, so it
+adopts that catalog once it is newer than the one in effect.
 
-**The part people miss:** your cluster still verifies the bundle signature before it will load
-anything, and it checks two things — that the signing certificate chains to the cluster's
-trust root, and that it carries Rasputin's catalog-signing purpose. A catalog you publish
-yourself satisfies neither by default. Running your own catalog therefore means running your
-own signing chain and installing your own trust root on the node. That is a genuine escape
-hatch — the door is deliberately left open — but it is a PKI project, not a one-line
-environment variable, and we would rather you knew that before you started than after.
-
-Two smaller options are worth knowing before you take that on:
+What to do instead:
 
 - **A custom app.** If you just want to run something the catalog doesn't carry, use
-  [your own Compose stack](#your-own-compose-stack) above. No catalog, no signing, no
-  ceremony — and unlike a catalog tile, nothing about it is constrained by us.
+  [your own Compose stack](#your-own-compose-stack) above. This is the supported way to run
+  an app that isn't in the catalog. No catalog, no signing, no ceremony — and unlike a
+  catalog tile, nothing about it is constrained by us.
 - **Ask for the app.** The catalog exists to grow. If something is missing, that's a request
   worth making rather than a fork worth maintaining.
 
