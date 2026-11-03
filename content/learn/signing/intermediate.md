@@ -74,8 +74,9 @@ record does not say why a separate root is stronger; plausibly, it would not sha
 
 ## What Rasputin does not do here
 
-A catalog you sign yourself is refused. The manual says running your own means *"running your own
-signing chain and installing your own trust root on the node"*, and calls that *"a PKI project"*.
+Running your own catalog is not supported for now. A cluster reads Geekdojo's own signed catalog
+and nothing else, and checks it against the trust root baked into its OS image. A catalog you sign
+yourself is refused.
 
 ## Try it
 
@@ -258,7 +259,7 @@ you typed `purpose-lab`.
 
 ## Where to go next
 
-- **The catalog's signature check:** [Running your own catalog](https://rasputin.geekdojo.com/docs/install-an-app/#running-your-own-catalog),
+- **Why the catalog is Geekdojo's alone:** [Running your own catalog](https://rasputin.geekdojo.com/docs/install-an-app/#running-your-own-catalog),
   in Rasputin's manual.
 - **What a release signature protects:** [Signing and the trust root](https://rasputin.geekdojo.com/docs/roll-out-an-update/#signing-and-the-trust-root).
 - **Two kinds of certificate authority:** [Why a browser warns about a private certificate authority](https://rasputin.geekdojo.com/learn/certificates/beginner/).
