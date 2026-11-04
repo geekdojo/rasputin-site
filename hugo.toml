@@ -14,7 +14,7 @@ enableGitInfo = true
   lastmod = [":git", "lastmod", "date", "publishDate"]
 
 [params]
-  description = "Rasputin is an open-source homelab cluster system: Raspberry Pis and UEFI amd64 boxes in any combination, plus an optional firewall node, managed from one web UI — opinionated where you want guidance, open where you want control, and built to work in the first hour."
+  description = "Rasputin is the feature rich homelab that works in the first hour: an open-source homelab cluster system for Raspberry Pis and UEFI amd64 boxes in any combination, plus an optional firewall node, managed from one web UI — opinionated where you want guidance, open where you want control."
   # Kit (ConvertKit) form ID — leave empty to show the GitHub-watch fallback
   # instead of the email form. Set it and the form goes live; nothing else to do.
   kitFormId = "9667090"
