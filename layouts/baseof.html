@@ -85,8 +85,8 @@
       <a href="{{ "/" | relURL }}#partners">Partners</a>
     </div>
     <div class="foot-links">
-      <a href="{{ site.Params.githubUrl }}">GitHub</a>
-      {{ with site.Params.sponsorUrl }}<a href="{{ . }}">Sponsor</a>{{ end }}
+      <a href="{{ site.Params.githubUrl }}" data-goatcounter-click="out-github-org">GitHub</a>
+      {{ with site.Params.sponsorUrl }}<a href="{{ . }}" data-goatcounter-click="out-sponsors">Sponsor</a>{{ end }}
       <a href="{{ site.Params.blueskyUrl }}">Bluesky</a>
       {{ with site.Params.lemmyUrl }}<a href="{{ . }}">Lemmy</a>{{ end }}
       {{ with site.Params.mastodonUrl }}<a rel="me" href="{{ . }}">Mastodon</a>{{ end }}
@@ -97,7 +97,7 @@
       <a href="{{ "docs/agents/" | relURL }}">For AI agents</a>
       <a href="{{ "llms.txt" | relURL }}">llms.txt</a>
       <a href="https://github.com/geekdojo/rasputin-os/blob/main/LICENSE">AGPL-3.0</a>
-      <a href="{{ site.Params.partnerIssueUrl }}">Become a design partner</a>
+      <a href="{{ site.Params.partnerIssueUrl }}" data-goatcounter-click="partner-intake">Become a design partner</a>
     </div>
   </div>
   <div class="wrap foot-fine">
