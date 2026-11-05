@@ -26,7 +26,7 @@
     if you kept the default name) — the first-run wizard registers a
     passkey and lands you on the dashboard. Under ten minutes, cold start to working cluster.</p>
     <p class="fine"><strong>Review the script without running it</strong> — read it
-    <a href="https://github.com/geekdojo/rasputin-site/blob/main/static/bootstrap.sh">on GitHub</a>
+    <a href="https://github.com/geekdojo/rasputin-site/blob/main/static/bootstrap.sh" data-goatcounter-click="view-bootstrap-source">on GitHub</a>
     (AGPL-3.0, same repo as this site), or read exactly what you'd be running:
     <code>curl -fsSL https://rasputin.geekdojo.com/bootstrap.sh | less</code></p>
     {{ with hugo.Data.releases }}{{ with .os }}{{ with .version }}
@@ -43,7 +43,7 @@
       <ol class="steps">
       <li><strong>Verify.</strong> Check the image's SHA-256 against its
       <code>manifest.json</code> — the stable URL is
-      <a href="https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json"><code>releases/latest/download/manifest.json</code></a>
+      <a href="https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json" data-goatcounter-click="out-github-os-releases"><code>releases/latest/download/manifest.json</code></a>
       on each repo (field <code>imageSha256</code>). Authenticity rides on the signature, not on
       where the file is hosted:
       <pre class="cmd">curl -fsSLO https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json
@@ -101,13 +101,13 @@ RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
         else to install.</p>
         <div class="dl-btns">
           {{ range .images }}
-          <a class="dl-btn" href="{{ .url }}">
+          <a class="dl-btn" href="{{ .url }}" data-goatcounter-click="dl-image-os">
             <span class="dl-btn-arch">{{ .label }}</span>
             <span class="dl-btn-file">{{ .name }}</span>
           </a>
           {{ end }}
         </div>
-        <p class="fine dl-notes">{{ with .releaseUrl }}<a href="{{ . }}">Release notes →</a> · {{ end }}<a href="https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json">manifest.json (checksums)</a></p>
+        <p class="fine dl-notes">{{ with .releaseUrl }}<a href="{{ . }}" data-goatcounter-click="out-github-os-releases">Release notes →</a> · {{ end }}<a href="https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json" data-goatcounter-click="out-github-os-releases">manifest.json (checksums)</a></p>
       </div>
       {{ end }}
 
@@ -122,13 +122,13 @@ RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
         same UI as the rest of the cluster.</p>
         <div class="dl-btns">
           {{ range .images }}
-          <a class="dl-btn" href="{{ .url }}">
+          <a class="dl-btn" href="{{ .url }}" data-goatcounter-click="dl-image-firewall">
             <span class="dl-btn-arch">{{ .label }}</span>
             <span class="dl-btn-file">{{ .name }}</span>
           </a>
           {{ end }}
         </div>
-        <p class="fine dl-notes">{{ with .releaseUrl }}<a href="{{ . }}">Release notes →</a> · {{ end }}<a href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest/download/manifest.json">manifest.json (checksums)</a></p>
+        <p class="fine dl-notes">{{ with .releaseUrl }}<a href="{{ . }}" data-goatcounter-click="out-github-firewall-releases">Release notes →</a> · {{ end }}<a href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest/download/manifest.json" data-goatcounter-click="out-github-firewall-releases">manifest.json (checksums)</a></p>
       </div>
       {{ end }}
 
@@ -146,8 +146,8 @@ RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
     <h2>Latest images</h2>
     <p class="lede">Grab the newest signed images straight from the source repositories:</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="https://github.com/geekdojo/rasputin-os/releases/latest">Rasputin OS releases</a>
-      <a class="btn btn-primary" href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest">Firewall releases</a>
+      <a class="btn btn-primary" href="https://github.com/geekdojo/rasputin-os/releases/latest" data-goatcounter-click="out-github-os-releases">Rasputin OS releases</a>
+      <a class="btn btn-primary" href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases/latest" data-goatcounter-click="out-github-firewall-releases">Firewall releases</a>
     </div>
     {{ end }}
   </div>
@@ -172,12 +172,12 @@ RASPUTIN_SSH_AUTHORIZED_KEY="ssh-ed25519 AAAA… you@laptop"</pre>
       for upgrades.</li>
       <li><strong>Dev builds exist.</strong> Beyond the stable images above, each repo publishes
       <code>-dev.N</code> pre-releases — the newest work, but rougher and subject to breaking format
-      changes. Grab them from the <a href="https://github.com/geekdojo/rasputin-os/releases">OS</a> or
-      <a href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases">firewall</a> releases if
+      changes. Grab them from the <a href="https://github.com/geekdojo/rasputin-os/releases" data-goatcounter-click="out-github-os-releases">OS</a> or
+      <a href="https://github.com/geekdojo/rasputin-openwrt-firewall/releases" data-goatcounter-click="out-github-firewall-releases">firewall</a> releases if
       you want the bleeding edge.</li>
     </ul>
     <div class="cta-row">
-      <a class="btn btn-ghost" href="{{ site.Params.releasesUrl }}">All OS releases on GitHub →</a>
+      <a class="btn btn-ghost" href="{{ site.Params.releasesUrl }}" data-goatcounter-click="out-github-os-releases">All OS releases on GitHub →</a>
       <a class="btn btn-ghost" href="{{ "/" | relURL }}#partners">Become a design partner</a>
     </div>
   </div>
