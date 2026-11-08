@@ -38,7 +38,7 @@
 # Download page (Raspberry Pi Imager / Etcher, then drop the seed file).
 #
 # Env knobs (all optional — the script prompts for anything missing):
-#   RASPUTIN_ARCH            target CPU arch: arm64 (Raspberry Pi 4/5/CM5) or
+#   RASPUTIN_ARCH            target CPU arch: arm64 (Raspberry Pi 5/CM5) or
 #                            amd64 (Intel N100 / any amd64 box)
 #   RASPUTIN_CLUSTER_ID      cluster name — the mDNS name you browse
 #                            (https://<name>.local), the WebAuthn RP ID, and the
@@ -300,7 +300,7 @@ ARCH="${RASPUTIN_ARCH:-}"
 if [ -z "$ARCH" ]; then
 	say ""
 	say "${BLD}What hardware is this control plane?${RST}"
-	say "  1) Raspberry Pi 4 / 5 / CM5            (arm64)"
+	say "  1) Raspberry Pi 5 / CM5                (arm64)"
 	say "  2) Intel N100 / any amd64 mini-PC      (amd64)"
 	say ""
 	sel="$(ask "Pick 1 or 2: ")"

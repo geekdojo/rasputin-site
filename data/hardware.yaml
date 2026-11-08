@@ -7,12 +7,15 @@
 # status:
 #   tested   — booted and run on real hardware. `evidence` says where.
 #   expected — should work by construction, never validated. Say so plainly.
+# note (optional) — a rule about how the hardware may be used, such as
+#   compute-only. Shown under the evidence.
 
 nodes:
   - name: Raspberry Pi 4
     arch: arm64
     status: tested
     evidence: 23 compute nodes in a BitScope ER24A rack, OS 2026.07.2-dev.101
+    note: Compute nodes only. A Pi 4 cannot be the control plane.
 
   - name: Raspberry Pi 5
     arch: arm64
@@ -23,13 +26,20 @@ nodes:
     arch: arm64
     status: tested
     evidence: 2 nodes on a Turing Pi 2, stock OS 2026.07.6, no image changes
+    note: Compute nodes only. A CM4 cannot be the control plane.
 
-  - name: Compute Module 5
+  - name: Compute Module 5 Lite (4 GB)
+    arch: arm64
+    status: tested
+    evidence: Booted from NVMe and ran as a cluster's control plane, including an
+      update and a rollback, OS 2026.11.0-dev.365. Needs OS 2026.11.0 or later;
+      older images do not boot it.
+
+  - name: Compute Module 5 with eMMC
     arch: arm64
     status: expected
-    evidence: Same SoC as the Pi 5, but the image builds only the Pi 4 and Pi 5
-      device trees, not a CM5 one, and no CM5 has ever been booted. Treat it as
-      untested.
+    evidence: The image includes its device tree from OS 2026.11.0, but no CM5
+      with eMMC has been booted. Treat it as untested.
 
   - name: LattePanda Mu + Lite Carrier
     arch: amd64

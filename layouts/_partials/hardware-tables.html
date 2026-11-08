@@ -15,7 +15,7 @@
       <td><strong>{{ .name }}</strong></td>
       <td><code>{{ .arch }}</code></td>
       <td>{{ partial "hardware-status.html" .status }}</td>
-      <td>{{ .evidence }}</td>
+      <td>{{ .evidence }}{{ with .note }}<br><span class="muted">{{ . }}</span>{{ end }}</td>
     </tr>
     {{ end }}
   </tbody>
