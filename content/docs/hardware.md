@@ -20,6 +20,10 @@ So this page keeps two things apart:
   promise. Hardware missing from it is not hardware that failed; it is hardware
   nobody has tried.
 
+**The control plane is narrower.** The node that runs the web UI and API needs a
+Raspberry Pi 5, a CM5 or an amd64 machine, with at least 4 GB of RAM. A Raspberry Pi 4 or CM4 runs as a compute
+node only.
+
 **The firewall is the exception.** It is a separate x86-only image on its own
 release cadence, and it stays narrower than the node claim — an Intel N100 box
 is the reference and the only target. See

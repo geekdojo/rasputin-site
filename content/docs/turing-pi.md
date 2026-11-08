@@ -7,11 +7,19 @@ applies-to: "2026.09.4"
 
 The [Turing Pi 2](https://turingpi.com/) puts four compute modules on one mini-ITX board with a BMC that can power,
 flash and reach the serial console of every slot over the network. That maps closely onto
-what Rasputin already does, so a Turing Pi makes a tidy Rasputin cluster.
+what Rasputin already does, so a Turing Pi makes a tidy home for a Rasputin cluster's compute
+nodes.
 
 This guide is written against **Rasputin OS 2026.09.4**, Turing Pi board revision 2.5.1, Turing
 Pi BMC firmware 2.3.2, and Raspberry Pi Compute Module 4. Everything here was run on that
 hardware.
+
+## The control plane goes somewhere else
+
+**Every CM4 on this board is a compute node.** The control plane, the node that runs
+Rasputin's web UI and API, cannot be a CM4. It needs a Raspberry Pi 5, a CM5 or an amd64
+machine, with at least 4 GB of RAM. Put it anywhere on the same network as the board and set
+it up first, following the [download page](/download/). The nodes on this board then join it.
 
 ## Read this before you buy modules
 
@@ -35,12 +43,8 @@ install.
 Nothing here is Turing Pi specific. A Lite module boots from the adapter's microSD slot, so it
 installs like any other Raspberry Pi.
 
-**The control-plane node.** Follow the [download page](/download/). Its one-line installer
-flashes the card *and* writes the node's seed, so the card comes out ready to boot.
-
-**Every other node.** Once the control plane is up, use its own **Add node** wizard. It hands
-you a one-liner with that node's enrollment seed already baked in — you do not create seeds by
-hand.
+Once your control plane is up, use its **Add node** wizard for each module. It hands you a
+one-liner with that node's enrollment seed already baked in, so you never write a seed by hand.
 
 For each node: put the finished card in the CM4 adapter's microSD slot, seat the adapter in a
 board slot, and power it on.
@@ -112,63 +116,14 @@ A seed is the node's `rasputin-seed.env` enrollment file: its name, role, and th
 it joins the cluster with. **Every seed is a credential.** Keep it somewhere private and delete
 it once the node is running.
 
-Where a seed comes from depends on the node:
-
-- **The control plane**, if it is on this board, is the one node that exists before there is
-  a cluster to ask. Its seed comes from the `rasputin-provision` tool, given the control plane
-  and nothing else — see [The control plane's seed](#the-control-planes-seed).
-- **Every other node** gets its seed from the running control plane's **Add node** wizard, one
-  node at a time — see [Every other node's seed](#every-other-nodes-seed). Never put a
-  non-control-plane node into `rasputin-provision`.
-
-So on a board that holds the control plane, do the control plane all the way through first,
-then come back for the rest.
-
-#### The control plane's seed
-
-`rasputin-provision` is not part of the OS image — it runs on *your* machine. Build it from the
-control-plane source with [Go](https://go.dev/dl/) 1.26 or newer installed:
-
-```bash
-git clone https://github.com/geekdojo/rasputin-control-plane.git
-cd rasputin-control-plane/api
-go build -o ../rasputin-provision ./cmd/rasputin-provision
-cd ..
-```
-
-That leaves a `rasputin-provision` binary in the `rasputin-control-plane` directory; run it
-from there as `./rasputin-provision`. Then:
-
-```bash
-./rasputin-provision \
-  --cluster-id my-cluster \
-  --node controlplane:cp-1 \
-  --ssh-authorized-key-file ~/.ssh/<your-key>.pub \
-  --out ./my-cluster
-```
-
-- `--cluster-id` — any short lowercase name for this cluster.
-- `--node controlplane:<name>` — the control plane, and only the control plane.
-- `--ssh-authorized-key-file` — your SSH **public** key, the `.pub` file. If you do not have
-  one, `ssh-keygen -t ed25519` creates a pair; the public half is the `.pub`.
-- `--out` — a directory to write into.
-
-Among the files it writes is `seed-cp-1.env` (`seed-<name>.env`). That is the control plane's
-seed. **Keep the whole directory private; the control plane's seed contains the cluster's bus
-private key.**
-
-The SSH key is load-bearing. Rasputin images bake **no** SSH key of any kind, so without one
-your only way in is the serial console.
-
-#### Every other node's seed
-
-Once the control plane is running, sign in to its dashboard and use
-[Add a node](/docs/add-a-node/), once per module:
+Each seed comes from your running control plane's **Add node** wizard, one module at a time.
+Sign in to its dashboard and use [Add a node](/docs/add-a-node/), once per module:
 
 1. On **Nodes**, click an open bay.
 2. `ROLE`: **COMPUTE**. `ARCHITECTURE`: **ARM64** (a CM4 is a Raspberry Pi).
 3. Accept or edit `NODE NAME`. This becomes `<node>`.
-4. Check the `SSH KEY` field holds your public key.
+4. Check the `SSH KEY` field holds your public key. Rasputin images ship with no SSH key, so
+   without yours your only way into the node is the serial console.
 5. Press **GENERATE ENROLLMENT FILE**.
 6. Ignore the one-line command — it flashes a drive attached to your machine, and this module
    has none. Expand **Prefer to flash manually?** and press **DOWNLOAD rasputin-seed.env**.
@@ -377,7 +332,8 @@ instead, and see [whether your hardware has a console at
 all](/docs/open-a-serial-console/#whether-your-hardware-has-a-console-at-all) for why.
 
 Go to **Settings → BMC** and choose **Turing Pi 2 / 2.5**, then pick the node that will talk to
-the board — the control plane is the usual choice, and it has to be on the board's network.
+the board. The control plane is the usual choice. Whichever node you pick has to be on the
+same network as the board's BMC.
 
 1. **Enter the BMC username and password.** Defaults are `root` / `turing`. If yours are still
    the defaults, change them on the board first: its BMC is reachable on your LAN and that

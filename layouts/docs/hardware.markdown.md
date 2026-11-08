@@ -13,7 +13,7 @@
 | Hardware | Arch | Status | Where that comes from |
 | --- | --- | --- | --- |
 {{ range hugo.Data.hardware.nodes -}}
-| {{ .name }} | `{{ .arch }}` | {{ if eq .status "tested" }}tested{{ else }}untested — should work{{ end }} | {{ .evidence }} |
+| {{ .name }} | `{{ .arch }}` | {{ if eq .status "tested" }}tested{{ else }}untested — should work{{ end }} | {{ .evidence }}{{ with .note }}. {{ . }}{{ end }} |
 {{ end }}
 ## Carrier boards
 
