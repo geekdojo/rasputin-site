@@ -49,10 +49,14 @@
       <pre class="cmd">curl -fsSLO https://github.com/geekdojo/rasputin-os/releases/latest/download/manifest.json
 shasum -a 256 rasputin-os-*.img.xz   # compare to imageSha256 in manifest.json</pre></li>
       <li><strong>Flash.</strong> Write the image to a microSD card, NVMe, or USB drive.
-      Raspberry Pi Imager (custom image) and balenaEtcher take the compressed files as-is;
-      flashing with <code>dd</code>, decompress first (<code>xz -d</code> for the OS image,
-      <code>gzip -d</code> for the firewall's <code>.img.gz</code>). On Windows, Rufus works
-      too — fair warning: we don't bench-test Windows flashing, so if something's weird,
+      Raspberry Pi Imager is the tool to use on Windows, macOS and Linux: choose <em>Use custom</em>
+      and pick the <code>.img.xz</code> as it is. It handles every Rasputin release. balenaEtcher
+      also takes the file as it is, but from Rasputin OS RASPUTIN_OS_ONE_STREAM_VERSION on it needs a computer with
+      8 GB of RAM or more, and some 8 GB Windows and Linux laptops still fall short. If Etcher
+      stops with a memory limit error, use Imager. Rufus can't unpack Rasputin OS images from
+      RASPUTIN_OS_ONE_STREAM_VERSION on. To flash with <code>dd</code>, decompress first (<code>xz -d</code> for the OS
+      image, <code>gzip -d</code> for the firewall's <code>.img.gz</code>). The firewall image is
+      unchanged and works in all three tools. Fair warning: we don't bench-test Windows flashing, so if something's weird,
       <a href="https://github.com/geekdojo/rasputin-site/issues/new?title=Docs Issue">say so</a>.
       <span class="fine">macOS + Etcher note: a "validation failed" at the very end is usually
       benign — macOS auto-mounts the freshly written seed volume and dirties it behind
