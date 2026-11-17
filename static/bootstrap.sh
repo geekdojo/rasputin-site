@@ -35,7 +35,7 @@
 # if it didn't land — a silently-unseeded first node boots un-enrollable.
 #
 # Cross-platform: macOS and Linux. Windows: use the manual steps on the
-# Download page (Raspberry Pi Imager / Etcher, then drop the seed file).
+# Download page (Raspberry Pi Imager, then drop the seed file).
 #
 # Env knobs (all optional — the script prompts for anything missing):
 #   RASPUTIN_ARCH            target CPU arch: arm64 (Raspberry Pi 4/5/CM5) or
