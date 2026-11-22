@@ -26,10 +26,10 @@ nodes:
 
   - name: Compute Module 5
     arch: arm64
-    status: expected
-    evidence: Same SoC as the Pi 5, but the image builds only the Pi 4 and Pi 5
-      device trees, not a CM5 one, and no CM5 has ever been booted. Treat it as
-      untested.
+    status: tested
+    evidence: 4 CM5 Lite 4 GB modules on a DeskPi Super4C, each booting from
+      M.2 NVMe, with an A/B update and a rollback run on one of them. The image
+      carries the CM5 device trees from OS 2026.11.0.
 
   - name: LattePanda Mu + Lite Carrier
     arch: amd64
@@ -62,3 +62,14 @@ carriers:
       from the control plane against the board itself. Shipped 2026.07.6.
     note: Serial-over-LAN is declined on purpose — this board exposes no console
       the backend can honestly serve, so it errors rather than faking one.
+
+  - name: DeskPi Super4C
+    detail: Four Compute Module 5 slots, each with M.2 NVMe, 1GbE and 2.5GbE
+    backend: none
+    transport: the board's ESP32 management module is not driven
+    status: tested
+    evidence: A four-node cluster on one board, one control plane and three
+      compute nodes, every node a CM5 Lite booting from its own M.2 NVMe on
+      the stock rpi image. The 2.5GbE port was brought up on one node.
+    note: No BMC backend yet, so the control plane cannot power a slot on or
+      off. Each node is still managed like any other Rasputin node.
