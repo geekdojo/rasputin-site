@@ -22,23 +22,22 @@ format. This document is the long-form version of it.
 Code review is itself AI-assisted in this project, so it is disclosed here rather than left
 implicit in the section above.
 
-- AI assists with review during interactive sessions — reading diffs and flagging issues — and
-  the review that decides whether a change lands is an adversarial review by a separate AI
-  agent, described under Human accountability below.
+- AI assists with review during interactive sessions — reading diffs and flagging issues — but
+  the review that decides whether a change lands is performed by the maintainer.
 - No automated review workflow runs in this repository. Other Rasputin repositories run Claude
   Code review workflows that comment on pull requests; which workflows run in a given repository
   is visible in `.github/workflows/`.
-- **Automation merges only its own reviewed pull requests, never with admin override.** It
-  never merges an outside contribution.
+- **No automation merges in this repository.** Every merge to `main` publishes the site, so
+  the maintainer performs every merge.
 
 ## Human accountability
 
 - The maintainer approves the plan for every change before any code is written. An AI agent
   writes the change; a separate AI agent, one that did not write it, reviews it adversarially
   against the plan and the project's written standards, and CI (build, tests, vulnerability
-  scanning where configured) must pass. Once both pass, the agent merges its own pull request.
-  The maintainer reviews and merges every outside contribution, and keeps release cuts and
-  site publishing.
+  scanning where configured) must pass. Every merge to this repository publishes the site, so
+  once both pass the maintainer performs the merge. The maintainer also reviews and merges
+  every outside contribution.
 - The maintainer takes full responsibility for all published code — AI assistance does not
   dilute that accountability.
 - AI-assisted code is reviewed with attention to licensing: nothing knowingly reproducing
